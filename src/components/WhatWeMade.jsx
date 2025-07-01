@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Container, Row, Col, Card } from "react-bootstrap";
 
-// Video asset'leri
+// Video asset'lerinizi doğru yoldan import ettiğinizden emin olun
 import video1 from "../assets/video/1.mp4";
 import video2 from "../assets/video/2.mp4";
 import video3 from "../assets/video/3.mp4";
@@ -21,59 +21,32 @@ class ErrorBoundary extends React.Component {
   }
 }
 
-// --- VideoCard Bileşeni için Yeni Stil Nesneleri ---
+// --- VideoCard Bileşeni için Stil Nesneleri (Değişiklik yok) ---
 const cardStyles = {
-  // Kartın kendisi: Kenarlık, yuvarlak köşeler ve içeriğin taşmasını engelleme
   card: {
     height: "100%",
     border: "2px solid #000000",
     borderRadius: "1rem",
-    overflow: "hidden", // Köşelerden taşan videoyu gizlemek için en önemlisi bu
+    overflow: "hidden",
     position: "relative",
     backgroundColor: "#000000",
   },
-  // Video: Kartı tamamen kaplayacak şekilde ayarlandı
-  video: {
-    width: "100%",
-    height: "100%",
-    // --- İSTEĞİNİZİN ANAHTARI: Videoyu kırparak kartı kaplamasını sağlar ---
-    objectFit: "cover",
-  },
-  // Yazıların bulunduğu katman
+  video: { width: "100%", height: "100%", objectFit: "cover" },
   overlay: {
-    padding: 0, // İçeriği kendimiz yöneteceğimiz için varsayılan padding'i sıfırlıyoruz
+    padding: 0,
     display: "flex",
     flexDirection: "column",
-    justifyContent: "flex-end", // Tüm içeriği dikeyde en alta yaslar
+    justifyContent: "flex-end",
     background:
-      "linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0.8) 100%)", // Yazıların okunabilirliği için alttan gölge
+      "linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0.8) 100%)",
   },
-  // Yazıların bulunduğu alt bölüm
-  footerContent: {
-    padding: "1.5rem",
-    color: "#FFFFFF",
-    textAlign: "left", // Yazıları sola hizala
-  },
-  // Başlık Stili
-  title: {
-    fontSize: "2rem",
-    fontWeight: 700,
-    marginBottom: "1rem", // Başlık ile istatistikler arasına boşluk
-  },
-  // İstatistiklerin listelendiği alan
-  statsContainer: {
-    display: "flex",
-    flexDirection: "column", // İstatistikleri alt alta sıralar
-    gap: "0.5rem", // Her istatistik arasına boşluk
-  },
-  // Her bir istatistik satırı
-  statItem: {
-    fontSize: "1rem",
-    fontWeight: 500,
-  },
+  footerContent: { padding: "1.5rem", color: "#FFFFFF", textAlign: "left" },
+  title: { fontSize: "2rem", fontWeight: 700, marginBottom: "1rem" },
+  statsContainer: { display: "flex", flexDirection: "column", gap: "0.5rem" },
+  statItem: { fontSize: "1rem", fontWeight: 500 },
 };
 
-// Video Kartı Bileşeni (Yeni Düzene Göre Güncellendi)
+// Video Kartı Bileşeni (Değişiklik yok)
 function VideoCard({ videoSrc, title, stats, wrapperStyle }) {
   return (
     <div style={wrapperStyle}>
@@ -104,7 +77,33 @@ function VideoCard({ videoSrc, title, stats, wrapperStyle }) {
   );
 }
 
-// Ana Bileşen (Bu kısımda değişiklik yok, sadece stiller güncellendi)
+// --- YENİ: ANİMASYON İÇİN STYLE ETİKETİ İÇERİĞİ ---
+// Harici CSS kullanmadan @keyframes tanımlamanın en temiz yolu budur.
+const animationStyles = `
+  @keyframes shine {
+    0% { background-position: -200% center; }
+    100% { background-position: 200% center; }
+  }
+
+  .animated-text-shine {
+    background-image: linear-gradient(
+      90deg,
+      #000000 0%,
+      #444444 25%,
+      #ffffff 50%,
+      #444444 75%,
+      #000000 100%
+    );
+    background-size: 200% auto;
+    color: transparent;
+    -webkit-background-clip: text;
+    background-clip: text;
+    animation: shine 5s linear infinite;
+    display: inline-block;
+  }
+`;
+
+// Ana Bileşen (Animasyon, metin boyutu ve buton stilleri güncellendi)
 function WhatWeMade() {
   const [breakpoint, setBreakpoint] = useState("desktop");
   const [isWhatsAppHovered, setIsWhatsAppHovered] = useState(false);
@@ -112,8 +111,7 @@ function WhatWeMade() {
 
   useEffect(() => {
     const handleResize = () => {
-      if (window.innerWidth < 768) setBreakpoint("mobile");
-      else if (window.innerWidth < 1024) setBreakpoint("tablet");
+      if (window.innerWidth < 992) setBreakpoint("mobile");
       else setBreakpoint("desktop");
     };
     handleResize();
@@ -126,7 +124,6 @@ function WhatWeMade() {
   const handleMailClick = () =>
     (window.location.href = "mailto:YOUR_EMAIL_ADDRESS");
 
-  // --- RESPONSIVE STİL NESNELERİ ---
   const baseFont = { fontFamily: "'BegeFont', sans-serif" };
 
   const responsiveStyles = {
@@ -138,39 +135,26 @@ function WhatWeMade() {
     },
     title: {
       fontWeight: 700,
-      fontSize:
-        breakpoint === "mobile"
-          ? "3rem"
-          : breakpoint === "tablet"
-          ? "4rem"
-          : "4.5rem",
+      fontSize: breakpoint === "mobile" ? "3.5rem" : "5rem",
       marginBottom: "4rem",
     },
     mainVideoWrapper: {
-      height: breakpoint === "mobile" ? "70vh" : "85vh",
-      marginBottom: "2rem",
+      height: breakpoint === "mobile" ? "70vh" : "75vh",
+      marginBottom: "4rem",
     },
-    dualVideoWrapper: { height: "60vh" },
+    dualVideoWrapper: { height: breakpoint === "mobile" ? "60vh" : "65vh" },
+    // YENİ: Tanıtım metni boyutu artırıldı
     promoText: {
-      fontSize:
-        breakpoint === "mobile"
-          ? "1.5rem"
-          : breakpoint === "tablet"
-          ? "2rem"
-          : "2.5rem",
-      lineHeight: 1.5,
-      margin: "4rem 0",
+      fontWeight: 500, // Daha tok bir görünüm için
+      fontSize: breakpoint === "mobile" ? "1.8rem" : "3rem",
+      lineHeight: 1.4,
+      margin: "5rem 0",
     },
     button: {
       cursor: "pointer",
-      padding: "14px 0",
-      width:
-        breakpoint === "mobile"
-          ? "160px"
-          : breakpoint === "tablet"
-          ? "200px"
-          : "220px",
-      fontSize: breakpoint === "mobile" ? "1.1rem" : "1.2rem",
+      padding: "16px 0",
+      width: breakpoint === "mobile" ? "180px" : "240px",
+      fontSize: breakpoint === "mobile" ? "1.1rem" : "1.3rem",
       borderRadius: "35px",
       border: "2px solid #141414",
       fontWeight: 500,
@@ -185,16 +169,19 @@ function WhatWeMade() {
     backgroundColor: isWhatsAppHovered ? "#FFFFFF" : "#141414",
     color: isWhatsAppHovered ? "#141414" : "#FFFFFF",
   };
+
+  // YENİ: Mail butonu artık WhatsApp ile aynı stile ve hover efektine sahip
   const mailButtonStyle = {
     ...responsiveStyles.button,
-    backgroundColor: "#FFFFFF",
-    color: "#141414",
-    border: "2px solid #141414",
-    ...(isMailHovered && { backgroundColor: "#141414", color: "#FFFFFF" }),
+    backgroundColor: isMailHovered ? "#FFFFFF" : "#141414",
+    color: isMailHovered ? "#141414" : "#FFFFFF",
   };
 
   return (
     <ErrorBoundary>
+      {/* YENİ: Animasyon stillerini sayfaya ekliyoruz */}
+      <style>{animationStyles}</style>
+
       <Container fluid="lg" style={responsiveStyles.container}>
         <Row className="justify-content-center">
           <Col xs={12}>
@@ -203,7 +190,7 @@ function WhatWeMade() {
         </Row>
 
         <Row className="justify-content-center">
-          <Col xs={12}>
+          <Col xs={12} lg={11} xl={10}>
             <VideoCard
               videoSrc={video1}
               title="BRAVE CF X CREATOR"
@@ -213,8 +200,8 @@ function WhatWeMade() {
           </Col>
         </Row>
 
-        <Row className="g-4">
-          <Col md={6}>
+        <Row className="justify-content-center g-4">
+          <Col md={6} lg={5}>
             <VideoCard
               videoSrc={video2}
               title="LAMBORGHINI YACHT"
@@ -222,7 +209,7 @@ function WhatWeMade() {
               wrapperStyle={responsiveStyles.dualVideoWrapper}
             />
           </Col>
-          <Col md={6}>
+          <Col md={6} lg={5}>
             <VideoCard
               videoSrc={video3}
               title="DUBAI TIMELAPSE"
@@ -233,10 +220,14 @@ function WhatWeMade() {
         </Row>
 
         <Row className="justify-content-center">
-          <Col lg={8}>
+          <Col lg={9}>
+            {/* YENİ: Metin büyütüldü ve animasyon için span'lar eklendi */}
             <p style={responsiveStyles.promoText}>
-              We shoot fast, <br /> we edit smart and we do <br /> it with
-              creators who know <br /> how to read the moment.
+              We shoot <span className="animated-text-shine">fast</span>, <br />
+              we edit smart and we do <br />
+              it with <span className="animated-text-shine">creators</span> who
+              know <br />
+              how to read the moment.
             </p>
           </Col>
         </Row>
