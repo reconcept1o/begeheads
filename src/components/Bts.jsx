@@ -90,24 +90,20 @@ const animationStyles = `
 `;
 
 // --- YENİDEN KULLANILABİLİR BİLEŞENLER ---
-function SocialButton({ text, href }) {
+// GÜNCELLEME: Buton artık dışarıdan bir stil nesnesi alıyor
+function SocialButton({ text, href, style }) {
   const [isHovered, setIsHovered] = useState(false);
-  const buttonStyle = {
+  const finalStyle = {
+    ...style, // Dışarıdan gelen ana stil
     backgroundColor: isHovered ? "#000000" : "#FFFFFF",
     color: isHovered ? "#FFFFFF" : "#000000",
-    padding: "0.75rem 1.5rem",
-    borderRadius: "20px",
-    border: "2px solid #FFFFFF",
-    textDecoration: "none",
-    fontWeight: "bold",
-    transition: "all 0.3s ease",
   };
   return (
     <a
       href={href}
       target="_blank"
       rel="noopener noreferrer"
-      style={buttonStyle}
+      style={finalStyle}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
@@ -146,6 +142,18 @@ function SlideContent({ item }) {
 // ANA BTS BİLEŞENİ
 function Bts() {
   const swiperRef = useRef(null);
+  // YENİ: Ekran boyutunu takip etmek için state ve effect
+  const [breakpoint, setBreakpoint] = useState("desktop");
+
+  useEffect(() => {
+    const handleResize = () => {
+      setBreakpoint(window.innerWidth < 768 ? "mobile" : "desktop");
+    };
+    handleResize(); // İlk yüklemede çalıştır
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
   useEffect(() => {
     const timer = setTimeout(() => {
       if (swiperRef.current) {
@@ -155,6 +163,17 @@ function Bts() {
     return () => clearTimeout(timer);
   }, []);
 
+  // YENİ: Ekran boyutuna göre değişen dinamik buton stili
+  const socialButtonStyle = {
+    padding: breakpoint === "mobile" ? "0.5rem 1rem" : "0.75rem 1.5rem", // Mobilde daha az padding
+    fontSize: breakpoint === "mobile" ? "0.8rem" : "1rem", // Mobilde daha küçük yazı
+    borderRadius: "20px",
+    border: "2px solid #FFFFFF",
+    textDecoration: "none",
+    fontWeight: "bold",
+    transition: "all 0.3s ease",
+  };
+
   return (
     <div style={styles.mainContainer}>
       <style>{animationStyles}</style>
@@ -163,23 +182,26 @@ function Bts() {
           <Col
             xs={12}
             md={4}
-            className="d-flex justify-content-center justify-content-md-start mb-3 mb-md-0"
+            className="d-flex justify-content-center justify-content-md-start mb-4 mb-md-0"
           >
             <h2 style={styles.btsTitle} className="animated-shine-text">
               BTS
             </h2>
           </Col>
-          {/* --- DEĞİŞİKLİK BURADA --- */}
           <Col
             xs={12}
             md={4}
-            className="d-flex flex-column flex-md-row align-items-center justify-content-center gap-2 gap-md-3 mb-3 mb-md-0"
+            className="d-flex align-items-center justify-content-center gap-2 gap-md-3" // Mobil için gap-2
           >
             {socialLinks.map((link) => (
-              <SocialButton key={link.name} text={link.name} href={link.href} />
+              <SocialButton
+                key={link.name}
+                text={link.name}
+                href={link.href}
+                style={socialButtonStyle}
+              />
             ))}
           </Col>
-          {/* --- DEĞİŞİKLİK SONA ERDİ --- */}
           <Col xs={12} md={4} className="d-none d-md-block"></Col>
         </Row>
         <Row>
