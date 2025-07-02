@@ -16,61 +16,63 @@ import image1 from "../assets/bts/11.webp";
 import image2 from "../assets/bts/22.webp";
 import image3 from "../assets/bts/33.webp";
 
-// Her bir slayt için verileri merkezi bir yerde tutmak daha temizdir
+// Veri yapısı (Değişiklik yok)
 const btsData = [
   {
     image: image1,
     text: "We brought creators to China and put them in the cage, turning them into the story that pulls every eye to BRAVE.",
-    link: "https://www.instagram.com/p/Czet215y5a3/", // Hedef linki buraya girin
+    link: "https://www.instagram.com/p/Czet215y5a3/",
   },
   {
     image: image2,
     text: "Producing on-water video content is proof that our limits don’t exist. Check out this shoot for the UAE’s best-known yacht agency.",
-    link: "https://www.instagram.com/p/Czdo_aISLej/", // Hedef linki buraya girin
+    link: "https://www.instagram.com/p/Czdo_aISLej/",
   },
   {
     image: image3,
     text: "Bringing a top USA influencer to film with Dubai’s biggest luxury car rental. Wild, right? Check the result.",
-    link: "https://www.instagram.com/p/Czc6eQnSdaE/", // Hedef linki buraya girin
+    link: "https://www.instagram.com/p/Czc6eQnSdaE/",
   },
 ];
 
-// --- STİL NESNELERİ ---
+// --- GÜNCELLENMİŞ STİL NESNELERİ ---
 const styles = {
-  // Her bir slaytın içindeki kart stili
-  slideCard: {
-    width: "100%",
-    fontFamily: "'BegeFont', sans-serif", // Kendi fontunuzu kullanın
+  sectionWrapper: {
+    padding: "5rem 0",
+    overflow: "hidden", // Kenarlardan taşan Swiper okları için
   },
-  // Resim stili
+  title: {
+    fontFamily: "'BegeFont', sans-serif",
+    fontSize: "4rem",
+    marginBottom: "4rem",
+    textAlign: "center",
+  },
+  // Resim: TUTARLILIK İÇİN EN ÖNEMLİ DEĞİŞİKLİK BURADA
   image: {
     display: "block",
     width: "100%",
-    height: "auto",
+    aspectRatio: "4 / 5", // Tüm resimleri dikey bir 4:5 oranına zorlar
+    objectFit: "cover", // Resmin oranını bozmadan alanı doldurur
     borderRadius: "24px",
-    boxShadow: "0 10px 30px rgba(0, 0, 0, 0.2)",
     border: "2px solid #000000",
   },
-  // Resmin altındaki beyaz metin kartı
+  // Metin kartı: Orijinal estetiği koruyoruz
   textCard: {
     backgroundColor: "#FFFFFF",
     color: "#000000",
     borderRadius: "24px",
     padding: "2rem",
-    marginTop: "-40px", // Kartın resmin üzerine hafifçe binmesini sağlar
+    marginTop: "-50px", // Üst üste binme efekti
     position: "relative",
     zIndex: 2,
     textAlign: "left",
-    boxShadow: "0 10px 30px rgba(0, 0, 0, 0.2)",
     border: "2px solid #000000",
   },
-  // Metnin kendisi
   text: {
-    fontSize: "1.2rem",
+    fontSize: "1.1rem",
     lineHeight: 1.6,
     marginBottom: "2rem",
   },
-  // "SEE MORE" linki
   seeMoreLink: {
     display: "inline-block",
     fontWeight: "bold",
@@ -83,30 +85,36 @@ const styles = {
   },
 };
 
-// Swiper'ın sayfalama noktacıklarını (pagination bullets) siyah yapmak için stil
+// Swiper Navigasyon ve Pagination için özel stiller
 const swiperCustomStyles = `
+  .swiper-container {
+    padding: 2rem 0; /* Slaytların gölgeleri için boşluk */
+  }
   .swiper-pagination-bullet {
     background-color: #000000 !important;
-    width: 12px;
-    height: 12px;
-    opacity: 0.5;
+    width: 10px;
+    height: 10px;
   }
-  .swiper-pagination-bullet-active {
-    opacity: 1;
+  .swiper-button-next, .swiper-button-prev {
+    color: #000000 !important;
+  }
+  /* Mobil cihazlarda okları gizle */
+  @media (max-width: 768px) {
+    .swiper-button-next, .swiper-button-prev {
+      display: none;
+    }
   }
 `;
 
-// Her bir slaytın içeriğini oluşturan küçük bileşen
+// Slayt içeriği bileşeni (Değişiklik yok)
 function SlideContent({ item }) {
   const [isHovered, setIsHovered] = useState(false);
-
   const linkStyleWithHover = {
     ...styles.seeMoreLink,
     opacity: isHovered ? 0.7 : 1,
   };
-
   return (
-    <div style={styles.slideCard}>
+    <div>
       <img src={item.image} alt="Behind the scenes" style={styles.image} />
       <div style={styles.textCard}>
         <p style={styles.text}>{item.text}</p>
@@ -125,46 +133,43 @@ function SlideContent({ item }) {
   );
 }
 
-// Ana Bts Bileşeni
+// Ana Bts Bileşeni (Nihai Tasarım)
 function Bts() {
   return (
-    <>
-      {/* Harici CSS olmadan Swiper stillerini özelleştirmek için */}
+    <div style={styles.sectionWrapper}>
       <style>{swiperCustomStyles}</style>
-
-      <Container fluid="lg" className="py-5 text-center">
-        <Row className="justify-content-center">
-          <Col xs={12}>
-            {/* Bu bölüme bir başlık ekleyebilirsiniz */}
-            {/* <h2 style={{ fontFamily: "'BegeFont', sans-serif", fontSize: '4rem', marginBottom: '4rem' }}>Behind The Scenes</h2> */}
+      <Container fluid>
+        <Row>
+          <Col>
+            <h2 style={styles.title}>Behind The Scenes</h2>
           </Col>
         </Row>
         <Row>
           <Col xs={12}>
             <Swiper
+              // GÜNCELLENMİŞ SWIPER AYARLARI
               effect={"coverflow"}
-              grabCursor={true} // Fareyle sürüklenebilirliği belirtmek için imleci değiştirir
+              grabCursor={true}
               centeredSlides={true}
-              loop={true} // Sonsuz döngü
-              slidesPerView={"auto"} // Ekran boyutuna göre slayt sayısını ayarlar
+              loop={true}
+              // Ekran boyutuna göre görünen slayt sayısını ayarlıyoruz
+              slidesPerView={"auto"}
               coverflowEffect={{
-                rotate: 30, // Kenardaki slaytların dönüş açısı
-                stretch: 0, // Slaytlar arası esneme
-                depth: 100, // 3D derinlik efekti
-                modifier: 1, // Efektin çarpanı
-                slideShadows: false, // Slayt gölgeleri
+                rotate: 0, // Slaytlar artık dönmeyecek, düz duracak
+                stretch: 80, // Slaytlar arasına boşluk koyar
+                depth: 200, // Slaytlara derinlik hissi verir
+                modifier: 1, // Efektin gücü
+                slideShadows: false, // Karmaşıklığı azaltmak için gölgeleri kapattık
               }}
-              pagination={{
-                clickable: true, // Noktalara tıklanabilir
-              }}
+              pagination={{ clickable: true }}
+              navigation={true} // Masaüstü için okları aktif ettik
               modules={[EffectCoverflow, Pagination, Navigation]}
-              className="mySwiper"
-              style={{ paddingBottom: "3rem" }} // Pagination için altta boşluk
+              className="swiper-container"
             >
               {btsData.map((item, index) => (
                 <SwiperSlide
                   key={index}
-                  style={{ width: "80%", maxWidth: "500px" }}
+                  style={{ width: "85%", maxWidth: "450px" }}
                 >
                   <SlideContent item={item} />
                 </SwiperSlide>
@@ -173,7 +178,7 @@ function Bts() {
           </Col>
         </Row>
       </Container>
-    </>
+    </div>
   );
 }
 
