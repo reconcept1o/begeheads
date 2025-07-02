@@ -42,8 +42,8 @@ const styles = {
     perspective: "1000px",
   },
   logo: {
-    width: "100%",
-    maxWidth: "600px",
+    width: "95%",
+    maxWidth: "630px",
     height: "auto",
     filter: "brightness(0) invert(1)",
     // GÜNCELLEME: Logonun dikey margin'i azaltıldı
