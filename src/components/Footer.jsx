@@ -2,9 +2,7 @@ import React, { useState, useRef } from "react";
 import { Container, Row, Col } from "react-bootstrap";
 import { useInView } from "react-intersection-observer";
 
-
 import logo from "../assets/logo.svg";
-
 
 const contactLinks = [
   { text: "Message us", href: "https://wa.me/YOUR_PHONE_NUMBER" },
@@ -17,12 +15,11 @@ const socialLinks = [
   { text: "YouTube", href: "https://youtube.com" },
 ];
 
-// --- STİL NESNELERİ (Daha Kompakt Düzen İçin Güncellendi) ---
+// --- STİL NESNELERİ ---
 const styles = {
   footer: {
     backgroundColor: "#0A0A0A",
     color: "#888888",
-    // GÜNCELLEME: Dikey padding azaltıldı
     padding: "5rem 0 3rem 0",
     fontFamily: "'Outfit', sans-serif",
     textAlign: "center",
@@ -42,11 +39,12 @@ const styles = {
     perspective: "1000px",
   },
   logo: {
+    // DEĞİŞİKLİK: Mobilde taşmayı önlemek için genişliği %100'den %95'e düşürüldü.
+    // Bu, logonun kenarlarda küçük bir boşluk bırakmasını sağlar.
     width: "95%",
     maxWidth: "630px",
     height: "auto",
     filter: "brightness(0) invert(1)",
-    // GÜNCELLEME: Logonun dikey margin'i azaltıldı
     margin: "3rem auto",
     transition: "transform 0.1s linear",
     position: "relative",
@@ -67,7 +65,6 @@ const styles = {
     fontWeight: "bold",
     fontSize: "1.2rem",
   },
-  // GÜNCELLEME: Yasal bilgi satırının üst boşluğu azaltıldı
   legalRow: { marginTop: "4rem" },
   legalLink: {
     color: "#888888",
@@ -146,7 +143,6 @@ function Footer() {
       <div style={styles.glowLine}></div>
       <Container>
         <AnimatedElement delay={0}>
-          {/* GÜNCELLEME: Link sırasının alt boşluğu azaltıldı */}
           <Row className="justify-content-center mb-4">
             <Col md={6} lg={5} className="mb-4 mb-md-0">
               <div style={styles.linkGroup}>
