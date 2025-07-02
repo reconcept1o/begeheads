@@ -44,7 +44,7 @@ function App() {
         <Route path="/" element={<MainPage />} />
 
         {/* Gizlilik Politikası için rota: "/imprint" URL'sinde PrivacyPage bileşenini göster */}
-        <Route path="/imprint" element={<PrivacyPage />} />
+        <Route path="/privacy-policy" element={<PrivacyPage />} />
       </Routes>
     </div>
   );

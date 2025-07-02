@@ -199,7 +199,7 @@ function Footer() {
         <AnimatedElement delay={0.6}>
           <Row style={styles.legalRow}>
             <Col>
-              <HoverLink href="/imprint" style={styles.legalLink}>
+              <HoverLink href="/privacy-policy" style={styles.legalLink}>
                 Imprint & Privacy Policy
               </HoverLink>
             </Col>

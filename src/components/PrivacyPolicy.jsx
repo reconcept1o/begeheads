@@ -1,9 +1,10 @@
 import React from "react";
 import { Container, Row, Col } from "react-bootstrap";
 import { useInView } from "react-intersection-observer";
+import { Link } from "react-router-dom";
+import logo from "../assets/logo.svg";
 
 // --- VERİLER ---
-// İçeriği burada yönetmek, JSX'i son derece temiz ve yönetilebilir kılar.
 const privacySections = [
   {
     number: "1.",
@@ -70,10 +71,19 @@ const styles = {
     fontFamily: "'BegeFont', sans-serif",
     lineHeight: 1.8,
   },
+  // DEĞİŞİKLİK: Logo stili güncellendi.
+  logo: {
+    display: "block",
+    width: "100%", // Sütunun %100'ünü kapla
+    // maxWidth kaldırıldı, artık genişliği sütun belirleyecek.
+    height: "auto",
+    margin: "0 auto 8rem auto", // Alt boşluk artırıldı.
+  },
   mainHeading: {
     fontSize: "clamp(2.5rem, 7vw, 4rem)",
     fontWeight: 700,
     marginBottom: "3rem",
+    textAlign: "center", // Başlıkları ortalıyoruz
   },
   section: {
     marginBottom: "5rem",
@@ -108,13 +118,11 @@ function AnimatedSection({ children, delay = 0 }) {
     triggerOnce: true,
     threshold: 0.1,
   });
-
   const style = {
     transition: `opacity 0.8s ease-out ${delay}s, transform 0.8s ease-out ${delay}s`,
     opacity: inView ? 1 : 0,
     transform: inView ? "translateY(0)" : "translateY(40px)",
   };
-
   return (
     <div ref={ref} style={style}>
       {children}
@@ -127,10 +135,22 @@ function PrivacyPolicy() {
   return (
     <div style={styles.pageContainer}>
       <Container>
+        {/* DEĞİŞİKLİK: Logo ve metin içeriği artık aynı Row ve Col içinde */}
         <Row className="justify-content-center">
           <Col md={10} lg={8}>
-            {/* IMPRINT BÖLÜMÜ */}
+            {/* 1. LOGO BÖLÜMÜ */}
             <AnimatedSection>
+              <Link to="/">
+                <img
+                  src={logo}
+                  alt="BEGEADS Anasayfaya Dön"
+                  style={styles.logo}
+                />
+              </Link>
+            </AnimatedSection>
+
+            {/* 2. IMPRINT BÖLÜMÜ */}
+            <AnimatedSection delay={0.1}>
               <div style={styles.section}>
                 <h1 style={styles.mainHeading}>IMPRINT</h1>
                 <p style={styles.paragraph}>
@@ -164,14 +184,14 @@ function PrivacyPolicy() {
 
             <hr style={styles.divider} />
 
-            {/* PRIVACY POLICY BÖLÜMÜ */}
+            {/* 3. PRIVACY POLICY BÖLÜMÜ */}
             <div style={styles.section}>
               <AnimatedSection delay={0.2}>
                 <h1 style={styles.mainHeading}>PRIVACY POLICY</h1>
               </AnimatedSection>
 
               {privacySections.map((section, index) => (
-                <AnimatedSection key={index} delay={index * 0.1}>
+                <AnimatedSection key={index} delay={0.3 + index * 0.1}>
                   <div>
                     <h2 style={styles.policySectionTitle}>
                       {section.number} {section.title}
