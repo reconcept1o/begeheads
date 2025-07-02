@@ -101,8 +101,9 @@ function Home() {
     letterSpacing: "2px",
   };
 
-  // KATMAN 1: Sadece Logo
+  // KATMAN 1: Logo ve Metin
   const logoContainerStyle = {
+    // GÜNCELLENDİ
     position: "absolute",
     top: 0,
     left: 0,
@@ -110,19 +111,37 @@ function Home() {
     height: "100%",
     zIndex: 1,
     display: "flex",
+    flexDirection: "column", // Öğeleri alt alta dizmek için
     justifyContent: "center",
     alignItems: "center",
     opacity: isSceneLoaded ? 1 : 0,
     transition: "opacity 1s ease-in",
+    padding: "20px", // Kenarlara yapışmasını engellemek için
+    boxSizing: "border-box", // Padding'in genişliği etkilememesi için
   };
 
   const logoStyle = {
     width: "100%",
     height: "auto",
-    maxHeight: isMobile ? "50vh" : "70vh",
+    maxHeight: isMobile ? "40vh" : "50vh", // Metin için yer açmak adına biraz küçültüldü
     objectFit: "contain",
-    filter: "brightness(0) invert(1)", // Logoyu beyaz yapar
+    filter: "brightness(0) invert(1)",
     opacity: 0.5,
+  };
+
+  // YENİ: Logo altı metni için stil
+  const subtitleStyle = {
+    color: "white",
+    textAlign: "center",
+    fontFamily: "'BegeFont', sans-serif",
+    fontSize: isMobile ? "1rem" : "1.2rem",
+    fontWeight: 300, // Daha ince bir font ağırlığı
+    lineHeight: 1.6,
+    marginTop: isMobile ? "20px" : "30px", // Logo ile arasına boşluk koyar
+    maxWidth: isMobile ? "90vw" : "600px", // Metnin okunabilirliğini artırır
+    opacity: isSceneLoaded ? 1 : 0,
+    // Logo'dan biraz sonra belirmesi için gecikme ekliyoruz
+    transition: "opacity 1s ease-in 0.3s",
   };
 
   // KATMAN 2: Three.js Canvas
@@ -132,7 +151,7 @@ function Home() {
     left: 0,
     width: "100%",
     height: "100%",
-    zIndex: 100,
+    zIndex: 2,
   };
 
   // KATMAN 3: UI (Header ve Nav)
@@ -150,11 +169,11 @@ function Home() {
     padding: isMobile ? "15px" : "20px",
     boxSizing: "border-box",
     color: "white",
-    pointerEvents: "none", // Bu katman fare olaylarını yakalamaz
+    pointerEvents: "none",
   };
 
   const headerStyle = {
-    pointerEvents: "auto", // Ama header yakalar
+    pointerEvents: "auto",
     width: "100%",
     textAlign: "center",
     opacity: isSceneLoaded ? 1 : 0,
@@ -162,7 +181,7 @@ function Home() {
   };
 
   const navStyle = {
-    pointerEvents: "auto", // Nav da yakalar
+    pointerEvents: "auto",
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
@@ -195,7 +214,7 @@ function Home() {
     transition: "all 0.3s ease",
     fontWeight: 500,
     width: isMobile ? "120px" : "220px",
-    maxWidth: isMobile ? "150px" : "220px",
+    maxWidth: isMobile ? "150px" : "150px",
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
@@ -219,9 +238,16 @@ function Home() {
         <div style={loadingTextStyle}>Coming</div>
       </div>
 
-      {/* KATMAN 1: Logo */}
+      {/* KATMAN 1: Logo ve Metin */}
       <div style={logoContainerStyle}>
+        {" "}
+        {/* GÜNCELLENDİ */}
         <img src={logoUrl} alt="Logo" style={logoStyle} />
+        {/* YENİ: Logo altı metni eklendi */}
+        <p style={subtitleStyle}>
+          You know what you're building. You’ve got the vision and you just need
+          the right hands to move it.
+        </p>
       </div>
 
       {/* KATMAN 2: Three.js Canvas */}
