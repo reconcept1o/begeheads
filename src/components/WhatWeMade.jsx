@@ -77,8 +77,7 @@ function VideoCard({ videoSrc, title, stats, wrapperStyle }) {
   );
 }
 
-// --- YENİ: ANİMASYON İÇİN STYLE ETİKETİ İÇERİĞİ ---
-// Harici CSS kullanmadan @keyframes tanımlamanın en temiz yolu budur.
+// --- Animasyon için Style Etiketi İçeriği (Değişiklik yok) ---
 const animationStyles = `
   @keyframes shine {
     0% { background-position: -200% center; }
@@ -86,14 +85,7 @@ const animationStyles = `
   }
 
   .animated-text-shine {
-    background-image: linear-gradient(
-      90deg,
-      #000000 0%,
-      #444444 25%,
-      #ffffff 50%,
-      #444444 75%,
-      #000000 100%
-    );
+    background-image: linear-gradient(90deg, #000000 0%, #444444 25%, #ffffff 50%, #444444 75%, #000000 100%);
     background-size: 200% auto;
     color: transparent;
     -webkit-background-clip: text;
@@ -103,7 +95,7 @@ const animationStyles = `
   }
 `;
 
-// Ana Bileşen (Animasyon, metin boyutu ve buton stilleri güncellendi)
+// Ana Bileşen (Masaüstü video boyutları güncellendi)
 function WhatWeMade() {
   const [breakpoint, setBreakpoint] = useState("desktop");
   const [isWhatsAppHovered, setIsWhatsAppHovered] = useState(false);
@@ -139,13 +131,16 @@ function WhatWeMade() {
       marginBottom: "4rem",
     },
     mainVideoWrapper: {
-      height: breakpoint === "mobile" ? "70vh" : "75vh",
-      marginBottom: "4rem",
+      // GÜNCELLEME: Yükseklik 90vh'ye çıkarıldı, dikey boşluk artırıldı.
+      height: breakpoint === "mobile" ? "70vh" : "90vh",
+      marginBottom: breakpoint === "mobile" ? "2rem" : "5rem",
     },
-    dualVideoWrapper: { height: breakpoint === "mobile" ? "60vh" : "65vh" },
-    // YENİ: Tanıtım metni boyutu artırıldı
+    dualVideoWrapper: {
+      // GÜNCELLEME: İkincil videoların yüksekliği de dengeli olması için artırıldı.
+      height: breakpoint === "mobile" ? "60vh" : "70vh",
+    },
     promoText: {
-      fontWeight: 500, // Daha tok bir görünüm için
+      fontWeight: 500,
       fontSize: breakpoint === "mobile" ? "1.8rem" : "3rem",
       lineHeight: 1.4,
       margin: "5rem 0",
@@ -169,8 +164,6 @@ function WhatWeMade() {
     backgroundColor: isWhatsAppHovered ? "#FFFFFF" : "#141414",
     color: isWhatsAppHovered ? "#141414" : "#FFFFFF",
   };
-
-  // YENİ: Mail butonu artık WhatsApp ile aynı stile ve hover efektine sahip
   const mailButtonStyle = {
     ...responsiveStyles.button,
     backgroundColor: isMailHovered ? "#FFFFFF" : "#141414",
@@ -179,7 +172,6 @@ function WhatWeMade() {
 
   return (
     <ErrorBoundary>
-      {/* YENİ: Animasyon stillerini sayfaya ekliyoruz */}
       <style>{animationStyles}</style>
 
       <Container fluid="lg" style={responsiveStyles.container}>
@@ -190,7 +182,8 @@ function WhatWeMade() {
         </Row>
 
         <Row className="justify-content-center">
-          <Col xs={12} lg={11} xl={10}>
+          {/* GÜNCELLEME: lg={11} xl={10} kaldırıldı, artık tam genişlik kullanıyor */}
+          <Col xs={12}>
             <VideoCard
               videoSrc={video1}
               title="BRAVE CF X CREATOR"
@@ -221,7 +214,6 @@ function WhatWeMade() {
 
         <Row className="justify-content-center">
           <Col lg={9}>
-            {/* YENİ: Metin büyütüldü ve animasyon için span'lar eklendi */}
             <p style={responsiveStyles.promoText}>
               We shoot <span className="animated-text-shine">fast</span>, <br />
               we edit smart and we do <br />

@@ -3,6 +3,7 @@ import Home from "./components/Home"; // Mevcut anasayfa bileşeni
 import "./index.css"; // Global stiller (varsa)
 import WhatWeMade from "./components/WhatWeMade";
 import 'bootstrap/dist/css/bootstrap.min.css';
+import Bts from "./components/Bts";
 
 function App() {
   return (
@@ -11,6 +12,8 @@ function App() {
     >
       <Home />
       <WhatWeMade />
+<Bts />
+
     </div>
   );
 }
