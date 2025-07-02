@@ -39,7 +39,7 @@ const socialLinks = [
   { name: "LinkedIn", href: "https://linkedin.com" },
 ];
 
-// --- NİHAİ STİL NESNELERİ ---
+// --- STİL NESNELERİ ---
 const styles = {
   mainContainer: {
     backgroundColor: "#000000",
@@ -58,18 +58,16 @@ const styles = {
     borderRadius: "24px",
     border: "2px solid #000000",
   },
-  // YENİ: KİBAR VE KOMPAKT KART STİLİ
   textCard: {
     backgroundColor: "#FFFFFF",
     color: "#000000",
     borderRadius: "24px",
-    padding: "1.5rem", // Daha sıkı bir padding
+    padding: "1.5rem",
     marginTop: "1.5rem",
     border: "2px solid #000000",
     boxShadow: "0 8px 20px rgba(0, 0, 0, 0.25)",
-    // minHeight kaldırıldı, kartın yüksekliği artık içeriğe göre belirleniyor.
   },
-  text: { fontSize: "1.1rem", lineHeight: 1.6, marginBottom: "1.5rem" }, // Alt boşluk ayarlandı
+  text: { fontSize: "1.1rem", lineHeight: 1.6, marginBottom: "1.5rem" },
   seeMoreButton: {
     display: "inline-block",
     backgroundColor: "#FFFFFF",
@@ -79,25 +77,13 @@ const styles = {
     textDecoration: "none",
     fontWeight: "bold",
     transition: "all 0.3s ease",
-    border: "2px solid #000000", // Butonun kendi sınırı
+    border: "2px solid #000000",
   },
 };
 
 const animationStyles = `
-  @keyframes shine {
-    from { background-position: -200% center; }
-    to { background-position: 200% center; }
-  }
-  .animated-shine-text {
-    background: linear-gradient(90deg, #fff 40%, #555 50%, #fff 60%);
-    background-size: 200% auto;
-    color: #000;
-    background-clip: text;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    animation: shine 4s linear infinite;
-  }
-  /* Swiper stilleri */
+  @keyframes shine { from { background-position: -200% center; } to { background-position: 200% center; } }
+  .animated-shine-text { background: linear-gradient(90deg, #fff 40%, #555 50%, #fff 60%); background-size: 200% auto; color: #000; background-clip: text; -webkit-background-clip: text; -webkit-text-fill-color: transparent; animation: shine 4s linear infinite; }
   .swiper-pagination-bullet { background-color: #FFFFFF !important; }
   .swiper-button-next, .swiper-button-prev { color: #FFFFFF !important; }
   @media (max-width: 768px) { .swiper-button-next, .swiper-button-prev { display: none; } }
@@ -160,7 +146,6 @@ function SlideContent({ item }) {
 // ANA BTS BİLEŞENİ
 function Bts() {
   const swiperRef = useRef(null);
-
   useEffect(() => {
     const timer = setTimeout(() => {
       if (swiperRef.current) {
@@ -184,19 +169,19 @@ function Bts() {
               BTS
             </h2>
           </Col>
+          {/* --- DEĞİŞİKLİK BURADA --- */}
           <Col
             xs={12}
             md={4}
-            className="d-flex justify-content-center gap-2 gap-md-3 mb-3 mb-md-0"
+            className="d-flex flex-column flex-md-row align-items-center justify-content-center gap-2 gap-md-3 mb-3 mb-md-0"
           >
             {socialLinks.map((link) => (
               <SocialButton key={link.name} text={link.name} href={link.href} />
             ))}
           </Col>
-          <Col xs={12} md={4} className="d-none d-md-block"></Col>{" "}
-          {/* Sağ boşluk */}
+          {/* --- DEĞİŞİKLİK SONA ERDİ --- */}
+          <Col xs={12} md={4} className="d-none d-md-block"></Col>
         </Row>
-
         <Row>
           <Col xs={12}>
             <Swiper
