@@ -1,5 +1,6 @@
 import React, { useRef, useEffect, useState } from "react";
 import BegeadsScene from "../Animation/BegeadsScene";
+import "../App.css"; // Font sınıfları için App.css'yi içe aktarın
 
 // Asset'leri import ediyoruz
 import backgroundUrl from "../assets/Background.png";
@@ -76,7 +77,6 @@ function Home() {
     backgroundSize: "cover",
     backgroundPosition: "center",
     overflow: "hidden",
-    fontFamily: "'BegeFont', sans-serif",
   };
 
   const loadingOverlayStyle = {
@@ -101,9 +101,7 @@ function Home() {
     letterSpacing: "2px",
   };
 
-  // KATMAN 1: Logo ve Metin
   const logoContainerStyle = {
-    // GÜNCELLENDİ
     position: "absolute",
     top: 0,
     left: 0,
@@ -111,40 +109,37 @@ function Home() {
     height: "100%",
     zIndex: 1,
     display: "flex",
-    flexDirection: "column", // Öğeleri alt alta dizmek için
-    justifyContent: "center",
+    flexDirection: "column",
+    justifyContent: isMobile ? "flex-start" : "center", // Mobil için yukarı taşı
     alignItems: "center",
     opacity: isSceneLoaded ? 1 : 0,
     transition: "opacity 1s ease-in",
-    padding: "20px", // Kenarlara yapışmasını engellemek için
-    boxSizing: "border-box", // Padding'in genişliği etkilememesi için
+    padding: isMobile ? "10px" : "20px", // Mobil için padding azaltıldı
+    paddingTop: isMobile ? "50px" : "20px", // Yukarı taşıma için
+    boxSizing: "border-box",
   };
 
   const logoStyle = {
     width: "100%",
     height: "auto",
-    maxHeight: isMobile ? "40vh" : "50vh", // Metin için yer açmak adına biraz küçültüldü
+    maxHeight: isMobile ? "45vh" : "50vh", // Mobil için logo büyütüldü
     objectFit: "contain",
     filter: "brightness(0) invert(1)",
     opacity: 0.5,
   };
 
-  // YENİ: Logo altı metni için stil
   const subtitleStyle = {
     color: "white",
     textAlign: "center",
-    fontFamily: "'BegeFont', sans-serif",
-    fontSize: isMobile ? "1rem" : "1.2rem",
-    fontWeight: 300, // Daha ince bir font ağırlığı
+    fontSize: isMobile ? "1.2rem" : "1.2rem", // Mobil için yazı büyütüldü
+    fontWeight: 300,
     lineHeight: 1.6,
-    marginTop: isMobile ? "20px" : "30px", // Logo ile arasına boşluk koyar
-    maxWidth: isMobile ? "90vw" : "600px", // Metnin okunabilirliğini artırır
+    marginTop: isMobile ? "15px" : "30px", // Mobil için boşluk azaltıldı
+    maxWidth: isMobile ? "90vw" : "600px",
     opacity: isSceneLoaded ? 1 : 0,
-    // Logo'dan biraz sonra belirmesi için gecikme ekliyoruz
     transition: "opacity 1s ease-in 0.3s",
   };
 
-  // KATMAN 2: Three.js Canvas
   const canvasContainerStyle = {
     position: "absolute",
     top: 0,
@@ -154,7 +149,6 @@ function Home() {
     zIndex: 2,
   };
 
-  // KATMAN 3: UI (Header ve Nav)
   const uiContainerStyle = {
     position: "absolute",
     top: 0,
@@ -164,9 +158,9 @@ function Home() {
     zIndex: 3,
     display: "flex",
     flexDirection: "column",
-    justifyContent: "space-between",
+    justifyContent: isMobile ? "space-between" : "space-between",
     alignItems: "center",
-    padding: isMobile ? "15px" : "20px",
+    padding: isMobile ? "10px" : "20px", // Mobil için padding azaltıldı
     boxSizing: "border-box",
     color: "white",
     pointerEvents: "none",
@@ -188,7 +182,7 @@ function Home() {
     width: "100%",
     flexWrap: "wrap",
     gap: isMobile ? "10px" : "20px",
-    paddingBottom: "20px",
+    paddingBottom: isMobile ? "10px" : "20px", // Mobil için padding azaltıldı
     opacity: isSceneLoaded ? 1 : 0,
     transform: isSceneLoaded ? "translateY(0)" : "translateY(20px)",
     transition: "opacity 1s ease-out 1.2s, transform 1s ease-out 1.2s",
@@ -199,33 +193,36 @@ function Home() {
     color: "white",
     marginBottom: "5px",
   };
+
   const headerLineStyle = {
     width: "100%",
     height: "1px",
     backgroundColor: "white",
     margin: "auto",
   };
+
   const buttonBaseStyle = {
     cursor: "pointer",
     margin: isMobile ? "0 5px" : "0 15px",
     padding: "14px 0",
-    fontSize: isMobile ? "1.1rem" : "1.2rem",
+    fontSize: isMobile ? "1rem" : "1.2rem", // Mobil için font boyutu küçültüldü
     borderRadius: "35px",
     transition: "all 0.3s ease",
     fontWeight: 500,
-    width: isMobile ? "120px" : "220px",
-    maxWidth: isMobile ? "150px" : "150px",
+    width: isMobile ? "100px" : "220px", // Mobil için buton genişliği küçültüldü
+    maxWidth: isMobile ? "120px" : "150px", // Mobil için max genişlik küçültüldü
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
     textAlign: "center",
-    fontFamily: "'BegeFont', sans-serif",
   };
+
   const buttonDefaultStyle = {
     backgroundColor: "transparent",
     color: "#FFFFFF",
     border: "2px solid #FFFFFF",
   };
+
   const buttonHoverStyle = {
     backgroundColor: "#FFFFFF",
     color: "#000000",
@@ -235,16 +232,15 @@ function Home() {
   return (
     <div style={rootStyle}>
       <div style={loadingOverlayStyle}>
-        <div style={loadingTextStyle}>Coming</div>
+        <div style={loadingTextStyle} className="acme-regular">
+          Coming
+        </div>
       </div>
 
       {/* KATMAN 1: Logo ve Metin */}
       <div style={logoContainerStyle}>
-        {" "}
-        {/* GÜNCELLENDİ */}
         <img src={logoUrl} alt="Logo" style={logoStyle} />
-        {/* YENİ: Logo altı metni eklendi */}
-        <p style={subtitleStyle}>
+        <p style={subtitleStyle} className="reddit-sans-custom">
           You know what you're building. You’ve got the vision and you just need
           the right hands to move it.
         </p>
@@ -256,7 +252,9 @@ function Home() {
       {/* KATMAN 3: UI (Header ve Nav) */}
       <div style={uiContainerStyle}>
         <header style={headerStyle}>
-          <div style={headerTextStyle}>©BEGEADS CREATIVE SPACE</div>
+          <div style={headerTextStyle} className="permanent-marker-regular">
+            ©BEGEADS CREATIVE SPACE
+          </div>
           <div style={headerLineStyle} />
         </header>
         <nav style={navStyle}>
@@ -265,6 +263,7 @@ function Home() {
               ...buttonBaseStyle,
               ...(isWhatsAppHovered ? buttonHoverStyle : buttonDefaultStyle),
             }}
+            className="reddit-sans-custom"
             onClick={handleWhatsAppClick}
             onMouseEnter={() => setIsWhatsAppHovered(true)}
             onMouseLeave={() => setIsWhatsAppHovered(false)}
@@ -276,6 +275,7 @@ function Home() {
               ...buttonBaseStyle,
               ...(isMailHovered ? buttonHoverStyle : buttonDefaultStyle),
             }}
+            className="reddit-sans-custom"
             onClick={handleMailClick}
             onMouseEnter={() => setIsMailHovered(true)}
             onMouseLeave={() => setIsMailHovered(false)}
