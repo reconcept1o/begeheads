@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState } from "react";
+import React, { useRef, useEffect, useState, useCallback } from "react";
 import BegeadsScene from "../Animation/BegeadsScene";
 
 // Asset'leri import ediyoruz
@@ -12,12 +12,20 @@ import envNy from "../assets/texture3/ny.png";
 import envPz from "../assets/texture3/pz.png";
 import envNz from "../assets/texture3/nz.png";
 
+// --- YENİ: Metin animasyonu için sabitler ---
+const SCRAMBLE_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ*#?%&@";
+const TARGET_TEXT = "©BEGEADS CREATIVE SPACE";
+
 function Home() {
   const mountRef = useRef(null);
   const [isSceneLoaded, setIsSceneLoaded] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
   const [isWhatsAppHovered, setIsWhatsAppHovered] = useState(false);
   const [isMailHovered, setIsMailHovered] = useState(false);
+
+  // --- YENİ: Başlık metnini ve animasyonunu yönetmek için state ve ref ---
+  const [headerText, setHeaderText] = useState(TARGET_TEXT);
+  const animationIntervalRef = useRef(null);
 
   useEffect(() => {
     if (!mountRef.current) return;
@@ -45,6 +53,45 @@ function Home() {
     window.addEventListener("resize", handleResize);
     handleResize();
     return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  // --- YENİ: Metin karıştırma animasyonunun mantığı ---
+  const runScrambleAnimation = useCallback(() => {
+    let iteration = 0;
+    clearInterval(animationIntervalRef.current); // Önceki animasyonu durdur
+
+    animationIntervalRef.current = setInterval(() => {
+      const newText = TARGET_TEXT.split("")
+        .map((letter, index) => {
+          if (index < iteration) {
+            return TARGET_TEXT[index];
+          }
+          return SCRAMBLE_CHARS[
+            Math.floor(Math.random() * SCRAMBLE_CHARS.length)
+          ];
+        })
+        .join("");
+
+      setHeaderText(newText);
+
+      if (iteration >= TARGET_TEXT.length) {
+        clearInterval(animationIntervalRef.current);
+      }
+      iteration += 1 / 3;
+    }, 30);
+  }, []);
+
+  // --- YENİ: Sahne yüklendiğinde metin animasyonunu tetikle ---
+  useEffect(() => {
+    if (isSceneLoaded) {
+      // Çizgi animasyonuyla uyumlu olması için gecikmeli başlat
+      setTimeout(runScrambleAnimation, 700);
+    }
+  }, [isSceneLoaded, runScrambleAnimation]);
+
+  // --- YENİ: Bileşen kaldırıldığında interval'ı temizle ---
+  useEffect(() => {
+    return () => clearInterval(animationIntervalRef.current);
   }, []);
 
   const handleWhatsAppClick = () => {
@@ -101,15 +148,13 @@ function Home() {
     letterSpacing: "2px",
   };
 
-  // KATMAN 1: Logo, Metin ve Butonlar
-  // DEĞİŞİKLİK: Bu konteyner artık butonları da içeriyor ve merkezi yerleşimi sağlıyor.
   const contentContainerStyle = {
     position: "absolute",
     top: 0,
     left: 0,
     width: "100%",
     height: "100%",
-    zIndex: 3, // UI elemanlarını canvasın önünde tutmak için zIndex artırıldı.
+    zIndex: 3,
     display: "flex",
     flexDirection: "column",
     justifyContent: "center",
@@ -141,7 +186,6 @@ function Home() {
     transition: "opacity 1s ease-in 0.3s",
   };
 
-  // KATMAN 2: Three.js Canvas
   const canvasContainerStyle = {
     position: "absolute",
     top: 0,
@@ -151,29 +195,26 @@ function Home() {
     zIndex: 2,
   };
 
-  // KATMAN 3: Sadece Header için kalan UI katmanı
-  // DEĞİŞİKLİK: Nav buradan kaldırıldı. Sadece header kaldı.
   const headerContainerStyle = {
     position: "absolute",
     top: 0,
     left: 0,
     width: "100%",
-    zIndex: 4, // Her şeyin üstünde olmalı
+    zIndex: 4,
     padding: isMobile ? "15px" : "20px",
     boxSizing: "border-box",
     color: "white",
-    pointerEvents: "none", // Konteynerin kendisi tıklanamaz
+    pointerEvents: "none",
   };
 
   const headerStyle = {
-    pointerEvents: "auto", // İçindeki elemanlar tıklanabilir
+    pointerEvents: "auto",
     width: "100%",
     textAlign: "center",
     opacity: isSceneLoaded ? 1 : 0,
     transition: "opacity 0.5s ease-in 0.5s",
   };
 
-  // DEĞİŞİKLİK: Nav stili merkezi yerleşim için güncellendi.
   const navStyle = {
     pointerEvents: "auto",
     display: "flex",
@@ -182,23 +223,32 @@ function Home() {
     width: "100%",
     flexWrap: "wrap",
     gap: isMobile ? "15px" : "20px",
-    marginTop: isMobile ? "40px" : "50px", // Metin ile butonlar arasına boşluk ekler
+    marginTop: isMobile ? "40px" : "50px",
     opacity: isSceneLoaded ? 1 : 0,
     transform: isSceneLoaded ? "translateY(0)" : "translateY(20px)",
     transition: "opacity 1s ease-out 1.2s, transform 1s ease-out 1.2s",
   };
 
+  // --- GÜNCELLENDİ: Yazı boyutu ve stili ---
   const headerTextStyle = {
-    fontSize: isMobile ? "0.7rem" : "0.8rem",
+    fontSize: isMobile ? "0.8rem" : "1rem", // Yazı boyutu büyütüldü
     color: "white",
-    marginBottom: "5px",
+    marginBottom: "8px", // Çizgiyle arayı biraz açtık
+    letterSpacing: "1px",
+    cursor: "pointer", // Fareyle üzerine gelince el işareti çıkar
+    fontVariantNumeric: "tabular-nums", // Harflerin zıplamasını engeller
   };
+
   const headerLineStyle = {
     width: "100%",
     height: "1px",
     backgroundColor: "white",
     margin: "auto",
+    transformOrigin: "left",
+    transform: isSceneLoaded ? "scaleX(1)" : "scaleX(0)",
+    transition: "transform 1.5s ease-out 0.8s",
   };
+
   const buttonBaseStyle = {
     cursor: "pointer",
     padding: "14px 0",
@@ -206,7 +256,7 @@ function Home() {
     borderRadius: "35px",
     transition: "all 0.3s ease",
     fontWeight: 500,
-    width: "150px", // Genişliği sabitledik, daha tutarlı bir görünüm için
+    width: "150px",
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
@@ -230,7 +280,6 @@ function Home() {
         <div style={loadingTextStyle}>Coming</div>
       </div>
 
-      {/* KATMAN 1: Merkezi İçerik (Logo, Metin, Butonlar) */}
       <div style={contentContainerStyle}>
         <img src={logoUrl} alt="Logo" style={logoStyle} />
         <p style={subtitleStyle}>
@@ -263,13 +312,14 @@ function Home() {
         </nav>
       </div>
 
-      {/* KATMAN 2: Three.js Canvas */}
       <div ref={mountRef} style={canvasContainerStyle}></div>
 
-      {/* KATMAN 3: Üst Header */}
       <div style={headerContainerStyle}>
         <header style={headerStyle}>
-          <div style={headerTextStyle}>©BEGEADS CREATIVE SPACE</div>
+          {/* GÜNCELLENDİ: Metin state'den geliyor ve onMouseEnter eventi eklendi */}
+          <div style={headerTextStyle} onMouseEnter={runScrambleAnimation}>
+            {headerText}
+          </div>
           <div style={headerLineStyle} />
         </header>
       </div>

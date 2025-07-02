@@ -2,10 +2,10 @@ import React, { useState, useRef } from "react";
 import { Container, Row, Col } from "react-bootstrap";
 import { useInView } from "react-intersection-observer";
 
-// Logonuzu assets klasöründen import edin
+
 import logo from "../assets/logo.svg";
 
-// VERİLER
+
 const contactLinks = [
   { text: "Message us", href: "https://wa.me/YOUR_PHONE_NUMBER" },
   { text: "Email us", href: "mailto:YOUR_EMAIL_ADDRESS" },

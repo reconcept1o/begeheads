@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { Container, Row, Col, Card } from "react-bootstrap";
 
-// Video asset'lerinizi doğru yoldan import ettiğinizden emin olun
+
 import video1 from "../assets/video/1.mp4";
 import video2 from "../assets/video/2.mp4";
 import video3 from "../assets/video/3.mp4";
 
-// Hata yakalama bileşeni (Değişiklik yok)
+
 class ErrorBoundary extends React.Component {
   state = { hasError: false };
   static getDerivedStateFromError() {
@@ -21,7 +21,7 @@ class ErrorBoundary extends React.Component {
   }
 }
 
-// --- VideoCard Bileşeni için Stil Nesneleri (Değişiklik yok) ---
+
 const cardStyles = {
   card: {
     height: "100%",
@@ -46,7 +46,7 @@ const cardStyles = {
   statItem: { fontSize: "1rem", fontWeight: 500 },
 };
 
-// Video Kartı Bileşeni (Değişiklik yok)
+
 function VideoCard({ videoSrc, title, stats, wrapperStyle }) {
   return (
     <div style={wrapperStyle}>
@@ -77,7 +77,7 @@ function VideoCard({ videoSrc, title, stats, wrapperStyle }) {
   );
 }
 
-// --- Animasyon için Style Etiketi İçeriği (Değişiklik yok) ---
+
 const animationStyles = `
   @keyframes shine {
     0% { background-position: -200% center; }
@@ -95,7 +95,7 @@ const animationStyles = `
   }
 `;
 
-// Ana Bileşen (Masaüstü video boyutları güncellendi)
+
 function WhatWeMade() {
   const [breakpoint, setBreakpoint] = useState("desktop");
   const [isWhatsAppHovered, setIsWhatsAppHovered] = useState(false);
