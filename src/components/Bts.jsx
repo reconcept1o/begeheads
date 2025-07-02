@@ -1,22 +1,20 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { Container, Row, Col } from "react-bootstrap";
 
-// Swiper.js kütüphanesinden gerekli bileşenleri ve stilleri import ediyoruz
+// Swiper.js
 import { Swiper, SwiperSlide } from "swiper/react";
 import { EffectCoverflow, Pagination, Navigation } from "swiper/modules";
-
-// Swiper'ın temel CSS dosyaları
 import "swiper/css";
 import "swiper/css/effect-coverflow";
 import "swiper/css/pagination";
 import "swiper/css/navigation";
 
-// Resim asset'leri
+// Resimler
 import image1 from "../assets/bts/11.webp";
 import image2 from "../assets/bts/22.webp";
 import image3 from "../assets/bts/33.webp";
 
-// Veri yapısı (Değişiklik yok)
+// VERİLER
 const btsData = [
   {
     image: image1,
@@ -35,94 +33,120 @@ const btsData = [
   },
 ];
 
-// --- GÜNCELLENMİŞ STİL NESNELERİ ---
+const socialLinks = [
+  { name: "Instagram", href: "https://instagram.com" },
+  { name: "YouTube", href: "https://youtube.com" },
+  { name: "LinkedIn", href: "https://linkedin.com" },
+];
+
+// --- NİHAİ STİL NESNELERİ ---
 const styles = {
-  sectionWrapper: {
-    padding: "5rem 0",
-    overflow: "hidden", // Kenarlardan taşan Swiper okları için
-  },
-  title: {
+  mainContainer: {
+    backgroundColor: "#000000",
+    color: "#FFFFFF",
+    minHeight: "100vh",
+    padding: "2rem 0 5rem 0",
     fontFamily: "'BegeFont', sans-serif",
-    fontSize: "4rem",
-    marginBottom: "4rem",
-    textAlign: "center",
   },
-  // Resim: TUTARLILIK İÇİN EN ÖNEMLİ DEĞİŞİKLİK BURADA
+  headerRow: { alignItems: "center", marginBottom: "3rem" },
+  btsTitle: { fontSize: "2rem", fontWeight: "bold", textAlign: "left" },
   image: {
     display: "block",
     width: "100%",
-    aspectRatio: "4 / 5", // Tüm resimleri dikey bir 4:5 oranına zorlar
-    objectFit: "cover", // Resmin oranını bozmadan alanı doldurur
+    aspectRatio: "4 / 5",
+    objectFit: "cover",
     borderRadius: "24px",
     border: "2px solid #000000",
   },
-  // Metin kartı: Orijinal estetiği koruyoruz
+  // YENİ: KİBAR VE KOMPAKT KART STİLİ
   textCard: {
     backgroundColor: "#FFFFFF",
     color: "#000000",
     borderRadius: "24px",
-    padding: "2rem",
-    marginTop: "-50px", // Üst üste binme efekti
-    position: "relative",
-    zIndex: 2,
-    textAlign: "left",
+    padding: "1.5rem", // Daha sıkı bir padding
+    marginTop: "1.5rem",
     border: "2px solid #000000",
+    boxShadow: "0 8px 20px rgba(0, 0, 0, 0.25)",
+    // minHeight kaldırıldı, kartın yüksekliği artık içeriğe göre belirleniyor.
   },
-  text: {
-    fontSize: "1.1rem",
-    lineHeight: 1.6,
-    marginBottom: "2rem",
-  },
-  seeMoreLink: {
+  text: { fontSize: "1.1rem", lineHeight: 1.6, marginBottom: "1.5rem" }, // Alt boşluk ayarlandı
+  seeMoreButton: {
     display: "inline-block",
-    fontWeight: "bold",
-    fontSize: "1.2rem",
+    backgroundColor: "#FFFFFF",
     color: "#000000",
-    textDecoration: "underline",
-    textUnderlineOffset: "6px",
-    cursor: "pointer",
-    transition: "opacity 0.3s ease",
+    padding: "0.75rem 1.5rem",
+    borderRadius: "16px",
+    textDecoration: "none",
+    fontWeight: "bold",
+    transition: "all 0.3s ease",
+    border: "2px solid #000000", // Butonun kendi sınırı
   },
 };
 
-// Swiper Navigasyon ve Pagination için özel stiller
-const swiperCustomStyles = `
-  .swiper-container {
-    padding: 2rem 0; /* Slaytların gölgeleri için boşluk */
+const animationStyles = `
+  @keyframes shine {
+    from { background-position: -200% center; }
+    to { background-position: 200% center; }
   }
-  .swiper-pagination-bullet {
-    background-color: #000000 !important;
-    width: 10px;
-    height: 10px;
+  .animated-shine-text {
+    background: linear-gradient(90deg, #fff 40%, #555 50%, #fff 60%);
+    background-size: 200% auto;
+    color: #000;
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: shine 4s linear infinite;
   }
-  .swiper-button-next, .swiper-button-prev {
-    color: #000000 !important;
-  }
-  /* Mobil cihazlarda okları gizle */
-  @media (max-width: 768px) {
-    .swiper-button-next, .swiper-button-prev {
-      display: none;
-    }
-  }
+  /* Swiper stilleri */
+  .swiper-pagination-bullet { background-color: #FFFFFF !important; }
+  .swiper-button-next, .swiper-button-prev { color: #FFFFFF !important; }
+  @media (max-width: 768px) { .swiper-button-next, .swiper-button-prev { display: none; } }
 `;
 
-// Slayt içeriği bileşeni (Değişiklik yok)
+// --- YENİDEN KULLANILABİLİR BİLEŞENLER ---
+function SocialButton({ text, href }) {
+  const [isHovered, setIsHovered] = useState(false);
+  const buttonStyle = {
+    backgroundColor: isHovered ? "#000000" : "#FFFFFF",
+    color: isHovered ? "#FFFFFF" : "#000000",
+    padding: "0.75rem 1.5rem",
+    borderRadius: "20px",
+    border: "2px solid #FFFFFF",
+    textDecoration: "none",
+    fontWeight: "bold",
+    transition: "all 0.3s ease",
+  };
+  return (
+    <a
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      style={buttonStyle}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
+      {text}
+    </a>
+  );
+}
+
 function SlideContent({ item }) {
   const [isHovered, setIsHovered] = useState(false);
-  const linkStyleWithHover = {
-    ...styles.seeMoreLink,
-    opacity: isHovered ? 0.7 : 1,
+  const buttonStyle = {
+    ...styles.seeMoreButton,
+    color: isHovered ? "#FFFFFF" : "#000000",
+    backgroundColor: isHovered ? "#000000" : "#FFFFFF",
   };
   return (
     <div>
-      <img src={item.image} alt="Behind the scenes" style={styles.image} />
+      <img src={item.image} alt="" style={styles.image} />
       <div style={styles.textCard}>
         <p style={styles.text}>{item.text}</p>
         <a
           href={item.link}
           target="_blank"
           rel="noopener noreferrer"
-          style={linkStyleWithHover}
+          style={buttonStyle}
           onMouseEnter={() => setIsHovered(true)}
           onMouseLeave={() => setIsHovered(false)}
         >
@@ -133,43 +157,72 @@ function SlideContent({ item }) {
   );
 }
 
-// Ana Bts Bileşeni (Nihai Tasarım)
+// ANA BTS BİLEŞENİ
 function Bts() {
+  const swiperRef = useRef(null);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (swiperRef.current) {
+        swiperRef.current.slideToLoop(0, 0);
+      }
+    }, 100);
+    return () => clearTimeout(timer);
+  }, []);
+
   return (
-    <div style={styles.sectionWrapper}>
-      <style>{swiperCustomStyles}</style>
-      <Container fluid>
-        <Row>
-          <Col>
-            <h2 style={styles.title}>Behind The Scenes</h2>
+    <div style={styles.mainContainer}>
+      <style>{animationStyles}</style>
+      <Container fluid="lg">
+        <Row style={styles.headerRow}>
+          <Col
+            xs={12}
+            md={4}
+            className="d-flex justify-content-center justify-content-md-start mb-3 mb-md-0"
+          >
+            <h2 style={styles.btsTitle} className="animated-shine-text">
+              BTS
+            </h2>
           </Col>
+          <Col
+            xs={12}
+            md={4}
+            className="d-flex justify-content-center gap-2 gap-md-3 mb-3 mb-md-0"
+          >
+            {socialLinks.map((link) => (
+              <SocialButton key={link.name} text={link.name} href={link.href} />
+            ))}
+          </Col>
+          <Col xs={12} md={4} className="d-none d-md-block"></Col>{" "}
+          {/* Sağ boşluk */}
         </Row>
+
         <Row>
           <Col xs={12}>
             <Swiper
-              // GÜNCELLENMİŞ SWIPER AYARLARI
+              onSwiper={(swiper) => {
+                swiperRef.current = swiper;
+              }}
               effect={"coverflow"}
               grabCursor={true}
               centeredSlides={true}
               loop={true}
-              // Ekran boyutuna göre görünen slayt sayısını ayarlıyoruz
               slidesPerView={"auto"}
               coverflowEffect={{
-                rotate: 0, // Slaytlar artık dönmeyecek, düz duracak
-                stretch: 80, // Slaytlar arasına boşluk koyar
-                depth: 200, // Slaytlara derinlik hissi verir
-                modifier: 1, // Efektin gücü
-                slideShadows: false, // Karmaşıklığı azaltmak için gölgeleri kapattık
+                rotate: 0,
+                stretch: 50,
+                depth: 150,
+                modifier: 1,
+                slideShadows: false,
               }}
               pagination={{ clickable: true }}
-              navigation={true} // Masaüstü için okları aktif ettik
+              navigation={true}
               modules={[EffectCoverflow, Pagination, Navigation]}
-              className="swiper-container"
             >
               {btsData.map((item, index) => (
                 <SwiperSlide
                   key={index}
-                  style={{ width: "85%", maxWidth: "450px" }}
+                  style={{ width: "80%", maxWidth: "420px" }}
                 >
                   <SlideContent item={item} />
                 </SwiperSlide>
