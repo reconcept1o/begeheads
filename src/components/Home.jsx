@@ -1,39 +1,54 @@
 import React, { useRef, useEffect, useState } from "react";
-import logo from "../assets/logo.svg";
 import BegeadsScene from "../Animation/BegeadsScene";
+
+// Asset'leri import ediyoruz
+import backgroundUrl from "../assets/Background.png";
+import logoUrl from "../assets/logo.svg";
+import gltfUrl from "../assets/letter_b_03.glb";
+import envPx from "../assets/texture3/px.png";
+import envNx from "../assets/texture3/nx.png";
+import envPy from "../assets/texture3/py.png";
+import envNy from "../assets/texture3/ny.png";
+import envPz from "../assets/texture3/pz.png";
+import envNz from "../assets/texture3/nz.png";
 
 function Home() {
   const mountRef = useRef(null);
   const [isSceneLoaded, setIsSceneLoaded] = useState(false);
-  const [isMobile, setIsMobile] = useState(false);
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
   const [isWhatsAppHovered, setIsWhatsAppHovered] = useState(false);
   const [isMailHovered, setIsMailHovered] = useState(false);
 
-  // Three.js sahnesini başlatan ve temizleyen ana useEffect
   useEffect(() => {
     if (!mountRef.current) return;
     const handleLoadComplete = () =>
       setTimeout(() => setIsSceneLoaded(true), 300);
+
+    const assetPaths = {
+      gltf: gltfUrl,
+      envMap: [envPx, envNx, envPy, envNy, envPz, envNz],
+    };
+
     const sceneInstance = new BegeadsScene(
       mountRef.current,
+      assetPaths,
       handleLoadComplete
     );
+
     return () => {
       if (sceneInstance?.dispose) sceneInstance.dispose();
     };
   }, []);
 
-  // Mobil cihaz tespiti için useEffect
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth <= 768);
     window.addEventListener("resize", handleResize);
-    handleResize(); // İlk yüklemede çalıştır
+    handleResize();
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  // Olay Yöneticileri
   const handleWhatsAppClick = () => {
-    const phoneNumber = "+905000000000"; // Numaranızı buraya yazın
+    const phoneNumber = "+905000000000";
     const message = "Merhaba, sizinle iletişime geçmek istiyorum!";
     window.open(
       `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`,
@@ -42,7 +57,7 @@ function Home() {
   };
 
   const handleMailClick = () => {
-    const email = "iletisim@begeads.com"; // E-posta adresinizi buraya yazın
+    const email = "iletisim@begeads.com";
     const subject = "İletişim Talebi";
     const body = "Merhaba, sizinle iletişime geçmek istiyorum...";
     window.location.href = `mailto:${email}?subject=${encodeURIComponent(
@@ -50,25 +65,18 @@ function Home() {
     )}&body=${encodeURIComponent(body)}`;
   };
 
-  // --- INLINE STYLES ---
+  // --- STYLES ---
 
   const rootStyle = {
     position: "relative",
     width: "100vw",
     height: "100vh",
-    background: "#141414",
+    backgroundColor: "#141414",
+    backgroundImage: `url(${backgroundUrl})`,
+    backgroundSize: "cover",
+    backgroundPosition: "center",
     overflow: "hidden",
     fontFamily: "'BegeFont', sans-serif",
-  };
-
-  // Canvas, HTML içeriğinin arkasında kalacak
-  const canvasContainerStyle = {
-    position: "absolute",
-    top: 0,
-    left: 0,
-    width: "100%",
-    height: "100%",
-    zIndex: 1,
   };
 
   const loadingOverlayStyle = {
@@ -81,7 +89,7 @@ function Home() {
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
-    zIndex: 100, // En üstte
+    zIndex: 1000,
     transition: "opacity 0.8s ease-out",
     opacity: isSceneLoaded ? 0 : 1,
     pointerEvents: isSceneLoaded ? "none" : "auto",
@@ -93,81 +101,68 @@ function Home() {
     letterSpacing: "2px",
   };
 
-  // HTML içeriği, canvas'ın üzerinde olacak
-  const contentContainerStyle = {
-    position: "relative",
-    zIndex: 10,
+  // KATMAN 1: Sadece Logo
+  const logoContainerStyle = {
+    position: "absolute",
+    top: 0,
+    left: 0,
     width: "100%",
     height: "100%",
+    zIndex: 1,
     display: "flex",
-    flexDirection: "column",
+    justifyContent: "center",
     alignItems: "center",
-    justifyContent: "space-between",
-    padding: isMobile ? "15px" : "20px",
-    boxSizing: "border-box",
-    color: "white",
     opacity: isSceneLoaded ? 1 : 0,
     transition: "opacity 1s ease-in",
-  };
-
-  const headerStyle = {
-    width: "100%",
-    textAlign: "center",
-    opacity: isSceneLoaded ? 1 : 0,
-    transition: "opacity 0.5s ease-in 0.5s",
-  };
-
-  const headerTextStyle = {
-    fontSize: isMobile ? "0.7rem" : "0.8rem",
-    color: "white",
-    marginBottom: "5px",
-  };
-
-  const headerLineStyle = {
-    width: "100%",
-    height: "1px",
-    backgroundColor: "white",
-    margin: "auto",
-  };
-
-  const mainContentStyle = {
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    textAlign: "center",
-    width: isMobile ? "100%" : "97%",
-    opacity: isSceneLoaded ? 1 : 0,
-    transform: isSceneLoaded ? "scale(1)" : "scale(0.95)",
-    transition: "opacity 1s ease-out 0.8s, transform 1s ease-out 0.8s",
   };
 
   const logoStyle = {
     width: "100%",
     height: "auto",
     maxHeight: isMobile ? "50vh" : "70vh",
-    marginBottom: "50px",
     objectFit: "contain",
-    filter:
-      "brightness(0) saturate(100%) invert(85%) sepia(6%) saturate(10%) hue-rotate(180deg)",
+    filter: "brightness(0) invert(1)", // Logoyu beyaz yapar
+    opacity: 0.5,
   };
 
-  const paragraphStyle = {
-    fontSize: isMobile ? "1.3rem" : "1.5rem",
-    color: "#FFFFFF",
-    maxWidth: isMobile ? "90%" : "800px",
-    margin: "0 auto",
-    padding: "0 10px",
-    lineHeight: "1.4",
+  // KATMAN 2: Three.js Canvas
+  const canvasContainerStyle = {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    width: "100%",
+    height: "100%",
+    zIndex: 100,
+  };
+
+  // KATMAN 3: UI (Header ve Nav)
+  const uiContainerStyle = {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    width: "100%",
+    height: "100%",
+    zIndex: 3,
     display: "flex",
     flexDirection: "column",
+    justifyContent: "space-between",
+    alignItems: "center",
+    padding: isMobile ? "15px" : "20px",
+    boxSizing: "border-box",
+    color: "white",
+    pointerEvents: "none", // Bu katman fare olaylarını yakalamaz
+  };
+
+  const headerStyle = {
+    pointerEvents: "auto", // Ama header yakalar
+    width: "100%",
     textAlign: "center",
-    gap: "0.5rem",
     opacity: isSceneLoaded ? 1 : 0,
-    transform: isSceneLoaded ? "translateY(0)" : "translateY(20px)",
-    transition: "opacity 1s ease-out 1s, transform 1s ease-out 1s",
+    transition: "opacity 0.5s ease-in 0.5s",
   };
 
   const navStyle = {
+    pointerEvents: "auto", // Nav da yakalar
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
@@ -180,6 +175,17 @@ function Home() {
     transition: "opacity 1s ease-out 1.2s, transform 1s ease-out 1.2s",
   };
 
+  const headerTextStyle = {
+    fontSize: isMobile ? "0.7rem" : "0.8rem",
+    color: "white",
+    marginBottom: "5px",
+  };
+  const headerLineStyle = {
+    width: "100%",
+    height: "1px",
+    backgroundColor: "white",
+    margin: "auto",
+  };
   const buttonBaseStyle = {
     cursor: "pointer",
     margin: isMobile ? "0 5px" : "0 15px",
@@ -196,13 +202,11 @@ function Home() {
     textAlign: "center",
     fontFamily: "'BegeFont', sans-serif",
   };
-
   const buttonDefaultStyle = {
     backgroundColor: "transparent",
     color: "#FFFFFF",
     border: "2px solid #FFFFFF",
   };
-
   const buttonHoverStyle = {
     backgroundColor: "#FFFFFF",
     color: "#000000",
@@ -215,24 +219,20 @@ function Home() {
         <div style={loadingTextStyle}>Coming</div>
       </div>
 
-      {/* Canvas, HTML'in arkasında */}
+      {/* KATMAN 1: Logo */}
+      <div style={logoContainerStyle}>
+        <img src={logoUrl} alt="Logo" style={logoStyle} />
+      </div>
+
+      {/* KATMAN 2: Three.js Canvas */}
       <div ref={mountRef} style={canvasContainerStyle}></div>
 
-      {/* HTML içeriği, canvas'ın üzerinde */}
-      <div style={contentContainerStyle}>
+      {/* KATMAN 3: UI (Header ve Nav) */}
+      <div style={uiContainerStyle}>
         <header style={headerStyle}>
           <div style={headerTextStyle}>©BEGEADS CREATIVE SPACE</div>
           <div style={headerLineStyle} />
         </header>
-
-        <main style={mainContentStyle}>
-          <img src={logo} alt="Logo" style={logoStyle} />
-          <p style={paragraphStyle}>
-            <span>You know what you're building. You’ve got the vision</span>
-            <span>and you just need the right hands to move it.</span>
-          </p>
-        </main>
-
         <nav style={navStyle}>
           <button
             style={{

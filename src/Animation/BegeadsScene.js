@@ -6,23 +6,25 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 gsap.registerPlugin(ScrollTrigger);
 
 class BegeadsScene {
-  constructor(container, onLoadCallback) {
+  constructor(container, assetPaths, onLoadCallback) {
     this.container = container;
+    this.assetPaths = assetPaths;
+    this.onLoadCallback = onLoadCallback;
+
     this.scene = new THREE.Scene();
     this.camera = new THREE.PerspectiveCamera(20, 1, 0.1, 1000);
 
-    // Renderer artık şeffaf DEĞİL. Arka planı kendisi çizecek.
+    // Büyüteç efekti için renderer ayarları
     this.renderer = new THREE.WebGLRenderer({
       antialias: true,
+      alpha: true,
     });
+    this.renderer.autoClear = false; // <<< KRİTİK!
     this.renderer.outputColorSpace = THREE.SRGBColorSpace;
     this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
     this.renderer.toneMappingExposure = 1.25;
 
-    this.clock = new THREE.Clock();
     this.loadingManager = new THREE.LoadingManager();
-
-    this.onLoadCallback = onLoadCallback;
     this.isLoaded = false;
     this.pointer = new THREE.Vector2();
     this.viewport = { width: 2, height: 2 };
@@ -49,17 +51,14 @@ class BegeadsScene {
   init() {
     this.setupLoadingManager();
     if (!this.container) return;
-
     const rect = this.container.getBoundingClientRect();
     this.renderer.setSize(rect.width, rect.height);
     this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     this.container.appendChild(this.renderer.domElement);
-
     this.camera.aspect = rect.width / rect.height;
     this.camera.position.set(0, 0, 5);
     this.camera.zoom = 0.8;
     this.camera.updateProjectionMatrix();
-
     this.updateViewport();
     this.setupLighting();
     this.setupEnvironment();
@@ -80,12 +79,10 @@ class BegeadsScene {
     this.showCanvas();
     this.animate();
   }
-
   showCanvas() {
     if (this.renderer.domElement) this.renderer.domElement.style.opacity = "1";
     this.handleResize();
   }
-
   updateViewport() {
     const z = this.camera.position.z;
     const fov = this.camera.fov * (Math.PI / 180);
@@ -95,8 +92,7 @@ class BegeadsScene {
   }
 
   setupLighting() {
-    const ambientLight = new THREE.AmbientLight(0xffffff, 4.5);
-    this.scene.add(ambientLight);
+    this.scene.add(new THREE.AmbientLight(0xffffff, 4.5));
     const directionalLight = new THREE.DirectionalLight(0xffffff, 12);
     directionalLight.position.set(1, 1, 2);
     this.scene.add(directionalLight);
@@ -104,27 +100,16 @@ class BegeadsScene {
 
   setupEnvironment() {
     const cubeLoader = new THREE.CubeTextureLoader(this.loadingManager);
-    const envMap = cubeLoader.load([
-      `/texture3/px.png`,
-      `/texture3/nx.png`,
-      `/texture3/py.png`,
-      `/texture3/ny.png`,
-      `/texture3/pz.png`,
-      `/texture3/nz.png`,
-    ]);
-
+    const envMap = cubeLoader.load(this.assetPaths.envMap);
     this.scene.environment = envMap;
-    // Sahne arka planı, yansıma haritasının karartılmış hali olacak.
-    this.scene.background = envMap;
-    this.scene.backgroundIntensity = 0.04;
-    this.scene.backgroundBlurriness = 0.2;
+    this.scene.background = null;
   }
 
   async loadAssets() {
     try {
       await this.loadGLTFModel();
-    } catch (error) {
-      console.error("BegeadsScene: Varlıklar yüklenirken hata oluştu:", error);
+    } catch (e) {
+      console.error(e);
     }
   }
 
@@ -132,7 +117,7 @@ class BegeadsScene {
     return new Promise((resolve, reject) => {
       const loader = new GLTFLoader(this.loadingManager);
       loader.load(
-        `/letter_b_03.glb`,
+        this.assetPaths.gltf,
         (gltf) => {
           const geometry = gltf.scene.children[0]?.geometry;
           if (geometry) this.createAnimatedLetters(geometry);
@@ -153,12 +138,9 @@ class BegeadsScene {
       ior: 1.5,
       envMap: this.scene.environment,
       envMapIntensity: 1.8,
-      specularIntensity: 1.0,
-      specularColor: new THREE.Color(0xffffff),
     });
 
     const scaleFactor = Math.max(15, Math.min(25, 30 / this.viewport.width));
-
     this.shapesGroup = new THREE.Group();
     const mesh1 = new THREE.Mesh(geometry, material);
     mesh1.rotation.set(Math.PI / 2, Math.PI / 9, Math.PI / 1);
@@ -174,7 +156,6 @@ class BegeadsScene {
       position: this.shapesGroup.position.clone(),
       rotation: this.shapesGroup.rotation.clone(),
     };
-
     this.shapesGroup2 = new THREE.Group();
     const mesh2 = new THREE.Mesh(geometry, material.clone());
     mesh2.rotation.set(Math.PI / 2, -Math.PI / 1.1, Math.PI / 1);
@@ -194,14 +175,20 @@ class BegeadsScene {
       position: this.shapesGroup2.position.clone(),
       rotation: this.shapesGroup2.rotation.clone(),
     };
-
     this.currentScrollPositions = {
       group1: this.basePositions.group1.position.clone(),
       group2: this.basePositions.group2.position.clone(),
     };
-
     this.startFloatingAnimations();
     this.setupScrollAnimation();
+  }
+
+  animate() {
+    requestAnimationFrame(() => this.animate());
+    if (!this.isLoaded) return;
+    this.renderer.clear();
+    this.updateMouseTracking();
+    this.renderer.render(this.scene, this.camera);
   }
 
   setupScrollAnimation() {
@@ -213,19 +200,15 @@ class BegeadsScene {
       onUpdate: (self) => this.updateLetterPositions(self.progress),
     });
   }
-
   updateLetterPositions(progress) {
     if (!this.shapesGroup || !this.shapesGroup2) return;
-
     const isMobile = window.innerWidth <= 768;
     const scrollFactor = isMobile ? 5.0 : 0.8;
     const scrollDistance = this.viewport.height * scrollFactor;
-
     this.currentScrollPositions.group1.y =
       this.basePositions.group1.position.y + scrollDistance * progress;
     this.currentScrollPositions.group2.y =
       this.basePositions.group2.position.y + scrollDistance * progress * 0.9;
-
     this.shapesGroup.position
       .copy(this.currentScrollPositions.group1)
       .add(this.floatingOffsets.group1);
@@ -233,12 +216,10 @@ class BegeadsScene {
       .copy(this.currentScrollPositions.group2)
       .add(this.floatingOffsets.group2);
   }
-
   startFloatingAnimations() {
     if (this.gsapAnimations.length > 0)
       this.gsapAnimations.forEach((anim) => anim.kill());
     this.gsapAnimations = [];
-
     const updatePositions = () => {
       if (this.currentScrollPositions) {
         if (this.shapesGroup)
@@ -251,7 +232,6 @@ class BegeadsScene {
             .add(this.floatingOffsets.group2);
       }
     };
-
     this.gsapAnimations.push(
       gsap.to(this.floatingOffsets.group1, {
         x: 0.1,
@@ -276,11 +256,9 @@ class BegeadsScene {
       })
     );
   }
-
   updateMouseTracking() {
     const targetX = this.pointer.x * 0.3;
     const targetY = this.pointer.y * 0.3;
-
     if (this.shapesGroup) {
       const lookAtPos = this.shapesGroup.position
         .clone()
@@ -296,26 +274,16 @@ class BegeadsScene {
       this.shapesGroup2.lookAt(this.lookAtTarget2);
     }
   }
-
-  animate() {
-    requestAnimationFrame(() => this.animate());
-    if (!this.isLoaded) return;
-    this.updateMouseTracking();
-    this.renderer.render(this.scene, this.camera);
-  }
-
   setupEventListeners() {
     this.boundHandleMouseMove = this.handleMouseMove.bind(this);
     this.boundHandleResize = this.handleResize.bind(this);
     window.addEventListener("mousemove", this.boundHandleMouseMove);
     window.addEventListener("resize", this.boundHandleResize);
   }
-
   handleMouseMove(event) {
     this.pointer.x = (event.clientX / window.innerWidth) * 2 - 1;
     this.pointer.y = -(event.clientY / window.innerHeight) * 2 + 1;
   }
-
   handleResize() {
     if (!this.container) return;
     const rect = this.container.getBoundingClientRect();
@@ -323,8 +291,10 @@ class BegeadsScene {
     this.camera.updateProjectionMatrix();
     this.renderer.setSize(rect.width, rect.height);
     this.updateViewport();
-
     if (this.basePositions.group1 && this.basePositions.group2) {
+      const scaleFactor = Math.max(15, Math.min(25, 30 / this.viewport.width));
+      this.shapesGroup.scale.setScalar(this.viewport.width * scaleFactor);
+      this.shapesGroup2.scale.setScalar(this.viewport.width * scaleFactor);
       this.basePositions.group1.position.set(
         this.viewport.width / 2,
         -this.viewport.width / 5.2,
@@ -344,14 +314,11 @@ class BegeadsScene {
       }
     }
   }
-
   dispose() {
     if (this.gsapAnimations) this.gsapAnimations.forEach((anim) => anim.kill());
     if (this.scrollTrigger) this.scrollTrigger.kill();
-
     window.removeEventListener("mousemove", this.boundHandleMouseMove);
     window.removeEventListener("resize", this.boundHandleResize);
-
     this.scene.traverse((object) => {
       if (object.geometry) object.geometry.dispose();
       if (object.material) {
@@ -360,7 +327,6 @@ class BegeadsScene {
         else object.material.dispose();
       }
     });
-
     if (this.renderer) {
       this.renderer.dispose();
       if (this.container && this.renderer.domElement) {
