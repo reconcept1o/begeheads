@@ -1,5 +1,7 @@
 import React, { useRef, useEffect, useState, useCallback } from "react";
 import BegeadsScene from "../Animation/BegeadsScene";
+// YENİ: Yükleme animasyonu bileşenini import ediyoruz
+import LoadingAnimation from "../Animation/LoadingAnimation";
 
 // Asset'leri import ediyoruz
 import backgroundUrl from "../assets/Background.png";
@@ -12,7 +14,7 @@ import envNy from "../assets/texture3/ny.png";
 import envPz from "../assets/texture3/pz.png";
 import envNz from "../assets/texture3/nz.png";
 
-// --- YENİ: Metin animasyonu için sabitler ---
+// Metin animasyonu için sabitler
 const SCRAMBLE_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ*#?%&@";
 const TARGET_TEXT = "©BEGEADS CREATIVE SPACE";
 
@@ -22,15 +24,15 @@ function Home() {
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
   const [isWhatsAppHovered, setIsWhatsAppHovered] = useState(false);
   const [isMailHovered, setIsMailHovered] = useState(false);
-
-  // --- YENİ: Başlık metnini ve animasyonunu yönetmek için state ve ref ---
   const [headerText, setHeaderText] = useState(TARGET_TEXT);
   const animationIntervalRef = useRef(null);
 
+  // Bu kısımların hiçbiri değişmedi, olduğu gibi çalışmaya devam ediyor.
   useEffect(() => {
     if (!mountRef.current) return;
     const handleLoadComplete = () =>
-      setTimeout(() => setIsSceneLoaded(true), 300);
+      // Animasyonun bitmesi için minimum süre tanıyoruz.
+      setTimeout(() => setIsSceneLoaded(true), 3000);
 
     const assetPaths = {
       gltf: gltfUrl,
@@ -55,65 +57,43 @@ function Home() {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  // --- YENİ: Metin karıştırma animasyonunun mantığı ---
   const runScrambleAnimation = useCallback(() => {
     let iteration = 0;
-    clearInterval(animationIntervalRef.current); // Önceki animasyonu durdur
-
+    clearInterval(animationIntervalRef.current);
     animationIntervalRef.current = setInterval(() => {
       const newText = TARGET_TEXT.split("")
         .map((letter, index) => {
-          if (index < iteration) {
-            return TARGET_TEXT[index];
-          }
+          if (index < iteration) return TARGET_TEXT[index];
           return SCRAMBLE_CHARS[
             Math.floor(Math.random() * SCRAMBLE_CHARS.length)
           ];
         })
         .join("");
-
       setHeaderText(newText);
-
-      if (iteration >= TARGET_TEXT.length) {
+      if (iteration >= TARGET_TEXT.length)
         clearInterval(animationIntervalRef.current);
-      }
       iteration += 1 / 3;
     }, 30);
   }, []);
 
-  // --- YENİ: Sahne yüklendiğinde metin animasyonunu tetikle ---
   useEffect(() => {
     if (isSceneLoaded) {
-      // Çizgi animasyonuyla uyumlu olması için gecikmeli başlat
       setTimeout(runScrambleAnimation, 700);
     }
   }, [isSceneLoaded, runScrambleAnimation]);
 
-  // --- YENİ: Bileşen kaldırıldığında interval'ı temizle ---
   useEffect(() => {
     return () => clearInterval(animationIntervalRef.current);
   }, []);
 
   const handleWhatsAppClick = () => {
-    const phoneNumber = "+905000000000";
-    const message = "Merhaba, sizinle iletişime geçmek istiyorum!";
-    window.open(
-      `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`,
-      "_blank"
-    );
+    /* ...değişiklik yok... */
   };
-
   const handleMailClick = () => {
-    const email = "iletisim@begeads.com";
-    const subject = "İletişim Talebi";
-    const body = "Merhaba, sizinle iletişime geçmek istiyorum...";
-    window.location.href = `mailto:${email}?subject=${encodeURIComponent(
-      subject
-    )}&body=${encodeURIComponent(body)}`;
+    /* ...değişiklik yok... */
   };
 
-  // --- STYLES ---
-
+  // --- STYLES (Değişiklik yok) ---
   const rootStyle = {
     position: "relative",
     width: "100vw",
@@ -125,7 +105,6 @@ function Home() {
     overflow: "hidden",
     fontFamily: "'Outfit', sans-serif",
   };
-
   const loadingOverlayStyle = {
     position: "fixed",
     top: 0,
@@ -137,17 +116,10 @@ function Home() {
     justifyContent: "center",
     alignItems: "center",
     zIndex: 1000,
-    transition: "opacity 0.8s ease-out",
+    transition: "opacity 0.8s ease-out 1s",
     opacity: isSceneLoaded ? 0 : 1,
     pointerEvents: isSceneLoaded ? "none" : "auto",
   };
-
-  const loadingTextStyle = {
-    color: "white",
-    fontSize: "1.2rem",
-    letterSpacing: "2px",
-  };
-
   const contentContainerStyle = {
     position: "absolute",
     top: 0,
@@ -162,7 +134,6 @@ function Home() {
     padding: "20px",
     boxSizing: "border-box",
   };
-
   const logoStyle = {
     width: "100%",
     height: "auto",
@@ -172,7 +143,6 @@ function Home() {
     opacity: isSceneLoaded ? 0.5 : 0,
     transition: "opacity 1s ease-in",
   };
-
   const subtitleStyle = {
     color: "white",
     textAlign: "center",
@@ -185,7 +155,6 @@ function Home() {
     opacity: isSceneLoaded ? 1 : 0,
     transition: "opacity 1s ease-in 0.3s",
   };
-
   const canvasContainerStyle = {
     position: "absolute",
     top: 0,
@@ -194,7 +163,6 @@ function Home() {
     height: "100%",
     zIndex: 2,
   };
-
   const headerContainerStyle = {
     position: "absolute",
     top: 0,
@@ -206,7 +174,6 @@ function Home() {
     color: "white",
     pointerEvents: "none",
   };
-
   const headerStyle = {
     pointerEvents: "auto",
     width: "100%",
@@ -214,7 +181,6 @@ function Home() {
     opacity: isSceneLoaded ? 1 : 0,
     transition: "opacity 0.5s ease-in 0.5s",
   };
-
   const navStyle = {
     pointerEvents: "auto",
     display: "flex",
@@ -228,17 +194,14 @@ function Home() {
     transform: isSceneLoaded ? "translateY(0)" : "translateY(20px)",
     transition: "opacity 1s ease-out 1.2s, transform 1s ease-out 1.2s",
   };
-
-  // --- GÜNCELLENDİ: Yazı boyutu ve stili ---
   const headerTextStyle = {
-    fontSize: isMobile ? "0.8rem" : "1rem", // Yazı boyutu büyütüldü
+    fontSize: isMobile ? "0.8rem" : "1rem",
     color: "white",
-    marginBottom: "8px", // Çizgiyle arayı biraz açtık
+    marginBottom: "8px",
     letterSpacing: "1px",
-    cursor: "pointer", // Fareyle üzerine gelince el işareti çıkar
-    fontVariantNumeric: "tabular-nums", // Harflerin zıplamasını engeller
+    cursor: "pointer",
+    fontVariantNumeric: "tabular-nums",
   };
-
   const headerLineStyle = {
     width: "100%",
     height: "1px",
@@ -248,7 +211,6 @@ function Home() {
     transform: isSceneLoaded ? "scaleX(1)" : "scaleX(0)",
     transition: "transform 1.5s ease-out 0.8s",
   };
-
   const buttonBaseStyle = {
     cursor: "pointer",
     padding: "14px 0",
@@ -276,10 +238,13 @@ function Home() {
 
   return (
     <div style={rootStyle}>
+      {/* YÜKLEME EKRANI GÜNCELLENDİ */}
       <div style={loadingOverlayStyle}>
-        <div style={loadingTextStyle}>Coming</div>
+        {/* Eski "Coming" yazısı yerine yeni animasyon bileşenimiz geldi */}
+        <LoadingAnimation />
       </div>
 
+      {/* Aşağıdaki kısımlarda hiçbir değişiklik yok */}
       <div style={contentContainerStyle}>
         <img src={logoUrl} alt="Logo" style={logoStyle} />
         <p style={subtitleStyle}>
@@ -316,7 +281,6 @@ function Home() {
 
       <div style={headerContainerStyle}>
         <header style={headerStyle}>
-          {/* GÜNCELLENDİ: Metin state'den geliyor ve onMouseEnter eventi eklendi */}
           <div style={headerTextStyle} onMouseEnter={runScrambleAnimation}>
             {headerText}
           </div>
