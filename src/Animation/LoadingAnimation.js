@@ -24,7 +24,8 @@ function LoadingAnimation() {
         0.1,
         100
       );
-      camera.position.z = 12;
+      // YENİ METİN DAHA UZUN OLDUĞU İÇİN KAMERAYI GERİ ÇEKTİK
+      camera.position.z = 20;
 
       renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
       renderer.setSize(mount.clientWidth, mount.clientHeight);
@@ -32,13 +33,23 @@ function LoadingAnimation() {
       mount.appendChild(renderer.domElement);
     };
 
-    // 2. Harfleri ve ® Sembolünü Oluştur
+    // 2. Harfleri ve Sembolü Oluştur
     const createLetters = () => {
-      const mainText = "BEGEADS";
-      const fullText = mainText + "®";
-      const letterSpacing = 2.0;
+      // --- YENİ METNİ BURADA TANIMLIYORUZ ---
+      const fullText = "©BEGEADS CREATIVE SPACE";
+      // Harflerin arasındaki boşluğu ayarlıyoruz
+      const letterSpacing = 1.5;
 
-      const createLetterTexture = (char, fontSize, width, height) => {
+      // Metnin toplam genişliğini hesaplayarak ortalamayı sağlıyoruz
+      const totalWidth = (fullText.length - 1) * letterSpacing;
+
+      const createLetterTexture = (
+        char,
+        fontSize,
+        width,
+        height,
+        yOffset = 0
+      ) => {
         const canvas = document.createElement("canvas");
         const ctx = canvas.getContext("2d");
         canvas.width = width;
@@ -47,37 +58,43 @@ function LoadingAnimation() {
         ctx.fillStyle = "white";
         ctx.textAlign = "center";
         ctx.textBaseline = "middle";
-        ctx.fillText(char, width / 2, height / 2 + 5);
+        ctx.fillText(char, width / 2, height / 2 + yOffset);
         return new THREE.CanvasTexture(canvas);
       };
 
       // Harfleri döngüyle oluştur
       fullText.split("").forEach((char, index) => {
+        // --- BOŞLUK KARAKTERLERİ İÇİN NESNE OLUŞTURMUYORUZ ---
+        if (char === " ") {
+          return; // Boşluğu atla ama pozisyonunu koru
+        }
+
         let material, geometry, mesh;
 
         // Hedef pozisyonu ve boyutu belirle
         let finalPosition = new THREE.Vector3();
         let finalScale = new THREE.Vector3(1, 1, 1);
 
-        if (char === "®") {
-          // ® sembolü için özel ayarlar
+        // Her harfin X pozisyonunu toplam genişliğe göre hesapla
+        finalPosition.x = index * letterSpacing - totalWidth / 2;
+
+        if (char === "©") {
+          // © sembolü için özel ayarlar
           material = new THREE.MeshBasicMaterial({
-            map: createLetterTexture(char, 60, 64, 64), // Daha küçük font ve canvas
+            map: createLetterTexture(char, 60, 64, 64, 5), // Daha küçük font ve canvas
             transparent: true,
           });
           geometry = new THREE.PlaneGeometry(0.9, 0.9); // Daha küçük düzlem
-          // Pozisyonu son harfe göre ayarla
-          const lastLetterX =
-            (mainText.length - 1 - (mainText.length - 1) / 2) * letterSpacing;
-          finalPosition.set(lastLetterX + 1.2, 0.9, 0);
+          // Pozisyonu hafifçe aşağı al
+          finalPosition.y = -0.1;
         } else {
           // Normal harfler için ayarlar
           material = new THREE.MeshBasicMaterial({
-            map: createLetterTexture(char, 90, 128, 128),
+            map: createLetterTexture(char, 90, 128, 128, 5),
             transparent: true,
           });
           geometry = new THREE.PlaneGeometry(1.8, 1.8);
-          finalPosition.x = (index - (mainText.length - 1) / 2) * letterSpacing;
+          finalPosition.y = 0;
         }
 
         mesh = new THREE.Mesh(geometry, material);
@@ -87,19 +104,16 @@ function LoadingAnimation() {
         mesh.userData.finalScale = finalScale;
 
         // --- YARATICI ANİMASYON İÇİN BAŞLANGIÇ DURUMU ---
-        // Rastgele pozisyonlardan başla
         mesh.position.set(
           (Math.random() - 0.5) * 25,
           (Math.random() - 0.5) * 25,
           (Math.random() - 0.5) * 25 - 10
         );
-        // Rastgele rotasyonla başla
         mesh.rotation.set(
           Math.random() * Math.PI * 2,
           Math.random() * Math.PI * 2,
           Math.random() * Math.PI * 2
         );
-        // Sıfır ölçekle başla
         mesh.scale.set(0, 0, 0);
 
         scene.add(mesh);
@@ -107,12 +121,11 @@ function LoadingAnimation() {
       });
     };
 
-    // 3. GSAP ile Animasyonu Çalıştır
+    // 3. GSAP ile Animasyonu Çalıştır (Bu kısımda değişiklik gerekmiyor)
     const runAnimation = () => {
       const tl = gsap.timeline();
 
       letterMeshes.forEach((mesh, index) => {
-        // Her harfi hedef pozisyonuna, rotasyonuna ve ölçeğine animasyonla getir
         tl.to(
           mesh.position,
           {
@@ -123,7 +136,7 @@ function LoadingAnimation() {
             ease: "power3.inOut",
           },
           index * 0.08
-        ); // Stagger efekti için başlangıç zamanını ayarla
+        );
 
         tl.to(
           mesh.rotation,
@@ -147,7 +160,7 @@ function LoadingAnimation() {
             ease: "back.out(1.7)",
           },
           index * 0.08 + 0.5
-        ); // Ölçek animasyonu biraz sonra başlasın
+        );
       });
     };
 
@@ -155,12 +168,9 @@ function LoadingAnimation() {
     const animate = () => {
       if (!renderer) return;
 
-      // Fare etkileşimi (Parallax)
       letterMeshes.forEach((mesh) => {
         const targetX = mesh.userData.finalPosition.x + mouse.x * 0.5;
         const targetY = mesh.userData.finalPosition.y - mouse.y * 0.5;
-
-        // Pozisyonu yumuşakça hedefe doğru kaydır
         mesh.position.x += (targetX - mesh.position.x) * 0.05;
         mesh.position.y += (targetY - mesh.position.y) * 0.05;
       });
@@ -171,7 +181,7 @@ function LoadingAnimation() {
 
     const onMouseMove = (event) => {
       mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-      mouse.y = (event.clientY / window.innerHeight) * 2 - 1;
+      mouse.y = -(event.clientY / window.innerHeight) * 2 + 1; // Y eksenini düzelttim
     };
 
     const onResize = () => {
@@ -190,7 +200,7 @@ function LoadingAnimation() {
     window.addEventListener("mousemove", onMouseMove);
     window.addEventListener("resize", onResize);
 
-    // 4. Temizleme Fonksiyonu
+    // 4. Temizleme Fonksiyonu (Bu kısımda değişiklik gerekmiyor)
     return () => {
       window.removeEventListener("mousemove", onMouseMove);
       window.removeEventListener("resize", onResize);
