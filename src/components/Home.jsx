@@ -212,7 +212,7 @@ function Home() {
   return (
     <div style={rootStyle}>
       <div style={loadingOverlayStyle}>
-        <div style={loadingTextStyle}>YÜKLENİYOR</div>
+        <div style={loadingTextStyle}>Coming</div>
       </div>
 
       {/* Canvas, HTML'in arkasında */}
