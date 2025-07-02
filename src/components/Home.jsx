@@ -1,6 +1,5 @@
 import React, { useRef, useEffect, useState } from "react";
 import BegeadsScene from "../Animation/BegeadsScene";
-import "../App.css"; // Font sınıfları için App.css'yi içe aktarın
 
 // Asset'leri import ediyoruz
 import backgroundUrl from "../assets/Background.png";
@@ -77,6 +76,7 @@ function Home() {
     backgroundSize: "cover",
     backgroundPosition: "center",
     overflow: "hidden",
+    fontFamily: "'Outfit', sans-serif",
   };
 
   const loadingOverlayStyle = {
@@ -101,45 +101,47 @@ function Home() {
     letterSpacing: "2px",
   };
 
-  const logoContainerStyle = {
+  // KATMAN 1: Logo, Metin ve Butonlar
+  // DEĞİŞİKLİK: Bu konteyner artık butonları da içeriyor ve merkezi yerleşimi sağlıyor.
+  const contentContainerStyle = {
     position: "absolute",
     top: 0,
     left: 0,
     width: "100%",
     height: "100%",
-    zIndex: 1,
+    zIndex: 3, // UI elemanlarını canvasın önünde tutmak için zIndex artırıldı.
     display: "flex",
     flexDirection: "column",
-    justifyContent: isMobile ? "flex-start" : "center", // Mobil için yukarı taşı
+    justifyContent: "center",
     alignItems: "center",
-    opacity: isSceneLoaded ? 1 : 0,
-    transition: "opacity 1s ease-in",
-    padding: isMobile ? "10px" : "20px", // Mobil için padding azaltıldı
-    paddingTop: isMobile ? "50px" : "20px", // Yukarı taşıma için
+    padding: "20px",
     boxSizing: "border-box",
   };
 
   const logoStyle = {
     width: "100%",
     height: "auto",
-    maxHeight: isMobile ? "45vh" : "50vh", // Mobil için logo büyütüldü
+    maxHeight: isMobile ? "35vh" : "45vh",
     objectFit: "contain",
     filter: "brightness(0) invert(1)",
-    opacity: 0.5,
+    opacity: isSceneLoaded ? 0.5 : 0,
+    transition: "opacity 1s ease-in",
   };
 
   const subtitleStyle = {
     color: "white",
     textAlign: "center",
-    fontSize: isMobile ? "1.2rem" : "1.2rem", // Mobil için yazı büyütüldü
+    fontFamily: "'Outfit', sans-serif",
+    fontSize: isMobile ? "1rem" : "1.2rem",
     fontWeight: 300,
     lineHeight: 1.6,
-    marginTop: isMobile ? "15px" : "30px", // Mobil için boşluk azaltıldı
+    marginTop: isMobile ? "20px" : "30px",
     maxWidth: isMobile ? "90vw" : "600px",
     opacity: isSceneLoaded ? 1 : 0,
     transition: "opacity 1s ease-in 0.3s",
   };
 
+  // KATMAN 2: Three.js Canvas
   const canvasContainerStyle = {
     position: "absolute",
     top: 0,
@@ -149,31 +151,29 @@ function Home() {
     zIndex: 2,
   };
 
-  const uiContainerStyle = {
+  // KATMAN 3: Sadece Header için kalan UI katmanı
+  // DEĞİŞİKLİK: Nav buradan kaldırıldı. Sadece header kaldı.
+  const headerContainerStyle = {
     position: "absolute",
     top: 0,
     left: 0,
     width: "100%",
-    height: "100%",
-    zIndex: 3,
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: isMobile ? "space-between" : "space-between",
-    alignItems: "center",
-    padding: isMobile ? "10px" : "20px", // Mobil için padding azaltıldı
+    zIndex: 4, // Her şeyin üstünde olmalı
+    padding: isMobile ? "15px" : "20px",
     boxSizing: "border-box",
     color: "white",
-    pointerEvents: "none",
+    pointerEvents: "none", // Konteynerin kendisi tıklanamaz
   };
 
   const headerStyle = {
-    pointerEvents: "auto",
+    pointerEvents: "auto", // İçindeki elemanlar tıklanabilir
     width: "100%",
     textAlign: "center",
     opacity: isSceneLoaded ? 1 : 0,
     transition: "opacity 0.5s ease-in 0.5s",
   };
 
+  // DEĞİŞİKLİK: Nav stili merkezi yerleşim için güncellendi.
   const navStyle = {
     pointerEvents: "auto",
     display: "flex",
@@ -181,8 +181,8 @@ function Home() {
     alignItems: "center",
     width: "100%",
     flexWrap: "wrap",
-    gap: isMobile ? "10px" : "20px",
-    paddingBottom: isMobile ? "10px" : "20px", // Mobil için padding azaltıldı
+    gap: isMobile ? "15px" : "20px",
+    marginTop: isMobile ? "40px" : "50px", // Metin ile butonlar arasına boşluk ekler
     opacity: isSceneLoaded ? 1 : 0,
     transform: isSceneLoaded ? "translateY(0)" : "translateY(20px)",
     transition: "opacity 1s ease-out 1.2s, transform 1s ease-out 1.2s",
@@ -193,36 +193,31 @@ function Home() {
     color: "white",
     marginBottom: "5px",
   };
-
   const headerLineStyle = {
     width: "100%",
     height: "1px",
     backgroundColor: "white",
     margin: "auto",
   };
-
   const buttonBaseStyle = {
     cursor: "pointer",
-    margin: isMobile ? "0 5px" : "0 15px",
     padding: "14px 0",
-    fontSize: isMobile ? "1rem" : "1.2rem", // Mobil için font boyutu küçültüldü
+    fontSize: isMobile ? "1.1rem" : "1.2rem",
     borderRadius: "35px",
     transition: "all 0.3s ease",
     fontWeight: 500,
-    width: isMobile ? "100px" : "220px", // Mobil için buton genişliği küçültüldü
-    maxWidth: isMobile ? "120px" : "150px", // Mobil için max genişlik küçültüldü
+    width: "150px", // Genişliği sabitledik, daha tutarlı bir görünüm için
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
     textAlign: "center",
+    fontFamily: "'Outfit', sans-serif",
   };
-
   const buttonDefaultStyle = {
     backgroundColor: "transparent",
     color: "#FFFFFF",
     border: "2px solid #FFFFFF",
   };
-
   const buttonHoverStyle = {
     backgroundColor: "#FFFFFF",
     color: "#000000",
@@ -232,38 +227,22 @@ function Home() {
   return (
     <div style={rootStyle}>
       <div style={loadingOverlayStyle}>
-        <div style={loadingTextStyle} className="acme-regular">
-          Coming
-        </div>
+        <div style={loadingTextStyle}>Coming</div>
       </div>
 
-      {/* KATMAN 1: Logo ve Metin */}
-      <div style={logoContainerStyle}>
+      {/* KATMAN 1: Merkezi İçerik (Logo, Metin, Butonlar) */}
+      <div style={contentContainerStyle}>
         <img src={logoUrl} alt="Logo" style={logoStyle} />
-        <p style={subtitleStyle} className="reddit-sans-custom">
+        <p style={subtitleStyle}>
           You know what you're building. You’ve got the vision and you just need
           the right hands to move it.
         </p>
-      </div>
-
-      {/* KATMAN 2: Three.js Canvas */}
-      <div ref={mountRef} style={canvasContainerStyle}></div>
-
-      {/* KATMAN 3: UI (Header ve Nav) */}
-      <div style={uiContainerStyle}>
-        <header style={headerStyle}>
-          <div style={headerTextStyle} className="permanent-marker-regular">
-            ©BEGEADS CREATIVE SPACE
-          </div>
-          <div style={headerLineStyle} />
-        </header>
         <nav style={navStyle}>
           <button
             style={{
               ...buttonBaseStyle,
               ...(isWhatsAppHovered ? buttonHoverStyle : buttonDefaultStyle),
             }}
-            className="reddit-sans-custom"
             onClick={handleWhatsAppClick}
             onMouseEnter={() => setIsWhatsAppHovered(true)}
             onMouseLeave={() => setIsWhatsAppHovered(false)}
@@ -275,7 +254,6 @@ function Home() {
               ...buttonBaseStyle,
               ...(isMailHovered ? buttonHoverStyle : buttonDefaultStyle),
             }}
-            className="reddit-sans-custom"
             onClick={handleMailClick}
             onMouseEnter={() => setIsMailHovered(true)}
             onMouseLeave={() => setIsMailHovered(false)}
@@ -283,6 +261,17 @@ function Home() {
             Mail
           </button>
         </nav>
+      </div>
+
+      {/* KATMAN 2: Three.js Canvas */}
+      <div ref={mountRef} style={canvasContainerStyle}></div>
+
+      {/* KATMAN 3: Üst Header */}
+      <div style={headerContainerStyle}>
+        <header style={headerStyle}>
+          <div style={headerTextStyle}>©BEGEADS CREATIVE SPACE</div>
+          <div style={headerLineStyle} />
+        </header>
       </div>
     </div>
   );
