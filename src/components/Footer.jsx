@@ -17,18 +17,18 @@ const socialLinks = [
   { text: "YouTube", href: "https://youtube.com" },
 ];
 
-// --- STİL NESNELERİ ---
+// --- STİL NESNELERİ (Daha Kompakt Düzen İçin Güncellendi) ---
 const styles = {
   footer: {
-    backgroundColor: "#0A0A0A", // Saf siyahtan daha yumuşak bir ton
-    color: "#888888", // Daha yumuşak bir gri
-    padding: "8rem 0 4rem 0",
+    backgroundColor: "#0A0A0A",
+    color: "#888888",
+    // GÜNCELLEME: Dikey padding azaltıldı
+    padding: "5rem 0 3rem 0",
     fontFamily: "'BegeFont', sans-serif",
     textAlign: "center",
-    overflow: "hidden", // Animasyonların taşmasını engeller
-    position: "relative", // Parlayan çizgi için
+    overflow: "hidden",
+    position: "relative",
   },
-  // YENİ: Üstteki parlayan çizgi
   glowLine: {
     position: "absolute",
     top: 0,
@@ -38,20 +38,20 @@ const styles = {
     background:
       "linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent)",
   },
-  // YENİ: Logo için perspektif konteyneri
   logoContainer: {
-    perspective: "1000px", // 3D efektin derinliğini ayarlar
+    perspective: "1000px",
   },
   logo: {
     width: "100%",
-    maxWidth: "660px",
+    maxWidth: "630px",
     height: "auto",
     filter: "brightness(0) invert(1)",
-    margin: "5rem auto",
-    transition: "transform 0.1s linear", // Animasyonun yumuşak olmasını sağlar
-    position: "relative", // Işık efekti için
-    overflow: "hidden", // Işık efektinin logonun dışına taşmasını engeller
-    borderRadius: "10px", // Işığın köşelerden taşmaması için
+    // GÜNCELLEME: Logonun dikey margin'i azaltıldı
+    margin: "3rem auto",
+    transition: "transform 0.1s linear",
+    position: "relative",
+    overflow: "hidden",
+    borderRadius: "10px",
   },
   address: { fontSize: "1.1rem", lineHeight: 1.7 },
   linkGroup: {
@@ -67,7 +67,8 @@ const styles = {
     fontWeight: "bold",
     fontSize: "1.2rem",
   },
-  legalRow: { marginTop: "6rem" },
+  // GÜNCELLEME: Yasal bilgi satırının üst boşluğu azaltıldı
+  legalRow: { marginTop: "4rem" },
   legalLink: {
     color: "#888888",
     textDecoration: "none",
@@ -77,8 +78,6 @@ const styles = {
 };
 
 // --- YENİDEN KULLANILABİLİR BİLEŞENLER ---
-
-// Kaydırma ile beliren animasyonlu eleman
 function AnimatedElement({ children, delay = 0 }) {
   const { ref, inView } = useInView({ triggerOnce: true, threshold: 0.1 });
   const style = {
@@ -93,7 +92,6 @@ function AnimatedElement({ children, delay = 0 }) {
   );
 }
 
-// Üzerine gelince rengi değişen link
 function HoverLink({ href, style, children }) {
   const [isHovered, setIsHovered] = useState(false);
   const finalStyle = { ...style, color: isHovered ? "#FFFFFF" : style.color };
@@ -122,25 +120,18 @@ function Footer() {
       footerRef.current.getBoundingClientRect();
     const x = e.clientX - left;
     const y = e.clientY - top;
-    const rotateX = (y / height - 0.5) * -20; // -10 ile 10 derece arası
-    const rotateY = (x / width - 0.5) * 20; // -10 ile 10 derece arası
-
-    // Işık efekti için
-    const lightX = (x / width) * 100;
-    const lightY = (y / height) * 100;
+    const rotateX = (y / height - 0.5) * -20;
+    const rotateY = (x / width - 0.5) * 20;
 
     setLogoStyle({
       transform: `rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(1.02)`,
       boxShadow: `inset 0 0 150px 50px rgba(255,255,255,0.05), 0 0 50px 10px rgba(255,255,255,0.03)`,
-      // Dinamik ışık efekti:
-      // backgroundImage: `radial-gradient(circle at ${lightX}% ${lightY}%, rgba(255, 255, 255, 0.15), transparent 40%)`
     });
   };
 
   const handleMouseLeave = () => {
     setLogoStyle({
       transform: "rotateX(0deg) rotateY(0deg) scale(1)",
-      // backgroundImage: 'none',
       boxShadow: "none",
     });
   };
@@ -155,7 +146,8 @@ function Footer() {
       <div style={styles.glowLine}></div>
       <Container>
         <AnimatedElement delay={0}>
-          <Row className="justify-content-center mb-5">
+          {/* GÜNCELLEME: Link sırasının alt boşluğu azaltıldı */}
+          <Row className="justify-content-center mb-4">
             <Col md={6} lg={5} className="mb-4 mb-md-0">
               <div style={styles.linkGroup}>
                 {socialLinks.map((link) => (
