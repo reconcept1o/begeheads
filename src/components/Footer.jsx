@@ -24,7 +24,7 @@ const styles = {
     color: "#888888",
     // GÜNCELLEME: Dikey padding azaltıldı
     padding: "5rem 0 3rem 0",
-    fontFamily: "'BegeFont', sans-serif",
+    fontFamily: "'Outfit', sans-serif",
     textAlign: "center",
     overflow: "hidden",
     position: "relative",
@@ -43,7 +43,7 @@ const styles = {
   },
   logo: {
     width: "100%",
-    maxWidth: "630px",
+    maxWidth: "600px",
     height: "auto",
     filter: "brightness(0) invert(1)",
     // GÜNCELLEME: Logonun dikey margin'i azaltıldı

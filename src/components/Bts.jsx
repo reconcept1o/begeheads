@@ -46,7 +46,7 @@ const styles = {
     color: "#FFFFFF",
     minHeight: "100vh",
     padding: "2rem 0 5rem 0",
-    fontFamily: "'BegeFont', sans-serif",
+    fontFamily: "'Outfit', sans-serif",
   },
   headerRow: { alignItems: "center", marginBottom: "3rem" },
   btsTitle: { fontSize: "2rem", fontWeight: "bold", textAlign: "left" },
