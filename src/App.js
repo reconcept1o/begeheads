@@ -5,6 +5,7 @@ import WhatWeMade from "./components/WhatWeMade";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Bts from "./components/Bts";
 import HowItsWorks from "./components/HowItsWorks"
+import Footer from "./components/Footer";
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
 
       <Bts />
       <HowItsWorks />
+<Footer /> 
     </div>
   );
 }
