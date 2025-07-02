@@ -4,6 +4,7 @@ import "./index.css"; // Global stiller (varsa)
 import WhatWeMade from "./components/WhatWeMade";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Bts from "./components/Bts";
+import HowItsWorks from "./components/HowItsWorks"
 
 function App() {
   return (
@@ -12,8 +13,9 @@ function App() {
     >
       <Home />
       <WhatWeMade />
-<Bts />
 
+      <Bts />
+      <HowItsWorks />
     </div>
   );
 }
