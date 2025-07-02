@@ -16,23 +16,19 @@ function LoadingAnimation() {
     const mount = mountRef.current;
     if (!mount) return;
 
-    // --- YENİ: DÜZEN AYARLARI ---
     const breakpoint = 768; // Mobil ve masaüstü arası geçiş noktası (px)
 
-    // 1. Sahneyi Kur
     const init = () => {
       const scene = new THREE.Scene();
       sceneRef.current = scene;
-
       const camera = new THREE.PerspectiveCamera(
         75,
         mount.clientWidth / mount.clientHeight,
         0.1,
         100
       );
-      camera.position.z = 20; // Başlangıçta geniş ekran için ayarlı
+      camera.position.z = 20;
       cameraRef.current = camera;
-
       const renderer = new THREE.WebGLRenderer({
         antialias: true,
         alpha: true,
@@ -43,15 +39,12 @@ function LoadingAnimation() {
       rendererRef.current = renderer;
     };
 
-    // --- YENİ: KONUMLANDIRMA MANTIĞINI AYIRAN FONKSİYON ---
     const updateLayout = () => {
       const camera = cameraRef.current;
       const letterMeshes = letterMeshesRef.current;
       if (!camera || letterMeshes.length === 0) return;
 
       const isMobile = window.innerWidth < breakpoint;
-
-      // Kamera pozisyonunu ekrana göre ayarla
       camera.position.z = isMobile ? 30 : 20;
 
       if (isMobile) {
@@ -59,7 +52,8 @@ function LoadingAnimation() {
         const lines = ["©BEGEADS", "CREATIVE", "SPACE"];
         const lineHeight = 2.2;
         const mobileLetterSpacing = 1.4;
-        const zigzagXOffset = 1.5; // Zikzak kaydırma miktarı
+        // Zikzak kaydırma miktarını biraz artırarak daha belirgin yapalım
+        const zigzagXOffset = 2.0;
 
         const totalHeight = (lines.length - 1) * lineHeight;
         let meshIndex = 0;
@@ -67,15 +61,27 @@ function LoadingAnimation() {
         lines.forEach((line, lineIndex) => {
           const lineY = totalHeight / 2 - lineIndex * lineHeight;
           const lineWidth = (line.length - 1) * mobileLetterSpacing;
-          // Satırın zikzak pozisyonunu belirle (çift satırlar sola, tek satırlar sağa)
-          const lineXOffset =
-            lineIndex % 2 === 0 ? -zigzagXOffset : zigzagXOffset;
+
+          // --- YENİ MERKEZLEME MANTIĞI ---
+          // Bu mantık, tüm metin bloğunun görsel olarak ortalanmasını sağlar.
+          let lineXOffset = 0;
+          // Ortadaki satırı (index 1) merkez alıyoruz.
+          if (lineIndex === 0) {
+            // En üst satırı (index 0) sola kaydır.
+            lineXOffset = -zigzagXOffset;
+          } else if (lineIndex === 2) {
+            // En alt satırı (index 2) sağa kaydır.
+            lineXOffset = zigzagXOffset;
+          }
+          // Ortadaki satır (index 1) için lineXOffset 0 kalır ve tam ortalanır.
+          // --- DEĞİŞİKLİK SONU ---
 
           line.split("").forEach((char, charIndex) => {
             if (meshIndex >= letterMeshes.length) return;
             const mesh = letterMeshes[meshIndex];
             const charX = charIndex * mobileLetterSpacing - lineWidth / 2;
 
+            // Nihai konumu hem satır merkezlemesi hem de zikzak kaydırmasını içerecek şekilde ayarla
             mesh.userData.finalPosition.set(charX + lineXOffset, lineY, 0);
             meshIndex++;
           });
@@ -85,20 +91,20 @@ function LoadingAnimation() {
         const fullText = "©BEGEADS CREATIVE SPACE";
         const letterSpacing = 1.5;
         const totalWidth =
-          (fullText.replace(/ /g, "").length - 1) * letterSpacing; // Boşlukları sayma
+          (fullText.replace(/ /g, "").length - 1) * letterSpacing;
 
         let currentX = -totalWidth / 2;
         let meshIndex = 0;
 
         fullText.split("").forEach((char) => {
           if (char === " ") {
-            currentX += letterSpacing; // Boşluk kadar ilerle
+            currentX += letterSpacing;
             return;
           }
           if (meshIndex >= letterMeshes.length) return;
 
           const mesh = letterMeshes[meshIndex];
-          const yPos = char === "©" ? -0.1 : 0; // © sembolünü hafifçe aşağı al
+          const yPos = char === "©" ? -0.1 : 0;
           mesh.userData.finalPosition.set(currentX, yPos, 0);
 
           currentX += letterSpacing;
@@ -107,11 +113,9 @@ function LoadingAnimation() {
       }
     };
 
-    // 2. Harfleri Oluştur (Sadece mesh'leri yaratır, konumlandırmaz)
     const createLetters = () => {
       const fullText = "©BEGEADS CREATIVE SPACE";
       const meshes = [];
-
       const createLetterTexture = (
         char,
         fontSize,
@@ -130,12 +134,9 @@ function LoadingAnimation() {
         ctx.fillText(char, width / 2, height / 2 + yOffset);
         return new THREE.CanvasTexture(canvas);
       };
-
       fullText.split("").forEach((char) => {
-        if (char === " ") return; // Boşluklar için mesh oluşturma
-
+        if (char === " ") return;
         let material, geometry;
-
         if (char === "©") {
           material = new THREE.MeshBasicMaterial({
             map: createLetterTexture(char, 60, 64, 64, 5),
@@ -149,12 +150,9 @@ function LoadingAnimation() {
           });
           geometry = new THREE.PlaneGeometry(1.8, 1.8);
         }
-
         const mesh = new THREE.Mesh(geometry, material);
         mesh.userData.finalPosition = new THREE.Vector3();
         mesh.userData.finalScale = new THREE.Vector3(1, 1, 1);
-
-        // Başlangıç durumu
         mesh.position.set(
           (Math.random() - 0.5) * 25,
           (Math.random() - 0.5) * 25,
@@ -166,21 +164,19 @@ function LoadingAnimation() {
           Math.random() * Math.PI * 2
         );
         mesh.scale.set(0, 0, 0);
-
         sceneRef.current.add(mesh);
         meshes.push(mesh);
       });
       letterMeshesRef.current = meshes;
     };
 
-    // 3. GSAP Animasyonu (Değişiklik yok)
     const runAnimation = () => {
       const tl = gsap.timeline();
       letterMeshesRef.current.forEach((mesh, index) => {
         tl.to(
           mesh.position,
           {
-            x: () => mesh.userData.finalPosition.x, // Fonksiyon kullanarak dinamik hedef al
+            x: () => mesh.userData.finalPosition.x,
             y: () => mesh.userData.finalPosition.y,
             z: () => mesh.userData.finalPosition.z,
             duration: 2.5,
@@ -188,7 +184,6 @@ function LoadingAnimation() {
           },
           index * 0.08
         );
-
         tl.to(
           mesh.rotation,
           { x: 0, y: 0, z: 0, duration: 2.5, ease: "power3.inOut" },
@@ -202,19 +197,15 @@ function LoadingAnimation() {
       });
     };
 
-    // Render ve Event Listener'lar
     const animate = () => {
       if (!rendererRef.current) return;
       const mouse = mouseRef.current;
-
       letterMeshesRef.current.forEach((mesh) => {
-        // Yumuşak geçiş (lerp) ile fare etkileşimi
         const targetX = mesh.userData.finalPosition.x + mouse.x * 0.5;
         const targetY = mesh.userData.finalPosition.y - mouse.y * 0.5;
         mesh.position.x += (targetX - mesh.position.x) * 0.05;
         mesh.position.y += (targetY - mesh.position.y) * 0.05;
       });
-
       rendererRef.current.render(sceneRef.current, cameraRef.current);
       requestAnimationFrame(animate);
     };
@@ -230,22 +221,18 @@ function LoadingAnimation() {
       cameraRef.current.aspect = mount.clientWidth / mount.clientHeight;
       cameraRef.current.updateProjectionMatrix();
       rendererRef.current.setSize(mount.clientWidth, mount.clientHeight);
-
-      // --- YENİ: YENİDEN BOYUTLANDIRMADA DÜZENİ GÜNCELLE ---
       updateLayout();
     };
 
-    // Kurulum ve Başlatma
     init();
     createLetters();
-    updateLayout(); // İlk düzeni hesapla
+    updateLayout();
     runAnimation();
     animate();
 
     window.addEventListener("mousemove", onMouseMove);
     window.addEventListener("resize", onResize);
 
-    // 4. Temizleme Fonksiyonu
     return () => {
       window.removeEventListener("mousemove", onMouseMove);
       window.removeEventListener("resize", onResize);
@@ -256,7 +243,6 @@ function LoadingAnimation() {
           m.scale,
         ])
       );
-
       if (sceneRef.current) {
         sceneRef.current.traverse((object) => {
           if (object.isMesh) {
@@ -268,7 +254,6 @@ function LoadingAnimation() {
           }
         });
       }
-
       if (rendererRef.current) {
         rendererRef.current.dispose();
         if (mount && mount.contains(rendererRef.current.domElement)) {
