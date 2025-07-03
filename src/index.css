@@ -1,11 +1,9 @@
 /* src/index.css */
 
-/* --- GOOGLE FONTS CLASS DEFINITIONS --- */
-/* Bu bölümü dosyanızın uygun bir yerine ekleyin */
 
 body {
   margin: 0;
-  /* Uygulamanızın varsayılan fontunu burada belirleyebilirsiniz. Örn: Outfit */
+
   font-family: "Outfit", -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
     sans-serif;
@@ -13,21 +11,21 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* WDXL Lubrifont TC */
+
 .wdxl-lubrifont-tc-regular {
   font-family: "WDXL Lubrifont TC", sans-serif;
   font-weight: 400;
   font-style: normal;
 }
 
-/* Noto Serif Dives Akuru */
+
 .noto-serif-dives-akuru-regular {
   font-family: "Noto Serif Dives Akuru", serif;
   font-weight: 400;
   font-style: normal;
 }
 
-/* Comic Relief */
+
 .comic-relief-regular {
   font-family: "Comic Relief", system-ui;
   font-weight: 400;
@@ -40,33 +38,32 @@ body {
   font-style: normal;
 }
 
-/* Outfit (Variable Font - Örnek Kullanımlar) */
-/* Farklı kalınlıklar için kendinize özel sınıflar oluşturabilirsiniz. */
+
 
 .outfit-light {
   font-family: "Outfit", sans-serif;
   font-optical-sizing: auto;
-  font-weight: 300; /* Light */
+  font-weight: 300; 
   font-style: normal;
 }
 
 .outfit-regular {
   font-family: "Outfit", sans-serif;
   font-optical-sizing: auto;
-  font-weight: 400; /* Regular */
+  font-weight: 400; 
   font-style: normal;
 }
 
 .outfit-bold {
   font-family: "Outfit", sans-serif;
   font-optical-sizing: auto;
-  font-weight: 700; /* Bold */
+  font-weight: 700; 
   font-style: normal;
 }
 
 .outfit-black {
   font-family: "Outfit", sans-serif;
   font-optical-sizing: auto;
-  font-weight: 900; /* Black (en kalın) */
+  font-weight: 900; 
   font-style: normal;
 }
