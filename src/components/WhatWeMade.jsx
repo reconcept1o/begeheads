@@ -1,55 +1,133 @@
 import React, { useState, useEffect } from "react";
 import { Container, Row, Col, Card } from "react-bootstrap";
+import { useInView } from "react-intersection-observer";
+import { useSpring, animated } from "react-spring";
 
-
+// Varlıklar
 import video1 from "../assets/video/1.mp4";
 import video2 from "../assets/video/2.mp4";
 import video3 from "../assets/video/3.mp4";
 
-
+// --- HATA DÜZELTİLDİ: ErrorBoundary bileşenine render() metodu eklendi ---
 class ErrorBoundary extends React.Component {
   state = { hasError: false };
-  static getDerivedStateFromError() {
+
+  static getDerivedStateFromError(error) {
+    // Bir sonraki render'da fallback UI'ı göstermek için state'i güncelle.
     return { hasError: true };
   }
+
   componentDidCatch(error, errorInfo) {
-    console.error("ErrorBoundary yakaladı:", error, errorInfo);
+    // Hatayı bir log servisine de gönderebilirsiniz
+    console.error("ErrorBoundary bir hata yakaladı:", error, errorInfo);
   }
+
+  // --- EKSİK OLAN VE HATAYA SEBEP OLAN RENDER METODU ---
   render() {
-    if (this.state.hasError) return <h1>Bir hata oluştu.</h1>;
+    if (this.state.hasError) {
+      // Hata olduğunda gösterilecek arayüz
+      return <h1>Something went wrong. Please refresh the page.</h1>;
+    }
+    // Hata yoksa, çocuk bileşenleri normal şekilde render et
     return this.props.children;
   }
 }
 
+// --- ANİMASYONLU SAYAÇ BİLEŞENİ ---
+function AnimatedStat({ value, unit, label, inView }) {
+  const { number } = useSpring({
+    from: { number: 0 },
+    number: inView ? value : 0,
+    delay: 300,
+    config: { mass: 1, tension: 20, friction: 10 },
+  });
 
-const cardStyles = {
-  card: {
-    height: "100%",
-    border: "2px solid #000000",
-    borderRadius: "1rem",
-    overflow: "hidden",
-    position: "relative",
-    backgroundColor: "#000000",
-  },
-  video: { width: "100%", height: "100%", objectFit: "cover" },
-  overlay: {
-    padding: 0,
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "flex-end",
-    background:
-      "linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0.8) 100%)",
-  },
-  footerContent: { padding: "1.5rem", color: "#FFFFFF", textAlign: "left" },
-  title: { fontSize: "2rem", fontWeight: 700, marginBottom: "1rem" },
-  statsContainer: { display: "flex", flexDirection: "column", gap: "0.5rem" },
-  statItem: { fontSize: "1rem", fontWeight: 500 },
-};
+  const statStyles = {
+    wrapper: {
+      minWidth: "110px",
+      padding: "0.75rem 1rem",
+      borderRadius: "12px",
+      backgroundColor: "rgba(255, 255, 255, 0.1)",
+      backdropFilter: "blur(10px)",
+      border: "1px solid rgba(255, 255, 255, 0.2)",
+      textAlign: "center",
+      color: "#FFFFFF",
+    },
+    valueContainer: {
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "baseline",
+      gap: "0.2rem",
+    },
+    value: { fontSize: "2rem", fontWeight: 700, lineHeight: 1 },
+    unit: { fontSize: "1.2rem", fontWeight: 600, textTransform: "uppercase" },
+    label: {
+      fontSize: "0.8rem",
+      fontWeight: 500,
+      marginTop: "0.25rem",
+      opacity: 0.8,
+      textTransform: "uppercase",
+    },
+  };
 
+  if (isNaN(value)) {
+    return (
+      <div style={{ ...statStyles.wrapper, padding: "1.25rem 1rem" }}>
+        {label}
+      </div>
+    );
+  }
 
-function VideoCard({ videoSrc, title, stats, wrapperStyle }) {
   return (
-    <div style={wrapperStyle}>
+    <div style={statStyles.wrapper}>
+      <div style={statStyles.valueContainer}>
+        <animated.span style={statStyles.value}>
+          {number.to((n) => n.toFixed(1))}
+        </animated.span>
+        <span style={statStyles.unit}>{unit}</span>
+      </div>
+      <div style={statStyles.label}>{label}</div>
+    </div>
+  );
+}
+
+// --- VIDEO KARTI BİLEŞENİ ---
+function VideoCard({ videoSrc, title, stats, wrapperStyle }) {
+  const { ref, inView } = useInView({
+    triggerOnce: true,
+    threshold: 0.4,
+  });
+
+  const cardStyles = {
+    card: {
+      height: "100%",
+      border: "2px solid #000000",
+      borderRadius: "1rem",
+      overflow: "hidden",
+      position: "relative",
+      backgroundColor: "#000000",
+      boxShadow: "0 10px 30px rgba(0,0,0,0.3)",
+    },
+    video: { width: "100%", height: "100%", objectFit: "cover" },
+    overlay: {
+      padding: "1.5rem",
+      display: "flex",
+      flexDirection: "column",
+      justifyContent: "space-between",
+      alignItems: "flex-start",
+      background:
+        "linear-gradient(180deg, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0) 40%, rgba(0,0,0,0.8) 100%)",
+    },
+    title: {
+      fontSize: "clamp(1.5rem, 4vw, 2rem)",
+      color: "#FFFFFF",
+      fontWeight: 700,
+    },
+    statsContainer: { display: "flex", gap: "1rem", flexWrap: "wrap" },
+  };
+
+  return (
+    <div ref={ref} style={wrapperStyle}>
       <Card style={cardStyles.card}>
         <video
           style={cardStyles.video}
@@ -61,15 +139,11 @@ function VideoCard({ videoSrc, title, stats, wrapperStyle }) {
           src={videoSrc}
         />
         <Card.ImgOverlay style={cardStyles.overlay}>
-          <div style={cardStyles.footerContent}>
-            <h3 style={cardStyles.title}>{title}</h3>
-            <div style={cardStyles.statsContainer}>
-              {stats.map((stat, index) => (
-                <span key={index} style={cardStyles.statItem}>
-                  {stat}
-                </span>
-              ))}
-            </div>
+          <h3 style={cardStyles.title}>{title}</h3>
+          <div style={cardStyles.statsContainer}>
+            {stats.map((stat, index) => (
+              <AnimatedStat key={index} {...stat} inView={inView} />
+            ))}
           </div>
         </Card.ImgOverlay>
       </Card>
@@ -77,13 +151,12 @@ function VideoCard({ videoSrc, title, stats, wrapperStyle }) {
   );
 }
 
-
+// --- SHINE ANIMASYONU İÇİN STİLLER ---
 const animationStyles = `
   @keyframes shine {
     0% { background-position: -200% center; }
     100% { background-position: 200% center; }
   }
-
   .animated-text-shine {
     background-image: linear-gradient(90deg, #000000 0%, #444444 25%, #ffffff 50%, #444444 75%, #000000 100%);
     background-size: 200% auto;
@@ -95,8 +168,39 @@ const animationStyles = `
   }
 `;
 
-
+// --- ANA BİLEŞEN (WHAT WE MADE) ---
 function WhatWeMade() {
+  const videoData = [
+    {
+      id: 1,
+      videoSrc: video1,
+      title: "BRAVE CF X CREATOR",
+      stats: [
+        { value: 27.2, unit: "M", label: "IG Views" },
+        { value: 6.7, unit: "M", label: "TikTok Views" },
+        { value: NaN, label: "Fully Creator-Led" },
+      ],
+    },
+    {
+      id: 2,
+      videoSrc: video2,
+      title: "LAMBORGHINI YACHT",
+      stats: [
+        { value: 690, unit: "K", label: "IG Views" },
+        { value: 640, unit: "K", label: "TikTok Views" },
+      ],
+    },
+    {
+      id: 3,
+      videoSrc: video3,
+      title: "DUBAI TIMELAPSE",
+      stats: [
+        { value: 297, unit: "K", label: "IG Views" },
+        { value: 245, unit: "K", label: "TikTok Views" },
+      ],
+    },
+  ];
+
   const [breakpoint, setBreakpoint] = useState("desktop");
   const [isWhatsAppHovered, setIsWhatsAppHovered] = useState(false);
   const [isMailHovered, setIsMailHovered] = useState(false);
@@ -131,14 +235,10 @@ function WhatWeMade() {
       marginBottom: "4rem",
     },
     mainVideoWrapper: {
-      // GÜNCELLEME: Yükseklik 90vh'ye çıkarıldı, dikey boşluk artırıldı.
       height: breakpoint === "mobile" ? "70vh" : "90vh",
       marginBottom: breakpoint === "mobile" ? "2rem" : "5rem",
     },
-    dualVideoWrapper: {
-      // GÜNCELLEME: İkincil videoların yüksekliği de dengeli olması için artırıldı.
-      height: breakpoint === "mobile" ? "60vh" : "70vh",
-    },
+    dualVideoWrapper: { height: breakpoint === "mobile" ? "60vh" : "70vh" },
     promoText: {
       fontWeight: 500,
       fontSize: breakpoint === "mobile" ? "1.8rem" : "3rem",
@@ -173,45 +273,34 @@ function WhatWeMade() {
   return (
     <ErrorBoundary>
       <style>{animationStyles}</style>
-
       <Container fluid="lg" style={responsiveStyles.container}>
         <Row className="justify-content-center">
           <Col xs={12}>
             <h1 style={responsiveStyles.title}>What we made</h1>
           </Col>
         </Row>
-
         <Row className="justify-content-center">
-          {/* GÜNCELLEME: lg={11} xl={10} kaldırıldı, artık tam genişlik kullanıyor */}
           <Col xs={12}>
             <VideoCard
-              videoSrc={video1}
-              title="BRAVE CF X CREATOR"
-              stats={["27.2M IG", "6.7M TikTok", "Fully creator-led"]}
+              {...videoData[0]}
               wrapperStyle={responsiveStyles.mainVideoWrapper}
             />
           </Col>
         </Row>
-
         <Row className="justify-content-center g-4">
           <Col md={6} lg={5}>
             <VideoCard
-              videoSrc={video2}
-              title="LAMBORGHINI YACHT"
-              stats={["690K IG", "640K TikTok"]}
+              {...videoData[1]}
               wrapperStyle={responsiveStyles.dualVideoWrapper}
             />
           </Col>
           <Col md={6} lg={5}>
             <VideoCard
-              videoSrc={video3}
-              title="DUBAI TIMELAPSE"
-              stats={["297K IG", "245K TikTok"]}
+              {...videoData[2]}
               wrapperStyle={responsiveStyles.dualVideoWrapper}
             />
           </Col>
         </Row>
-
         <Row className="justify-content-center">
           <Col lg={9}>
             <p style={responsiveStyles.promoText}>
@@ -223,7 +312,6 @@ function WhatWeMade() {
             </p>
           </Col>
         </Row>
-
         <Row className="justify-content-center">
           <Col xs="auto" className="d-grid d-sm-flex gap-3">
             <button
