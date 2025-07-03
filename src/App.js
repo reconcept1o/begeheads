@@ -1,7 +1,7 @@
 import React from "react";
 import { Routes, Route } from "react-router-dom";
 
-// Bileşenler
+
 import Home from "./components/Home";
 import WhatWeMade from "./components/WhatWeMade";
 import Bts from "./components/Bts";

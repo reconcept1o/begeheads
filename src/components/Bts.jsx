@@ -39,7 +39,7 @@ const socialLinks = [
   { name: "LinkedIn", href: "https://linkedin.com" },
 ];
 
-// --- STİL NESNELERİ ---
+
 const styles = {
   mainContainer: {
     backgroundColor: "#000000",
@@ -89,8 +89,6 @@ const animationStyles = `
   @media (max-width: 768px) { .swiper-button-next, .swiper-button-prev { display: none; } }
 `;
 
-// --- YENİDEN KULLANILABİLİR BİLEŞENLER ---
-// GÜNCELLEME: Buton artık dışarıdan bir stil nesnesi alıyor
 function SocialButton({ text, href, style }) {
   const [isHovered, setIsHovered] = useState(false);
   const finalStyle = {
@@ -142,7 +140,7 @@ function SlideContent({ item }) {
 // ANA BTS BİLEŞENİ
 function Bts() {
   const swiperRef = useRef(null);
-  // YENİ: Ekran boyutunu takip etmek için state ve effect
+  
   const [breakpoint, setBreakpoint] = useState("desktop");
 
   useEffect(() => {
@@ -163,7 +161,6 @@ function Bts() {
     return () => clearTimeout(timer);
   }, []);
 
-  // YENİ: Ekran boyutuna göre değişen dinamik buton stili
   const socialButtonStyle = {
     padding: breakpoint === "mobile" ? "0.5rem 1rem" : "0.75rem 1.5rem", // Mobilde daha az padding
     fontSize: breakpoint === "mobile" ? "0.8rem" : "1rem", // Mobilde daha küçük yazı

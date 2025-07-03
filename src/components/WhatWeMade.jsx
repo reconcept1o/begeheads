@@ -3,37 +3,36 @@ import { Container, Row, Col, Card } from "react-bootstrap";
 import { useInView } from "react-intersection-observer";
 import { useSpring, animated } from "react-spring";
 
-// Varlıklar
+
 import video1 from "../assets/video/1.mp4";
 import video2 from "../assets/video/2.mp4";
 import video3 from "../assets/video/3.mp4";
 
-// --- HATA DÜZELTİLDİ: ErrorBoundary bileşenine render() metodu eklendi ---
 class ErrorBoundary extends React.Component {
   state = { hasError: false };
 
   static getDerivedStateFromError(error) {
-    // Bir sonraki render'da fallback UI'ı göstermek için state'i güncelle.
+  
     return { hasError: true };
   }
 
   componentDidCatch(error, errorInfo) {
-    // Hatayı bir log servisine de gönderebilirsiniz
+  
     console.error("ErrorBoundary bir hata yakaladı:", error, errorInfo);
   }
 
-  // --- EKSİK OLAN VE HATAYA SEBEP OLAN RENDER METODU ---
+
   render() {
     if (this.state.hasError) {
-      // Hata olduğunda gösterilecek arayüz
+ 
       return <h1>Something went wrong. Please refresh the page.</h1>;
     }
-    // Hata yoksa, çocuk bileşenleri normal şekilde render et
+   
     return this.props.children;
   }
 }
 
-// --- ANİMASYONLU SAYAÇ BİLEŞENİ ---
+
 function AnimatedStat({ value, unit, label, inView }) {
   const { number } = useSpring({
     from: { number: 0 },
@@ -91,7 +90,7 @@ function AnimatedStat({ value, unit, label, inView }) {
   );
 }
 
-// --- VIDEO KARTI BİLEŞENİ ---
+
 function VideoCard({ videoSrc, title, stats, wrapperStyle }) {
   const { ref, inView } = useInView({
     triggerOnce: true,
@@ -168,7 +167,7 @@ const animationStyles = `
   }
 `;
 
-// --- ANA BİLEŞEN (WHAT WE MADE) ---
+
 function WhatWeMade() {
   const videoData = [
     {

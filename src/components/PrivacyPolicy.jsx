@@ -4,7 +4,7 @@ import { useInView } from "react-intersection-observer";
 import { Link } from "react-router-dom";
 import logo from "../assets/logo.svg";
 
-// --- VERİLER ---
+
 const privacySections = [
   {
     number: "1.",
@@ -71,19 +71,19 @@ const styles = {
     fontFamily: "'BegeFont', sans-serif",
     lineHeight: 1.8,
   },
-  // DEĞİŞİKLİK: Logo stili güncellendi.
+ 
   logo: {
     display: "block",
-    width: "100%", // Sütunun %100'ünü kapla
-    // maxWidth kaldırıldı, artık genişliği sütun belirleyecek.
+    width: "100%", 
+   
     height: "auto",
-    margin: "0 auto 8rem auto", // Alt boşluk artırıldı.
+    margin: "0 auto 8rem auto", 
   },
   mainHeading: {
     fontSize: "clamp(2.5rem, 7vw, 4rem)",
     fontWeight: 700,
     marginBottom: "3rem",
-    textAlign: "center", // Başlıkları ortalıyoruz
+    textAlign: "center", 
   },
   section: {
     marginBottom: "5rem",
@@ -112,7 +112,7 @@ const styles = {
   },
 };
 
-// --- YENİDEN KULLANILABİLİR ANİMASYONLU BİLEŞEN ---
+
 function AnimatedSection({ children, delay = 0 }) {
   const { ref, inView } = useInView({
     triggerOnce: true,
@@ -130,15 +130,15 @@ function AnimatedSection({ children, delay = 0 }) {
   );
 }
 
-// --- ANA BİLEŞEN ---
+
 function PrivacyPolicy() {
   return (
     <div style={styles.pageContainer}>
       <Container>
-        {/* DEĞİŞİKLİK: Logo ve metin içeriği artık aynı Row ve Col içinde */}
+
         <Row className="justify-content-center">
           <Col md={10} lg={8}>
-            {/* 1. LOGO BÖLÜMÜ */}
+         
             <AnimatedSection>
               <Link to="/">
                 <img
@@ -149,7 +149,7 @@ function PrivacyPolicy() {
               </Link>
             </AnimatedSection>
 
-            {/* 2. IMPRINT BÖLÜMÜ */}
+    
             <AnimatedSection delay={0.1}>
               <div style={styles.section}>
                 <h1 style={styles.mainHeading}>IMPRINT</h1>
@@ -184,7 +184,7 @@ function PrivacyPolicy() {
 
             <hr style={styles.divider} />
 
-            {/* 3. PRIVACY POLICY BÖLÜMÜ */}
+     
             <div style={styles.section}>
               <AnimatedSection delay={0.2}>
                 <h1 style={styles.mainHeading}>PRIVACY POLICY</h1>

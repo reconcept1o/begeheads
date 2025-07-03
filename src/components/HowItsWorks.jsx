@@ -2,8 +2,7 @@ import React, { useState } from "react";
 import { Container, Row, Col } from "react-bootstrap";
 import { useInView } from "react-intersection-observer";
 
-// --- İKON BİLEŞENLERİ ---
-// İkonları ayrı bileşenler olarak tanımlamak kodu temiz tutar.
+
 const IntuitiveIcon = () => (
   <svg
     width="50"
@@ -52,7 +51,7 @@ const BuiltIcon = () => (
   </svg>
 );
 
-// --- VERİLER (İkonlar eklendi) ---
+
 const featuresData = [
   {
     icon: <IntuitiveIcon />,
@@ -105,7 +104,7 @@ const styles = {
     color: "#000000",
   },
   featureCard: { height: "100%", display: "flex", flexDirection: "column" },
-  // YENİ: İkon için sarmalayıcı stil
+ 
   featureIcon: {
     marginBottom: "1.5rem",
   },

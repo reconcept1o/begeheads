@@ -71,7 +71,7 @@ function Home() {
     };
     window.addEventListener("resize", handleResize);
 
-    // Cleanup fonksiyonunda HomeRef.current'ı bir değişkene kopyala
+ 
     const currentHomeRef = HomeRef.current;
     return () => {
       window.removeEventListener("resize", handleResize);

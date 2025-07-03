@@ -39,8 +39,7 @@ const styles = {
     perspective: "1000px",
   },
   logo: {
-    // DEĞİŞİKLİK: Mobilde taşmayı önlemek için genişliği %100'den %95'e düşürüldü.
-    // Bu, logonun kenarlarda küçük bir boşluk bırakmasını sağlar.
+   
     width: "95%",
     maxWidth: "630px",
     height: "auto",
@@ -74,7 +73,7 @@ const styles = {
   },
 };
 
-// --- YENİDEN KULLANILABİLİR BİLEŞENLER ---
+
 function AnimatedElement({ children, delay = 0 }) {
   const { ref, inView } = useInView({ triggerOnce: true, threshold: 0.1 });
   const style = {
@@ -106,7 +105,6 @@ function HoverLink({ href, style, children }) {
   );
 }
 
-// --- ANA FOOTER BİLEŞENİ ---
 function Footer() {
   const [logoStyle, setLogoStyle] = useState({});
   const footerRef = useRef(null);
