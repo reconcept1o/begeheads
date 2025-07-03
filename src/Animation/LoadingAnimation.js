@@ -4,6 +4,8 @@ import { gsap } from "gsap";
 
 function LoadingAnimation() {
   const mountRef = useRef(null);
+
+  // Three.js nesnelerini ve diğer değişkenleri useEffect dışında useRef ile saklayalım.
   const rendererRef = useRef(null);
   const sceneRef = useRef(null);
   const cameraRef = useRef(null);
@@ -13,6 +15,7 @@ function LoadingAnimation() {
     const mount = mountRef.current;
     if (!mount) return;
 
+    // Sadece bir kere çalışacak başlangıç kurulumu
     const init = () => {
       sceneRef.current = new THREE.Scene();
       cameraRef.current = new THREE.PerspectiveCamera(
@@ -21,7 +24,7 @@ function LoadingAnimation() {
         0.1,
         100
       );
-      cameraRef.current.position.z = 40; // Kamera pozisyonunu artırdık
+      cameraRef.current.position.z = 25; // Başlangıç pozisyonu
 
       rendererRef.current = new THREE.WebGLRenderer({
         antialias: true,
@@ -32,51 +35,52 @@ function LoadingAnimation() {
       mount.appendChild(rendererRef.current.domElement);
     };
 
-    const createLetterTexture = (char, fontSize, width, height) => {
-      const canvas = document.createElement("canvas");
-      const ctx = canvas.getContext("2d");
-      canvas.width = width;
-      canvas.height = height;
-      ctx.font = `bold ${fontSize}px 'Outfit', sans-serif`;
-      ctx.fillStyle = "white";
-      ctx.textAlign = "center";
-      ctx.textBaseline = "middle";
-      ctx.fillText(char, width / 2, height / 2 + 5);
-      return new THREE.CanvasTexture(canvas);
-    };
-
+    // Harf nesnelerini oluşturan fonksiyon
     const createLetters = () => {
       const fullText = "©BEGEADS CREATIVE SPACE";
       const scene = sceneRef.current;
       const meshes = [];
 
+      const createLetterTexture = (char, fontSize, width, height) => {
+        const canvas = document.createElement("canvas");
+        const ctx = canvas.getContext("2d");
+        canvas.width = width;
+        canvas.height = height;
+        ctx.font = `bold ${fontSize}px 'Outfit', sans-serif`;
+        ctx.fillStyle = "white";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.fillText(char, width / 2, height / 2 + 5);
+        return new THREE.CanvasTexture(canvas);
+      };
+
       fullText.split("").forEach((char) => {
-        if (char === " ") return;
+        if (char === " ") return; // Boşluklar için mesh oluşturma
 
         let material, geometry;
         const isSymbol = char === "©";
 
         if (isSymbol) {
           material = new THREE.MeshBasicMaterial({
-            map: createLetterTexture(char, 120, 128, 128), // Yazı boyutunu artırdık
+            map: createLetterTexture(char, 60, 64, 64),
             transparent: true,
           });
-          geometry = new THREE.PlaneGeometry(1.8, 1.8); // Sembol boyutu artırıldı
+          geometry = new THREE.PlaneGeometry(0.9, 0.9);
         } else {
           material = new THREE.MeshBasicMaterial({
-            map: createLetterTexture(char, 180, 256, 256), // Yazı boyutunu artırdık
+            map: createLetterTexture(char, 90, 128, 128),
             transparent: true,
           });
-          geometry = new THREE.PlaneGeometry(3.6, 3.6); // Harf boyutunu artırdık
+          geometry = new THREE.PlaneGeometry(1.8, 1.8);
         }
 
         const mesh = new THREE.Mesh(geometry, material);
         mesh.userData.isSymbol = isSymbol;
 
         mesh.position.set(
-          (Math.random() - 0.5) * 50, // Daha geniş bir başlangıç alanı
-          (Math.random() - 0.5) * 50,
-          (Math.random() - 0.5) * 50 - 20
+          (Math.random() - 0.5) * 30,
+          (Math.random() - 0.5) * 30,
+          (Math.random() - 0.5) * 30 - 15
         );
         mesh.rotation.set(
           Math.random() * Math.PI,
@@ -91,6 +95,7 @@ function LoadingAnimation() {
       letterMeshesRef.current = meshes;
     };
 
+    // Hem ilk düzeni hem de yeniden boyutlandırmayı yöneten ana fonksiyon
     const updateAndAnimateLayout = (isInitialAnimation = false) => {
       const letterMeshes = letterMeshesRef.current;
       const camera = cameraRef.current;
@@ -99,14 +104,15 @@ function LoadingAnimation() {
       const breakpoint = 768;
       const isMobile = window.innerWidth < breakpoint;
 
-      camera.position.z = isMobile ? 50 : 40; // Kamera pozisyonunu artırdık
-      const scaleFactor = isMobile ? 2.0 : 1.6; // Ölçeği büyüttük
+      camera.position.z = isMobile ? 35 : 25;
+      const scaleFactor = isMobile ? 1.3 : 1.0;
 
       if (isMobile) {
+        // --- MOBİL: Dikey ve Zikzak Düzen ---
         const lines = ["©BEGEADS", "CREATIVE", "SPACE"];
-        const lineHeight = 5.0 * scaleFactor; // Satır yüksekliğini artırdık
-        const mobileLetterSpacing = 2.8; // Harf aralığını artırdık
-        const zigzagXOffset = 3.5 * scaleFactor;
+        const lineHeight = 2.8 * scaleFactor;
+        const mobileLetterSpacing = 1.4;
+        const zigzagXOffset = 2.0 * scaleFactor;
         const totalHeight = (lines.length - 1) * lineHeight;
         let meshIndex = 0;
 
@@ -127,9 +133,10 @@ function LoadingAnimation() {
               lineWidth / 2 +
               lineXOffset;
             const finalScale = mesh.userData.isSymbol
-              ? scaleFactor * 0.9
+              ? scaleFactor * 0.7
               : scaleFactor;
 
+            // HATA DÜZELTİLDİ: 'index' yerine 'meshIndex' kullanıldı
             gsap.to(mesh.position, {
               x: charX,
               y: lineY,
@@ -144,7 +151,7 @@ function LoadingAnimation() {
               z: finalScale,
               duration: isInitialAnimation ? 1.5 : 0.8,
               ease: isInitialAnimation ? "back.out(1.7)" : "power3.out",
-              Ydelay: isInitialAnimation ? meshIndex * 0.05 + 0.5 : 0,
+              delay: isInitialAnimation ? meshIndex * 0.05 + 0.5 : 0,
             });
 
             if (isInitialAnimation) {
@@ -161,8 +168,9 @@ function LoadingAnimation() {
           });
         });
       } else {
+        // --- MASAÜSTÜ: Yatay Düzen ---
         const fullText = "©BEGEADS CREATIVE SPACE";
-        const letterSpacing = 3.0; // Harf aralığını artırdık
+        const letterSpacing = 1.5;
         let characterCount = 0;
         fullText.split("").forEach((char) => char !== " " && characterCount++);
         const totalWidth = (characterCount - 1) * letterSpacing * scaleFactor;
@@ -179,9 +187,9 @@ function LoadingAnimation() {
           const mesh = letterMeshes[meshIndex];
           if (!mesh) return;
 
-          const yPos = mesh.userData.isSymbol ? -0.2 * scaleFactor : 0;
+          const yPos = mesh.userData.isSymbol ? -0.1 * scaleFactor : 0;
           const finalScale = mesh.userData.isSymbol
-            ? scaleFactor * 0.9
+            ? scaleFactor * 0.7
             : scaleFactor;
 
           gsap.to(mesh.position, {
@@ -231,8 +239,8 @@ function LoadingAnimation() {
         const isAnimating = gsap.isTweening(mesh.position);
         if (isAnimating) return;
 
-        const targetX = mesh.position.x - mouse.x * 0.03; // Fare hareket etkisini artırdık
-        const targetY = mesh.position.y - mouse.y * 0.03;
+        const targetX = mesh.position.x - mouse.x * 0.02;
+        const targetY = mesh.position.y - mouse.y * 0.02;
         mesh.position.x += (targetX - mesh.position.x) * 0.1;
         mesh.position.y += (targetY - mesh.position.y) * 0.1;
       });
@@ -250,6 +258,7 @@ function LoadingAnimation() {
       updateAndAnimateLayout(false);
     };
 
+    // --- BAŞLATMA SÜRECİ ---
     init();
     createLetters();
     updateAndAnimateLayout(true);
@@ -286,7 +295,7 @@ function LoadingAnimation() {
       ref={mountRef}
       style={{
         width: "100%",
-        height: "100vh", // Sayfanın tamamını kaplaması için
+        height: "100%",
         cursor: "pointer",
         background: "transparent",
       }}
