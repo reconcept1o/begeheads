@@ -276,7 +276,7 @@ function WhatWeMade() {
       <Container fluid="lg" style={responsiveStyles.container}>
         <Row className="justify-content-center">
           <Col xs={12}>
-            <h1 style={responsiveStyles.title}>What we made</h1>
+            <h1 style={responsiveStyles.title}>What We Made</h1>
           </Col>
         </Row>
         <Row className="justify-content-center">
