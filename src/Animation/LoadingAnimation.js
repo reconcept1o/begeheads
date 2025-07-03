@@ -57,10 +57,9 @@ function LoadingAnimation() {
           img.onload = resolve;
         });
 
-        // SVG'yi yüksek çözünürlüklü canvas üzerinde beyaz renkte çizme
         const canvas = document.createElement("canvas");
         const ctx = canvas.getContext("2d");
-        const scale = 2; // Çözünürlüğü artırmak için ölçek
+        const scale = 2;
         canvas.width = img.width * scale;
         canvas.height = img.height * scale;
 
@@ -78,14 +77,13 @@ function LoadingAnimation() {
           color: 0xffffff,
         });
 
-        // Logo boyutları: SVG'nin en-boy oranına göre ayarlanabilir
-        const aspectRatio = img.width / img.height; // SVG'nin en-boy oranı
-        const logoWidth = 15; // Temel genişlik
-        const logoHeight = logoWidth / aspectRatio; // Orantılı yükseklik
+        const aspectRatio = img.width / img.height;
+        const logoWidth = 10; // Mobil için daha küçük logo genişliği
+        const logoHeight = logoWidth / aspectRatio;
         const geometry = new THREE.PlaneGeometry(logoWidth, logoHeight);
 
         const mesh = new THREE.Mesh(geometry, material);
-        mesh.position.set(0, 10, 10); // Yazının üstünde ve önde
+        mesh.position.set(0, 8, 10); // Yazının üstünde, mobil için hafif aşağıda
         mesh.userData.isLogo = true;
         sceneRef.current.add(mesh);
         logoMeshRef.current = mesh;
@@ -107,16 +105,16 @@ function LoadingAnimation() {
 
         if (isSymbol) {
           material = new THREE.MeshBasicMaterial({
-            map: createLetterTexture(char, 120, 128, 128),
+            map: createLetterTexture(char, 100, 128, 128), // Mobil için font boyutunu küçülttük
             transparent: true,
           });
-          geometry = new THREE.PlaneGeometry(1.8, 1.8);
+          geometry = new THREE.PlaneGeometry(1.5, 1.5); // Mobil için daha küçük
         } else {
           material = new THREE.MeshBasicMaterial({
-            map: createLetterTexture(char, 180, 256, 256),
+            map: createLetterTexture(char, 150, 256, 256), // Mobil için font boyutunu küçülttük
             transparent: true,
           });
-          geometry = new THREE.PlaneGeometry(3.6, 3.6);
+          geometry = new THREE.PlaneGeometry(3.0, 3.0); // Mobil için daha küçük
         }
 
         const mesh = new THREE.Mesh(geometry, material);
@@ -149,16 +147,15 @@ function LoadingAnimation() {
       const breakpoint = 768;
       const isMobile = window.innerWidth < breakpoint;
 
-      camera.position.z = isMobile ? 50 : 40;
-      const scaleFactor = isMobile ? 2.0 : 1.6;
+      camera.position.z = isMobile ? 45 : 40; // Mobil için kamera hafif yakınlaştırıldı
+      const scaleFactor = isMobile ? 1.5 : 1.6; // Mobil için ölçeği azalttık
 
-      // Logo animasyonu
       if (logoMesh) {
-        const logoScale = isMobile ? 1.2 : 1.0; // Mobil ve masaüstü için ölçek
+        const logoScale = isMobile ? 0.8 : 1.0; // Mobil için daha küçük logo ölçeği
         gsap.to(logoMesh.position, {
           x: 0,
-          y: 10, // Yazının üstünde
-          z: 10, // Yazının önde
+          y: 8, // Mobil için daha düşük y pozisyonu
+          z: 10,
           duration: isInitialAnimation ? 2.5 : 0.8,
           ease: "power3.inOut",
         });
@@ -173,16 +170,15 @@ function LoadingAnimation() {
 
       if (isMobile) {
         const lines = ["©BEGEADS", "CREATIVE", "SPACE"];
-        const lineHeight = 5.0 * scaleFactor;
-        const mobileLetterSpacing = 2.8;
-        const zigzagXOffset = 3.5 * scaleFactor;
+        const lineHeight = 4.0 * scaleFactor; // Satır yüksekliğini azalttık
+        const mobileLetterSpacing = 2.0; // Harf aralığını azalttık
+        const zigzagXOffset = 2.5 * scaleFactor; // Zikzak ofsetini azalttık
         const totalHeight = (lines.length - 1) * lineHeight;
         let meshIndex = 0;
 
         lines.forEach((line, lineIndex) => {
           const lineY = totalHeight / 2 - lineIndex * lineHeight;
-          const lineWidth =
-            (line.length - 1) * mobileLetterSpacing * scaleFactor;
+          const lineWidth = (line.length - 1) * mobileLetterSpacing * scaleFactor;
           let lineXOffset = 0;
           if (lineIndex === 0) lineXOffset = -zigzagXOffset;
           else if (lineIndex === 2) lineXOffset = zigzagXOffset;
@@ -196,7 +192,7 @@ function LoadingAnimation() {
               lineWidth / 2 +
               lineXOffset;
             const finalScale = mesh.userData.isSymbol
-              ? scaleFactor * 0.9
+              ? scaleFactor * 0.8
               : scaleFactor;
 
             gsap.to(mesh.position, {
@@ -309,12 +305,10 @@ function LoadingAnimation() {
       if (logoMeshRef.current) {
         const isAnimating = gsap.isTweening(logoMeshRef.current.position);
         if (!isAnimating) {
-          const targetX = logoMeshRef.current.position.x - mouse.x * 0.03;
+          const targetX = logoMeshRef.current.position. x - mouse.x * 0.03;
           const targetY = logoMeshRef.current.position.y - mouse.y * 0.03;
-          logoMeshRef.current.position.x +=
-            (targetX - logoMeshRef.current.position.x) * 0.1;
-          logoMeshRef.current.position.y +=
-            (targetY - logoMeshRef.current.position.y) * 0.1;
+          logoMeshRef.current.position.x += (targetX - logoMeshRef.current.position.x) * 0.1;
+          logoMeshRef.current.position.y += (targetY - logoMeshRef.current.position.y) * 0.1;
         }
       }
 
@@ -338,7 +332,7 @@ function LoadingAnimation() {
       animate();
     });
 
-    window.addEventListener("mousemove", onMouseMove);
+    window.addEventListener("mousemoveTruthy, onMouseMove);
     window.addEventListener("resize", onResize);
 
     return () => {
