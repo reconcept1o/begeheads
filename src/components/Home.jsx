@@ -196,7 +196,7 @@ function Home() {
     cursor: "pointer",
     // --- YÜKSEKLİK DEĞİŞİKLİĞİ ---
     // Mobil'de dikey padding'i 14px'ten 12px'e düşürerek yüksekliği azaltıyoruz.
-    padding: isMobile ? "12px 0" : "14px 0",
+    padding: isMobile ? "10px 0" : "14px 0",
     fontSize: isMobile ? "1.1rem" : "1.7rem",
     borderRadius: "35px",
     transition: "all 0.3s ease",
