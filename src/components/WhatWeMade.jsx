@@ -93,8 +93,15 @@ function AnimatedStat({ value, label, inView, breakpoint }) {
 }
 
 // --- VideoCard Bileşeni (DEĞİŞİKLİK) ---
-// Sorunu kökünden çözmek için mobil'de infoBar'ın yönü değiştirildi.
-function VideoCard({ videoSrc, title, stats, wrapperStyle, breakpoint }) {
+// Mobil için özel satır düzenini render edecek şekilde güncellendi
+function VideoCard({
+  videoSrc,
+  title,
+  stats,
+  mobileStatRows,
+  wrapperStyle,
+  breakpoint,
+}) {
   const { ref, inView } = useInView({ triggerOnce: true, threshold: 0.5 });
 
   const isMobile = breakpoint === "mobile";
@@ -116,30 +123,28 @@ function VideoCard({ videoSrc, title, stats, wrapperStyle, breakpoint }) {
       borderRadius: "12px",
     },
     video: { width: "100%", height: "100%", objectFit: "cover" },
-    // DEĞİŞİKLİK: Mobil'de flexDirection 'column' olarak ayarlandı.
-    // Bu, başlık ve istatistikleri alt alta getirir ve taşma sorununu çözer.
     infoBar: {
       backgroundColor: "#000000",
       padding: "1rem 1.25rem",
       display: "flex",
-      alignItems: "center",
-      gap: "1rem",
-      flexDirection: isMobile ? "column" : "row", // MOBİL'DE DİKEY, DESKTOP'TA YATAY
       justifyContent: isMobile ? "center" : "space-between",
+      alignItems: "center",
+      flexWrap: "wrap",
+      gap: "1rem",
     },
     title: {
       fontSize: "clamp(1.2rem, 3vw, 1.5rem)",
       color: "#FFFFFF",
       fontWeight: 600,
       margin: 0,
-      textAlign: "center", // Her zaman ortalı olması daha iyi görünür
+      textAlign: "center", // Başlığın mobil'de ortalı durmasını sağlar
     },
-    // DEĞİŞİKLİK: Bu bölüm artık her zaman düzgün çalışacak.
+    // Bu container artık sadece bir sarmalayıcı görevi görüyor
     statsContainer: {
       display: "flex",
       gap: "0.75rem",
-      flexWrap: "wrap", // Sığmazsa alt satıra geçmesine izin ver
-      justifyContent: "center", // İçindeki elemanları her zaman ortala
+      flexWrap: "wrap",
+      justifyContent: "center",
     },
   };
 
@@ -159,15 +164,51 @@ function VideoCard({ videoSrc, title, stats, wrapperStyle, breakpoint }) {
         </div>
         <div style={cardStyles.infoBar}>
           <h3 style={cardStyles.title}>{title}</h3>
+
+          {/* DEĞİŞİKLİK: Mobil ve Desktop için koşullu render etme */}
           <div style={cardStyles.statsContainer}>
-            {stats.map((stat, index) => (
-              <AnimatedStat
-                key={index}
-                {...stat}
-                inView={inView}
-                breakpoint={breakpoint}
-              />
-            ))}
+            {isMobile && mobileStatRows ? (
+              // MOBİL GÖRÜNÜM: İç içe geçmiş diziyi render et
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  gap: "0.75rem",
+                }}
+              >
+                {mobileStatRows.map((row, rowIndex) => (
+                  <div
+                    key={rowIndex}
+                    style={{
+                      display: "flex",
+                      flexWrap: "wrap",
+                      justifyContent: "center",
+                      gap: "0.75rem",
+                    }}
+                  >
+                    {row.map((stat, statIndex) => (
+                      <AnimatedStat
+                        key={statIndex}
+                        {...stat}
+                        inView={inView}
+                        breakpoint={breakpoint}
+                      />
+                    ))}
+                  </div>
+                ))}
+              </div>
+            ) : (
+              // DESKTOP GÖRÜNÜMÜ (veya mobil için fallback): Orijinal flat diziyi render et
+              stats.map((stat, index) => (
+                <AnimatedStat
+                  key={index}
+                  {...stat}
+                  inView={inView}
+                  breakpoint={breakpoint}
+                />
+              ))
+            )}
           </div>
         </div>
       </div>
@@ -185,16 +226,25 @@ const highlightStyles = `
 
 // --- Ana Sayfa Bileşeni ---
 function WhatWeMade() {
-  // Not: mobileStatRows yapısına artık ihtiyaç yok, kodu temizledik.
+  // DEĞİŞİKLİK: Veri yapısı mobil için özel satırları içerecek şekilde güncellendi.
   const videoData = [
     {
       id: 1,
       videoSrc: video1,
       title: "BRAVE CF X CREATOR",
       stats: [
-        { value: 27.2, label: "M IG Views" },
+        // Bu dizi masaüstü ve fallback için kullanılır
+        { value: 27.2, label: "M   IG Views" },
         { value: 6.7, label: "M TikTok Views" },
-        { value: NaN, label: "Fully Creator-Led" },
+        { value: NaN, label: "FULLY CREATOR-LED" },
+      ],
+      mobileStatRows: [
+        // Bu dizi sadece mobil için kullanılır
+        [
+          { value: 27.2, label: "M IG Views" },
+          { value: 6.7, label: "M TikTok Views" },
+        ],
+        [{ value: NaN, label: "Fully Creator-Led" }],
       ],
     },
     {
@@ -205,6 +255,12 @@ function WhatWeMade() {
         { value: 690, label: "K IG Views" },
         { value: 640, label: "K TikTok Views" },
       ],
+      mobileStatRows: [
+        [
+          { value: 690, label: "K IG Views" },
+          { value: 640, label: "K TikTok Views" },
+        ],
+      ],
     },
     {
       id: 3,
@@ -213,6 +269,12 @@ function WhatWeMade() {
       stats: [
         { value: 297, label: "K IG Views" },
         { value: 245, label: "K TikTok Views" },
+      ],
+      mobileStatRows: [
+        [
+          { value: 297, label: "K IG Views" },
+          { value: 245, label: "K TikTok Views" },
+        ],
       ],
     },
   ];
