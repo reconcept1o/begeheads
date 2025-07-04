@@ -25,8 +25,7 @@ class ErrorBoundary extends React.Component {
   }
 }
 
-// --- AnimatedStat Bileşeni (DEĞİŞİKLİK) ---
-// breakpoint prop'u eklendi ve mobil için estetik düzenlemeler yapıldı
+// --- AnimatedStat Bileşeni ---
 function AnimatedStat({ value, label, inView, breakpoint }) {
   const { number } = useSpring({
     from: { number: 0 },
@@ -43,26 +42,20 @@ function AnimatedStat({ value, label, inView, breakpoint }) {
       alignItems: "center",
       gap: isMobile ? "0.4rem" : "0.5rem",
       color: "#FFFFFF",
-      // DEĞİŞİKLİK: Mobil için daha küçük padding
       padding: isMobile ? "0.5rem 0.9rem" : "0.8rem 1.2rem",
-      // DEĞİŞİKLİK: Mobil için daha az yuvarlak köşe
       borderRadius: isMobile ? "20px" : "25px",
       backgroundColor: "rgba(255, 255, 255, 0.05)",
       border: "1px solid #FFFFFF",
-      // DEĞİŞİKLİK: Mobil için min-width kaldırıldı, daha esnek
       minWidth: isMobile ? "auto" : "140px",
       justifyContent: "center",
-      // DEĞİŞİKLİK: Flex container içinde ezilmesini engeller
       flexShrink: 0,
     },
     value: {
-      // DEĞİŞİKLİK: Mobil için daha küçük font
       fontSize: isMobile ? "1.2rem" : "1.5rem",
       fontWeight: 700,
       lineHeight: 1,
     },
     label: {
-      // DEĞİŞİKLİK: Mobil için daha küçük font
       fontSize: isMobile ? "0.8rem" : "1rem",
       fontWeight: 500,
       textTransform: "uppercase",
@@ -70,7 +63,6 @@ function AnimatedStat({ value, label, inView, breakpoint }) {
     },
     labelOnly: {
       color: "#FFFFFF",
-      // DEĞİŞİKLİK: Mobil için daha küçük font ve padding
       fontSize: isMobile ? "0.8rem" : "0.9rem",
       fontWeight: 500,
       padding: isMobile ? "0.6rem 1rem" : "0.8rem 1.2rem",
@@ -101,13 +93,16 @@ function AnimatedStat({ value, label, inView, breakpoint }) {
 }
 
 // --- VideoCard Bileşeni (DEĞİŞİKLİK) ---
+// Mobil görünümde taşmayı önlemek ve estetiği artırmak için stiller güncellendi
 function VideoCard({ videoSrc, title, stats, wrapperStyle, breakpoint }) {
   const { ref, inView } = useInView({ triggerOnce: true, threshold: 0.5 });
+
+  const isMobile = breakpoint === "mobile";
 
   const cardStyles = {
     frame: {
       backgroundColor: "#000000",
-      padding: breakpoint === "mobile" ? "6px" : "12px",
+      padding: isMobile ? "6px" : "12px",
       height: "100%",
       display: "flex",
       flexDirection: "column",
@@ -121,11 +116,12 @@ function VideoCard({ videoSrc, title, stats, wrapperStyle, breakpoint }) {
       borderRadius: "12px",
     },
     video: { width: "100%", height: "100%", objectFit: "cover" },
+    // DEĞİŞİKLİK: Mobil için justifyContent 'center' yapıldı.
     infoBar: {
       backgroundColor: "#000000",
       padding: "1rem 1.25rem",
       display: "flex",
-      justifyContent: "space-between",
+      justifyContent: isMobile ? "center" : "space-between", // Mobil'de ortala
       alignItems: "center",
       flexWrap: "wrap",
       gap: "1rem",
@@ -136,16 +132,12 @@ function VideoCard({ videoSrc, title, stats, wrapperStyle, breakpoint }) {
       fontWeight: 600,
       margin: 0,
     },
+    // DEĞİŞİKLİK: Yatay kaydırma kaldırıldı, sarmalama ve ortalama eklendi.
     statsContainer: {
       display: "flex",
       gap: "0.75rem",
-      flexWrap: "wrap",
-      ...(breakpoint === "mobile" && {
-        flexWrap: "nowrap",
-        overflowX: "auto",
-        width: "100%",
-        paddingBottom: "8px",
-      }),
+      flexWrap: "wrap", // Sığmazsa alt satıra geçmesine izin ver
+      justifyContent: "center", // İçindeki elemanları her zaman ortala
     },
   };
 
@@ -166,7 +158,6 @@ function VideoCard({ videoSrc, title, stats, wrapperStyle, breakpoint }) {
         <div style={cardStyles.infoBar}>
           <h3 style={cardStyles.title}>{title}</h3>
           <div style={cardStyles.statsContainer}>
-            {/* DEĞİŞİKLİK: breakpoint prop'u AnimatedStat'a aktarılıyor */}
             {stats.map((stat, index) => (
               <AnimatedStat
                 key={index}
@@ -188,10 +179,6 @@ const highlightStyles = `
   .highlight-word:hover::before { content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background-image: linear-gradient(to right, #111111, #555555); border-radius: 6px; z-index: -1; transition: all 0.2s ease-in-out; }
   .highlight-word:hover { color: #FFFFFF; border-bottom-color: transparent; padding: 0.5rem 1rem; border-radius: 6px; transform: rotate(-2deg); line-height: 1.2; }
   .highlight-word:hover::after { content: ''; position: absolute; left: 1rem; right: 1rem; bottom: 0.5rem; height: 7px; background-color: #FFFFFF; }
-  
-  /* Mobil için scrollbar'ı gizleme */
-  .statsContainer::-webkit-scrollbar { display: none; }
-  .statsContainer { -ms-overflow-style: none; scrollbar-width: none; }
 `;
 
 // --- Ana Sayfa Bileşeni ---
