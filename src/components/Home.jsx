@@ -195,13 +195,13 @@ function Home() {
   const buttonBaseStyle = {
     cursor: "pointer",
     padding: "14px 0",
-    fontSize: isMobile ? "1.1rem" : "1.7rem",
+    fontSize: isMobile ? "0.8rem" : "1.5rem",
     borderRadius: "35px",
     transition: "all 0.3s ease",
     fontWeight: 500,
     // --- 1. DEĞİŞİKLİK ---
     // Mobil'de butonların yan yana sığabilmesi için genişliği küçültüyoruz.
-    width: isMobile ? "140px" : "220px",
+    width: isMobile ? "160px" : "220px",
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
@@ -218,7 +218,7 @@ function Home() {
     color: "#000000",
     // --- 2. DEĞİŞİKLİK ---
     // Mobil'de üzerine gelince kenarlığın 1px kalmasını, masaüstünde 2px olmasını sağlıyoruz.
-    border: isMobile ? "1px solid #FFFFFF" : "2px solid #FFFFFF",
+    border: isMobile ? "1px solid #FFFFFF" : "1px solid #FFFFFF",
   };
 
   return (
