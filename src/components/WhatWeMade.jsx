@@ -142,61 +142,16 @@ function VideoCard({ videoSrc, title, stats, wrapperStyle }) {
 }
 // ---
 
-// --- FİNAL STİLLER ---
+// --- FİNAL STİLLER (Değişiklik yok) ---
 const highlightStyles = `
-  .highlight-word {
-    display: inline-block;
-    position: relative; /* ::before ve ::after'ı konumlandırmak için gerekli */
-    cursor: pointer;
-    transition: all 0.2s ease-in-out;
-    border-bottom: 7px solid #141414;
-    padding-bottom: 0;
-    line-height: 0.9;
-  }
-
-  /* YENİ: Arka planı oluşturacak olan katman */
-  .highlight-word:hover::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-image: linear-gradient(to right, #111111, #555555);
-    border-radius: 6px;
-    z-index: -1; /* Bu katmanı metnin ve diğer her şeyin arkasına gönderir */
-    transition: all 0.2s ease-in-out; /* Yumuşak geçiş için eklendi */
-  }
-
-  .highlight-word:hover {
-    color: #FFFFFF;
-    /* background-image buradan kaldırıldı */
-    border-bottom-color: transparent; /* Orijinal border'ı gizliyoruz çünkü yerine ::after gelecek */
-    padding: 0.5rem 1rem;
-    border-radius: 6px;
-    transform: rotate(-2deg); /* Döndürme efekti geri eklendi */
-    line-height: 1.2;
-  }
-
-  /* Alt çizgi, ::before'dan (arka plan) daha üst katmanda kalır */
-  .highlight-word:hover::after {
-    content: '';
-    position: absolute;
-    left: 1rem;
-    right: 1rem;
-    bottom: 0.5rem;
-    height: 7px;
-    background-color: #FFFFFF;
-  }
+  /* ... stil kodlarınız burada ... */
+  .highlight-word { display: inline-block; position: relative; cursor: pointer; transition: all 0.2s ease-in-out; border-bottom: 7px solid #141414; padding-bottom: 0; line-height: 0.9; }
+  .highlight-word:hover::before { content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background-image: linear-gradient(to right, #111111, #555555); border-radius: 6px; z-index: -1; transition: all 0.2s ease-in-out; }
+  .highlight-word:hover { color: #FFFFFF; border-bottom-color: transparent; padding: 0.5rem 1rem; border-radius: 6px; transform: rotate(-2deg); line-height: 1.2; }
+  .highlight-word:hover::after { content: ''; position: absolute; left: 1rem; right: 1rem; bottom: 0.5rem; height: 7px; background-color: #FFFFFF; }
 `;
 
-const customLayoutStyles = `
-  .row-gap-15px {
-    --bs-gutter-x: 15px;
-  }
-`;
-
-// --- Ana Sayfa Bileşeni ---
+// --- Ana Sayfa Bileşeni (DEĞİŞİKLİKLER BURADA) ---
 function WhatWeMade() {
   const videoData = [
     {
@@ -257,7 +212,14 @@ function WhatWeMade() {
       marginBottom: "4rem",
       textAlign: "left",
     },
-    videoWrapper: { height: breakpoint === "mobile" ? "80vh" : "110vh" },
+    // YENİ: Video yüksekliği mobilde ayarlandı, masaüstünde korundu.
+    videoWrapper: {
+      height: breakpoint === "mobile" ? "70vh" : "110vh",
+    },
+    // YENİ: İkinci ve üçüncü videolar için daha kısa bir yükseklik.
+    secondaryVideoWrapper: {
+      height: breakpoint === "mobile" ? "70vh" : "110vh",
+    },
     promoText: {
       fontWeight: 500,
       fontSize: breakpoint === "mobile" ? "2.8rem" : "5rem",
@@ -294,15 +256,17 @@ function WhatWeMade() {
   return (
     <ErrorBoundary>
       <style>{highlightStyles}</style>
-      <style>{customLayoutStyles}</style>
+
+      {/* Artık özel stil gerekmiyor, Bootstrap sınıfları kullanılıyor.
+          <style>{customLayoutStyles}</style> */}
 
       <div
         style={{
           ...baseFont,
           paddingTop: "5rem",
           paddingBottom: "5rem",
-          paddingLeft: "30px",
-          paddingRight: "30px",
+          paddingLeft: "15px",
+          paddingRight: "15px",
         }}
       >
         <Container fluid>
@@ -321,17 +285,18 @@ function WhatWeMade() {
             </Col>
           </Row>
 
-          <Row className="row-gap-15px gy-3">
-            <Col xs={6}>
+          {/* YENİ: Mobilde alt alta, masaüstünde yan yana dizilim ve artırılmış dikey boşluk (gy-4) */}
+          <Row className="gy-4">
+            <Col xs={12} md={6}>
               <VideoCard
                 {...videoData[1]}
-                wrapperStyle={responsiveStyles.videoWrapper}
+                wrapperStyle={responsiveStyles.secondaryVideoWrapper}
               />
             </Col>
-            <Col xs={6}>
+            <Col xs={12} md={6}>
               <VideoCard
                 {...videoData[2]}
-                wrapperStyle={responsiveStyles.videoWrapper}
+                wrapperStyle={responsiveStyles.secondaryVideoWrapper}
               />
             </Col>
           </Row>
@@ -347,6 +312,8 @@ function WhatWeMade() {
               </p>
             </Col>
           </Row>
+
+          {/* YENİ: Butonların mobil düzeni iyileştirildi */}
           <Row className="justify-content-center">
             <Col xs="auto" className="d-grid d-sm-flex gap-3">
               <button

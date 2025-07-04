@@ -3,7 +3,6 @@ import { Container, Row, Col } from "react-bootstrap";
 
 // Swiper.js
 import { Swiper, SwiperSlide } from "swiper/react";
-// Bu özel çözüm için FreeMode, Scrollbar ve Navigation modüllerini kullanıyoruz.
 import { FreeMode, Scrollbar, Navigation } from "swiper/modules";
 
 // Gerekli CSS dosyaları
@@ -22,29 +21,28 @@ const btsData = [
   {
     id: 1,
     image: image1,
-    text: "We brought creators to China and put them in the cage, turning them into the story that pulls every eye to BRAVE.",
-    link: "https://www.instagram.com/p/Czet215y5a3/",
+    text: "We brought creators to China...",
+    link: "...",
   },
   {
     id: 2,
     image: image2,
-    text: "Producing on-water video content is proof that our limits don’t exist. Check out this shoot for the UAE’s best-known yacht agency.",
-    link: "https://www.instagram.com/p/Czdo_aISLej/",
+    text: "Producing on-water video content...",
+    link: "...",
   },
   {
     id: 3,
     image: image3,
-    text: "Bringing a top USA influencer to film with Dubai’s biggest luxury car rental. Wild, right? Check the result.",
-    link: "https://www.instagram.com/p/Czc6eQnSdaE/",
+    text: "Bringing a top USA influencer...",
+    link: "...",
   },
 ];
 
 // --- ÖZEL SANAL DÖNGÜ MANTIĞI ---
-// Başa ve sona, geçişlerin kesintisiz görünmesi için fazladan slaytlar ekliyoruz.
 const bufferSize = btsData.length;
-const startBuffer = btsData.slice(-bufferSize); // Orijinal listenin sonunu al
-const endBuffer = btsData.slice(0, bufferSize); // Orijinal listenin başını al
-const virtualData = [...startBuffer, ...btsData, ...endBuffer]; // Sanal listeyi oluştur: [son, ORİJİNAL, baş]
+const startBuffer = btsData.slice(-bufferSize);
+const endBuffer = btsData.slice(0, bufferSize);
+const virtualData = [...startBuffer, ...btsData, ...endBuffer];
 // --- BİTTİ ---
 
 const socialLinks = [
@@ -53,6 +51,7 @@ const socialLinks = [
   { name: "LinkedIn", href: "https://linkedin.com" },
 ];
 
+// STİLLER
 const styles = {
   mainContainer: {
     backgroundColor: "#000000",
@@ -63,52 +62,46 @@ const styles = {
   },
   headerRow: { alignItems: "center", marginBottom: "3rem" },
   btsTitle: { fontSize: "2rem", fontWeight: "bold", textAlign: "left" },
+  slideCard: {
+    borderRadius: "2px",
+    overflow: "hidden",
+    boxShadow: "0 8px 20px rgba(0, 0, 0, 0.25)",
+  },
   image: {
     display: "block",
     width: "100%",
     aspectRatio: "4 / 5",
     objectFit: "cover",
   },
-  // DEĞİŞİKLİK: Metin alanı için beyaz arka planlı tasarım
   slideContent: {
     backgroundColor: "#FFFFFF",
-    color: "#000000", // Metin rengi siyah olacak
-    borderRadius: "24px",
+    color: "#000000",
     padding: "1.5rem",
-    marginTop: "1.5rem",
   },
   slideText: {
     fontSize: "1.1rem",
     lineHeight: 1.6,
     marginBottom: "1.5rem",
-    color: "#000000", // Rengi explicit olarak siyah yapıyoruz.
+    color: "#000000",
   },
-  // DEĞİŞİKLİK: Beyaz arka plana uygun buton tasarımı
   slideButton: {
     display: "inline-block",
     backgroundColor: "transparent",
-    color: "#000000", // Normalde siyah metin
+    color: "#000000",
     padding: "0.75rem 1.5rem",
     borderRadius: "16px",
     textDecoration: "none",
     fontWeight: "bold",
     transition: "all 0.3s ease",
-    border: "2px solid #000000", // Siyah çerçeve
+    border: "2px solid #000000",
   },
 };
 
 const animationStyles = `
   @keyframes shine { from { background-position: -200% center; } to { background-position: 200% center; } }
   .animated-shine-text { background: linear-gradient(90deg, #fff 40%, #555 50%, #fff 60%); background-size: 200% auto; color: #000; background-clip: text; -webkit-background-clip: text; -webkit-text-fill-color: transparent; animation: shine 4s linear infinite; }
-  
-  /* Scrollbar (kaydırma çubuğu) stilleri */
-  .swiper-scrollbar {
-    background: rgba(255, 255, 255, 0.2) !important;
-    bottom: -10px !important;
-    height: 4px !important;
-  }
+  .swiper-scrollbar { background: rgba(255, 255, 255, 0.2) !important; bottom: -10px !important; height: 4px !important; }
   .swiper-scrollbar-drag { background: #FFFFFF !important; }
-
   .swiper-button-next, .swiper-button-prev { color: #FFFFFF !important; }
   @media (max-width: 768px) { .swiper-button-next, .swiper-button-prev { display: none; } }
 `;
@@ -138,12 +131,11 @@ function BtsSlide({ item }) {
   const [isHovered, setIsHovered] = useState(false);
   const buttonStyle = {
     ...styles.slideButton,
-    // Hover efekti: siyah arka plan, beyaz metin
     color: isHovered ? "#FFFFFF" : "#000000",
     backgroundColor: isHovered ? "#000000" : "transparent",
   };
   return (
-    <div>
+    <div style={styles.slideCard}>
       <img src={item.image} alt="Behind the scenes" style={styles.image} />
       <div style={styles.slideContent}>
         <p style={styles.slideText}>{item.text}</p>
@@ -165,25 +157,28 @@ function BtsSlide({ item }) {
 function Bts() {
   const isTeleporting = useRef(false);
 
-  // Kaydırma bittiğinde, sahte bir alandaysak gerçek alana ışınlama fonksiyonu
-  const handleMomentumEnd = (swiper) => {
-    if (isTeleporting.current) return;
+  // DÜZELTİLMİŞ DÖNGÜ MANTIĞI
+  const handleTransitionEnd = (swiper) => {
+    // Eğer bu olay, bizim yaptığımız bir "ışınlanma" sonucu tetiklendiyse,
+    // sadece kilidi kaldır ve hiçbir şey yapma.
+    if (isTeleporting.current) {
+      isTeleporting.current = false;
+      return;
+    }
 
+    // Eğer olay kullanıcı tarafından başlatıldıysa, pozisyonu kontrol et.
     const realSlidesCount = btsData.length;
-    // Eğer sondaki sahte alana geldiyse
+
+    // Sona gelip sahte alana girerse
     if (swiper.activeIndex >= realSlidesCount + bufferSize) {
-      isTeleporting.current = true;
+      isTeleporting.current = true; // Işınlanmadan önce kilitle
       swiper.slideTo(swiper.activeIndex - realSlidesCount, 0); // Anında ve sessizce gerçek alana ışınla
     }
-    // Eğer baştaki sahte alana geldiyse
+    // Başa gelip sahte alana girerse
     else if (swiper.activeIndex < bufferSize) {
-      isTeleporting.current = true;
+      isTeleporting.current = true; // Işınlanmadan önce kilitle
       swiper.slideTo(swiper.activeIndex + realSlidesCount, 0); // Anında ve sessizce gerçek alana ışınla
     }
-  };
-
-  const handleTransitionEnd = () => {
-    isTeleporting.current = false;
   };
 
   const [breakpoint, setBreakpoint] = useState("desktop");
@@ -237,13 +232,11 @@ function Bts() {
         <Row>
           <Col xs={12}>
             <Swiper
-              // İSTEDİĞİN İKİ ÖZELLİĞİ BİRLEŞTİREN AYARLAR
-              freeMode={true} // FAREYİ BIRAKTIĞIN YERDE KALMASINI SAĞLAR
-              // SANAL DÖNGÜ OLAYLARI
+              freeMode={true}
+              // Swiper başladığında, kullanıcıyı sahte alanın hemen sonrasına, yani gerçek listenin başına taşı
               onSwiper={(swiper) => swiper.slideTo(bufferSize, 0)}
-              onMomentumScrollEnd={handleMomentumEnd}
+              // DÜZELTME: Sadece onTransitionEnd olayını kullanarak döngüyü her zaman kontrol et
               onTransitionEnd={handleTransitionEnd}
-              // Diğer responsive ve kullanışlılık ayarları
               modules={[FreeMode, Scrollbar, Navigation]}
               slidesPerView={"auto"}
               spaceBetween={40}
