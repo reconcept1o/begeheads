@@ -82,11 +82,9 @@ function AnimatedStat({ value, label, inView }) {
 }
 
 // --- VideoCard Bileşeni (GÜNCELLENMİŞ HALİ) ---
-// Bu bileşen mobil düzende istenen katmanlı yapıyı oluşturacak şekilde güncellendi.
 function VideoCard({ videoSrc, title, stats, wrapperStyle, breakpoint }) {
   const { ref, inView } = useInView({ triggerOnce: true, threshold: 0.5 });
 
-  // İstatistikleri sayısal olanlar ve sadece etiket olanlar olarak ayırıyoruz.
   const numericStats = stats.filter((stat) => !isNaN(stat.value));
   const labelOnlyStat = stats.find((stat) => isNaN(stat.value));
 
@@ -107,17 +105,13 @@ function VideoCard({ videoSrc, title, stats, wrapperStyle, breakpoint }) {
       borderRadius: "12px",
     },
     video: { width: "100%", height: "100%", objectFit: "cover" },
-    // --- BİLGİ ÇUBUĞU STİLLERİ GÜNCELLENDİ ---
     infoBar: {
       backgroundColor: "#000000",
       padding: "1rem 1.25rem",
       display: "flex",
       gap: "1rem",
-      // Mobilde dikey (kolon), masaüstünde yatay (satır) dizilim
       flexDirection: breakpoint === "mobile" ? "column" : "row",
-      // Mobilde sola hizalı, masaüstünde dikeyde ortalı
       alignItems: breakpoint === "mobile" ? "flex-start" : "center",
-      // Masaüstünde başlık ve istatistikleri iki uca yaslar
       justifyContent: "space-between",
     },
     title: {
@@ -127,19 +121,18 @@ function VideoCard({ videoSrc, title, stats, wrapperStyle, breakpoint }) {
       margin: 0,
       flexShrink: 0,
     },
-    // Tüm istatistikleri saran genel bir sarmalayıcı
     allStatsWrapper: {
       display: "flex",
-      // Mobilde istatistik gruplarını (sayısal ve etiket) alt alta dizer
       flexDirection: breakpoint === "mobile" ? "column" : "row",
       gap: "0.75rem",
-      alignItems: "flex-start", // Grupları sola hizalı tutar
+      alignItems: "flex-start",
     },
     // Sadece sayısal istatistikleri yan yana tutan sarmalayıcı
     numericStatsContainer: {
       display: "flex",
       gap: "0.75rem",
-      flexWrap: "wrap",
+      // DEĞİŞİKLİK: 'wrap' yerine 'nowrap' kullanılarak istatistiklerin alt satıra kayması engellendi.
+      flexWrap: "nowrap",
     },
   };
 
@@ -157,20 +150,15 @@ function VideoCard({ videoSrc, title, stats, wrapperStyle, breakpoint }) {
             src={videoSrc}
           />
         </div>
-        {/* --- BİLGİ ÇUBUĞU JSX YAPISI GÜNCELLENDİ --- */}
         <div style={cardStyles.infoBar}>
           <h3 style={cardStyles.title}>{title}</h3>
 
           <div style={cardStyles.allStatsWrapper}>
-            {/* Sayısal istatistikler her zaman bu container içinde yan yana olacak */}
             <div style={cardStyles.numericStatsContainer}>
               {numericStats.map((stat, index) => (
                 <AnimatedStat key={index} {...stat} inView={inView} />
               ))}
             </div>
-
-            {/* Eğer sadece etiket olan bir istatistik varsa, onu ayrı olarak render et */}
-            {/* `allStatsWrapper`'ın flex-direction'ı sayesinde mobilde alta gelecektir */}
             {labelOnlyStat && (
               <AnimatedStat
                 key="label-only"
@@ -203,7 +191,7 @@ function WhatWeMade() {
       stats: [
         { value: 27.2, label: "M IG Views" },
         { value: 6.7, label: "M TikTok Views" },
-        { value: NaN, label: "Fully Creator-Led" }, // NaN değeri özel düzeni tetikler
+        { value: NaN, label: "Fully Creator-Led" },
       ],
     },
     {
