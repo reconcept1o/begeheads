@@ -90,7 +90,7 @@ function VideoCard({ videoSrc, title, stats, wrapperStyle, breakpoint }) {
     frame: {
       backgroundColor: "#000000",
       // YENİ: Padding mobil için azaltıldı, video daha geniş görünecek
-      padding: breakpoint === "mobile" ? "8px" : "12px",
+      padding: breakpoint === "mobile" ? "6px" : "12px",
       height: "100%",
       display: "flex",
       flexDirection: "column",
@@ -220,7 +220,7 @@ function WhatWeMade() {
     },
     // YENİ: Mobil video yüksekliği 85vh'ye çıkarıldı.
     videoWrapper: {
-      height: breakpoint === "mobile" ? "125vh" : "110vh",
+      height: breakpoint === "mobile" ? "105vh" : "110vh",
     },
     secondaryVideoWrapper: {
       height: breakpoint === "mobile" ? "85vh" : "110vh",
