@@ -25,8 +25,7 @@ class ErrorBoundary extends React.Component {
   }
 }
 
-// --- AnimatedStat Bileşeni (İSTENEN GÖRÜNÜM İÇİN GÜNCELLENDİ) ---
-// Her bir istatistiği ayrı bir kapsül olarak render eder.
+// --- AnimatedStat Bileşeni (Değişiklik Yok) ---
 function AnimatedStat({ value, label, inView, breakpoint }) {
   const { number } = useSpring({
     from: { number: 0 },
@@ -38,34 +37,30 @@ function AnimatedStat({ value, label, inView, breakpoint }) {
   const isMobile = breakpoint === "mobile";
 
   const statStyles = {
-    // Kapsülün genel stili
     container: {
       display: "flex",
       alignItems: "center",
       justifyContent: "center",
-      gap: "0.4rem", // Sayı ve etiket arası boşluk
+      gap: "0.4rem",
       color: "#FFFFFF",
       padding: isMobile ? "0.5rem 0.9rem" : "0.7rem 1.1rem",
-      borderRadius: "25px", // Oval şekil
+      borderRadius: "25px",
       backgroundColor: "rgba(255, 255, 255, 0.05)",
       border: "1px solid rgba(255, 255, 255, 0.8)",
       flexShrink: 0,
       whiteSpace: "nowrap",
     },
-    // Sayı stili
     value: {
       fontSize: isMobile ? "0.9rem" : "1rem",
       fontWeight: 600,
       lineHeight: 1,
     },
-    // Etiket stili
     label: {
       fontSize: isMobile ? "0.9rem" : "1rem",
       fontWeight: 500,
       textTransform: "uppercase",
       lineHeight: 1,
     },
-    // Sadece etiket olan kapsül stili (örn: Fully Creator-Led)
     labelOnly: {
       fontSize: isMobile ? "0.9rem" : "1rem",
       fontWeight: 500,
@@ -80,12 +75,10 @@ function AnimatedStat({ value, label, inView, breakpoint }) {
     },
   };
 
-  // Eğer değer bir sayı değilse (NaN), sadece etiket gösteren kapsülü render et
   if (isNaN(value)) {
     return <div style={statStyles.labelOnly}>{label}</div>;
   }
 
-  // Sayısal değerler için sayı ve etiketi bir arada gösteren kapsülü render et
   return (
     <div style={statStyles.container}>
       <animated.span style={statStyles.value}>
@@ -96,8 +89,7 @@ function AnimatedStat({ value, label, inView, breakpoint }) {
   );
 }
 
-// --- VideoCard Bileşeni (YAPI DEĞİŞMEDİ, YENİ VERİYE UYUMLU) ---
-// Bu bileşen, mobil ve masaüstü için farklı veri yapılarını işleyecek şekilde zaten doğru yapılandırılmıştı.
+// --- VideoCard Bileşeni (MOBİL İÇİN GÜNCELLENDİ) ---
 function VideoCard({
   videoSrc,
   title,
@@ -126,30 +118,31 @@ function VideoCard({
       borderRadius: "12px",
     },
     video: { width: "100%", height: "100%", objectFit: "cover" },
-    // Anahtar Değişiklik: Mobil'de dikey, masaüstünde yatay düzen
     infoBar: {
       backgroundColor: "#000000",
       padding: "1rem 1.25rem",
       display: "flex",
-      alignItems: "center",
       gap: "1rem",
       flexDirection: isMobile ? "column" : "row",
-      justifyContent: isMobile ? "center" : "space-between",
+      // MOBİL GÜNCELLEME: Mobil'de dikey düzende öğeleri ortalamak yerine sola yaslamak için 'flex-start' kullanıldı.
+      alignItems: isMobile ? "flex-start" : "center",
+      justifyContent: isMobile ? "center" : "flex-start",
     },
     title: {
       fontSize: "clamp(1.2rem, 3vw, 1.5rem)",
       color: "#FFFFFF",
       fontWeight: 600,
       margin: 0,
-      textAlign: isMobile ? "center" : "left",
-      flexShrink: 0, // Başlığın küçülmesini engeller
-      marginRight: isMobile ? 0 : "1rem", // Masaüstünde stat'larla araya boşluk koy
+      // MOBİL GÜNCELLEME: Mobil'de metni ortalamak yerine her zaman sola yaslı olacak şekilde ayarlandı.
+      textAlign: "left",
+      flexShrink: 0,
+      marginRight: isMobile ? 0 : "1rem",
     },
     statsContainer: {
       display: "flex",
-      width: "100%",
-      justifyContent: isMobile ? "center" : "flex-end", // Mobilde ortala, masaüstünde sağa yasla
-      // Bu container içindeki render mantığı artık doğru çalışacak.
+      justifyContent: isMobile ? "center" : "flex-start",
+      // MOBİL GÜNCELLEME: Konteynerin tam genişlik kaplaması ve içindekileri sola yaslayabilmesi için.
+      width: isMobile ? "100%" : "auto",
     },
   };
 
@@ -169,17 +162,16 @@ function VideoCard({
         </div>
         <div style={cardStyles.infoBar}>
           <h3 style={cardStyles.title}>{title}</h3>
-
-          {/* İstatistikleri render eden bölüm */}
           <div style={cardStyles.statsContainer}>
             {isMobile && mobileStatRows ? (
-              // MOBİL GÖRÜNÜM: Tanımlanmış satırları render et
+              // MOBİL GÖRÜNÜM: Ana kapsayıcı artık 'alignItems' ile sola yaslanıyor.
               <div
                 style={{
                   display: "flex",
                   flexDirection: "column",
-                  alignItems: "center",
+                  alignItems: "flex-start", // Satırların kendisini sola yaslar
                   gap: "0.75rem",
+                  width: "100%",
                 }}
               >
                 {mobileStatRows.map((row, rowIndex) => (
@@ -188,7 +180,7 @@ function VideoCard({
                     style={{
                       display: "flex",
                       flexWrap: "wrap",
-                      justifyContent: "center",
+                      justifyContent: "flex-start", // Satır içindeki kapsülleri sola yaslar
                       gap: "0.75rem",
                     }}
                   >
@@ -204,13 +196,13 @@ function VideoCard({
                 ))}
               </div>
             ) : (
-              // DESKTOP GÖRÜNÜMÜ: Orijinal flat diziyi render et
+              // DESKTOP GÖRÜNÜMÜ
               <div
                 style={{
                   display: "flex",
                   gap: "0.75rem",
                   flexWrap: "wrap",
-                  justifyContent: "flex-end",
+                  justifyContent: "flex-start",
                 }}
               >
                 {stats.map((stat, index) => (
@@ -238,31 +230,24 @@ const highlightStyles = `
   .highlight-word:hover::after { content: ''; position: absolute; left: 1rem; right: 1rem; bottom: 0.5rem; height: 7px; background-color: #FFFFFF; }
 `;
 
-// --- Ana Sayfa Bileşeni ---
+// --- Ana Sayfa Bileşeni (Değişiklik Yok) ---
 function WhatWeMade() {
-  // --- VERİ YAPISI İSTEDİĞİNİZ GİBİ GÜNCELLENDİ ---
   const videoData = [
     {
       id: 1,
       videoSrc: video1,
       title: "BRAVE CF X CREATOR",
-      // Masaüstü için yan yana gösterilecek düz liste
       stats: [
         { value: 27.2, label: "M IG" },
         { value: 6.7, label: "M TikTok" },
         { value: NaN, label: "Fully Creator-Led" },
       ],
-      // Mobil için özel satır yapısı
       mobileStatRows: [
         [
-          // İlk satır
           { value: 27.2, label: "M IG" },
           { value: 6.7, label: "M TikTok" },
         ],
-        [
-          // İkinci satır
-          { value: NaN, label: "Fully Creator-Led" },
-        ],
+        [{ value: NaN, label: "Fully Creator-Led" }],
       ],
     },
     {
@@ -275,7 +260,6 @@ function WhatWeMade() {
       ],
       mobileStatRows: [
         [
-          // Tek satır
           { value: 690, label: "K IG" },
           { value: 640, label: "K TIKTOK" },
         ],
@@ -291,7 +275,6 @@ function WhatWeMade() {
       ],
       mobileStatRows: [
         [
-          // Tek satır
           { value: 297, label: "K IG" },
           { value: 245, label: "K TIKTOK" },
         ],
@@ -306,7 +289,6 @@ function WhatWeMade() {
   useEffect(() => {
     const handleResize = () => {
       if (window.innerWidth < 992) {
-        // Breakpoint'i md ve lg arası bir değere ayarlayabiliriz (Bootstrap'e göre)
         setBreakpoint("mobile");
       } else {
         setBreakpoint("desktop");
@@ -330,7 +312,7 @@ function WhatWeMade() {
       fontSize: breakpoint === "mobile" ? "2.8rem" : "4.5rem",
       marginBottom: "4rem",
       textAlign: "left",
-      paddingLeft: "15px", // Başlığın kenara yapışmasını engeller
+      paddingLeft: "15px",
       paddingRight: "15px",
     },
     videoWrapper: { height: breakpoint === "mobile" ? "105vh" : "110vh" },
