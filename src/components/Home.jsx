@@ -83,10 +83,10 @@ function Home() {
   }, []);
 
   const handleWhatsAppClick = () => {
-    /* ...değişiklik yok... */
+    window.open("https://wa.me/YOUR_PHONE_NUMBER", "_blank");
   };
   const handleMailClick = () => {
-    /* ...değişiklik yok... */
+    window.location.href = "mailto:YOUR_EMAIL_ADDRESS";
   };
 
   // --- STYLES ---
@@ -168,7 +168,7 @@ function Home() {
     justifyContent: "center",
     alignItems: "center",
     width: "100%",
-    flexWrap: "wrap",
+    flexWrap: "wrap", // Yan yana sığmazsa alt satıra atar, bu kalmalı. Genişliği ayarlayarak sığmasını sağlayacağız.
     gap: isMobile ? "15px" : "20px",
     marginTop: isMobile ? "40px" : "50px",
     opacity: isSceneLoaded ? 1 : 0,
@@ -199,7 +199,9 @@ function Home() {
     borderRadius: "35px",
     transition: "all 0.3s ease",
     fontWeight: 500,
-    width: "220px",
+    // --- 1. DEĞİŞİKLİK ---
+    // Mobil'de butonların yan yana sığabilmesi için genişliği küçültüyoruz.
+    width: isMobile ? "140px" : "220px",
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
@@ -209,12 +211,14 @@ function Home() {
   const buttonDefaultStyle = {
     backgroundColor: "transparent",
     color: "#FFFFFF",
-    border: "1px solid #FFFFFF",
+    border: "1px solid #FFFFFF", // Kenarlık zaten 1px, bu doğru.
   };
   const buttonHoverStyle = {
     backgroundColor: "#FFFFFF",
     color: "#000000",
-    border: "2px solid #FFFFFF",
+    // --- 2. DEĞİŞİKLİK ---
+    // Mobil'de üzerine gelince kenarlığın 1px kalmasını, masaüstünde 2px olmasını sağlıyoruz.
+    border: isMobile ? "1px solid #FFFFFF" : "2px solid #FFFFFF",
   };
 
   return (
