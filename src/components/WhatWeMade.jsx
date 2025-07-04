@@ -8,7 +8,7 @@ import video1 from "../assets/video/1.mp4";
 import video2 from "../assets/video/2.mp4";
 import video3 from "../assets/video/3.mp4";
 
-// --- ErrorBoundary Bileşeni ---
+// --- ErrorBoundary Bileşeni (Değişiklik Yok) ---
 class ErrorBoundary extends React.Component {
   state = { hasError: false };
   static getDerivedStateFromError(error) {
@@ -25,7 +25,8 @@ class ErrorBoundary extends React.Component {
   }
 }
 
-// --- AnimatedStat Bileşeni ---
+// --- AnimatedStat Bileşeni (İSTENEN GÖRÜNÜM İÇİN GÜNCELLENDİ) ---
+// Her bir istatistiği ayrı bir kapsül olarak render eder.
 function AnimatedStat({ value, label, inView, breakpoint }) {
   const { number } = useSpring({
     from: { number: 0 },
@@ -37,62 +38,66 @@ function AnimatedStat({ value, label, inView, breakpoint }) {
   const isMobile = breakpoint === "mobile";
 
   const statStyles = {
+    // Kapsülün genel stili
     container: {
       display: "flex",
       alignItems: "center",
-      gap: isMobile ? "0.4rem" : "0.5rem",
-      color: "#FFFFFF",
-      padding: isMobile ? "0.5rem 0.9rem" : "0.8rem 1.2rem",
-      borderRadius: isMobile ? "20px" : "25px",
-      backgroundColor: "rgba(255, 255, 255, 0.05)",
-      border: "1px solid #FFFFFF",
-      minWidth: isMobile ? "auto" : "140px",
       justifyContent: "center",
+      gap: "0.4rem", // Sayı ve etiket arası boşluk
+      color: "#FFFFFF",
+      padding: isMobile ? "0.5rem 0.9rem" : "0.7rem 1.1rem",
+      borderRadius: "25px", // Oval şekil
+      backgroundColor: "rgba(255, 255, 255, 0.05)",
+      border: "1px solid rgba(255, 255, 255, 0.8)",
       flexShrink: 0,
+      whiteSpace: "nowrap",
     },
+    // Sayı stili
     value: {
-      fontSize: isMobile ? "1.2rem" : "1.5rem",
-      fontWeight: 700,
+      fontSize: isMobile ? "0.9rem" : "1rem",
+      fontWeight: 600,
       lineHeight: 1,
     },
+    // Etiket stili
     label: {
-      fontSize: isMobile ? "0.8rem" : "1rem",
+      fontSize: isMobile ? "0.9rem" : "1rem",
       fontWeight: 500,
       textTransform: "uppercase",
-      opacity: 0.9,
+      lineHeight: 1,
     },
+    // Sadece etiket olan kapsül stili (örn: Fully Creator-Led)
     labelOnly: {
-      color: "#FFFFFF",
-      fontSize: isMobile ? "0.8rem" : "0.9rem",
+      fontSize: isMobile ? "0.9rem" : "1rem",
       fontWeight: 500,
-      padding: isMobile ? "0.6rem 1rem" : "0.8rem 1.2rem",
-      borderRadius: "16px",
+      textTransform: "uppercase",
+      lineHeight: 1,
+      color: "#FFFFFF",
+      padding: isMobile ? "0.5rem 1rem" : "0.7rem 1.2rem",
+      borderRadius: "25px",
       backgroundColor: "rgba(255, 255, 255, 0.05)",
-      border: "1px solid #FFFFFF",
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-      height: "100%",
-      minWidth: isMobile ? "auto" : "140px",
-      flexShrink: 0,
+      border: "1px solid rgba(255, 255, 255, 0.8)",
+      whiteSpace: "nowrap",
     },
   };
 
+  // Eğer değer bir sayı değilse (NaN), sadece etiket gösteren kapsülü render et
   if (isNaN(value)) {
     return <div style={statStyles.labelOnly}>{label}</div>;
   }
 
+  // Sayısal değerler için sayı ve etiketi bir arada gösteren kapsülü render et
   return (
     <div style={statStyles.container}>
       <animated.span style={statStyles.value}>
-        {number.to((n) => (n < 10 ? n.toFixed(1) : n.toFixed(0)))}
+        {number.to((n) => (n % 1 !== 0 ? n.toFixed(1) : n.toFixed(0)))}
       </animated.span>
       <span style={statStyles.label}>{label}</span>
     </div>
   );
 }
 
-// --- VideoCard Bileşeni (NİHAİ ÇÖZÜM) ---
+// --- VideoCard Bileşeni (YAPI DEĞİŞMEDİ, YENİ VERİYE UYUMLU) ---
+// Bu bileşen, mobil ve masaüstü için farklı veri yapılarını işleyecek şekilde zaten doğru yapılandırılmıştı.
 function VideoCard({
   videoSrc,
   title,
@@ -102,13 +107,12 @@ function VideoCard({
   breakpoint,
 }) {
   const { ref, inView } = useInView({ triggerOnce: true, threshold: 0.5 });
-
   const isMobile = breakpoint === "mobile";
 
   const cardStyles = {
     frame: {
       backgroundColor: "#000000",
-      padding: isMobile ? "6px" : "12px",
+      padding: isMobile ? "8px" : "12px",
       height: "100%",
       display: "flex",
       flexDirection: "column",
@@ -122,6 +126,7 @@ function VideoCard({
       borderRadius: "12px",
     },
     video: { width: "100%", height: "100%", objectFit: "cover" },
+    // Anahtar Değişiklik: Mobil'de dikey, masaüstünde yatay düzen
     infoBar: {
       backgroundColor: "#000000",
       padding: "1rem 1.25rem",
@@ -136,12 +141,15 @@ function VideoCard({
       color: "#FFFFFF",
       fontWeight: 600,
       margin: 0,
-      textAlign: "center",
+      textAlign: isMobile ? "center" : "left",
+      flexShrink: 0, // Başlığın küçülmesini engeller
+      marginRight: isMobile ? 0 : "1rem", // Masaüstünde stat'larla araya boşluk koy
     },
     statsContainer: {
       display: "flex",
       width: "100%",
-      justifyContent: "center",
+      justifyContent: isMobile ? "center" : "flex-end", // Mobilde ortala, masaüstünde sağa yasla
+      // Bu container içindeki render mantığı artık doğru çalışacak.
     },
   };
 
@@ -161,8 +169,11 @@ function VideoCard({
         </div>
         <div style={cardStyles.infoBar}>
           <h3 style={cardStyles.title}>{title}</h3>
+
+          {/* İstatistikleri render eden bölüm */}
           <div style={cardStyles.statsContainer}>
             {isMobile && mobileStatRows ? (
+              // MOBİL GÖRÜNÜM: Tanımlanmış satırları render et
               <div
                 style={{
                   display: "flex",
@@ -193,12 +204,13 @@ function VideoCard({
                 ))}
               </div>
             ) : (
+              // DESKTOP GÖRÜNÜMÜ: Orijinal flat diziyi render et
               <div
                 style={{
                   display: "flex",
                   gap: "0.75rem",
                   flexWrap: "wrap",
-                  justifyContent: "center",
+                  justifyContent: "flex-end",
                 }}
               >
                 {stats.map((stat, index) => (
@@ -218,7 +230,7 @@ function VideoCard({
   );
 }
 
-// --- FİNAL STİLLER ---
+// --- FİNAL STİLLER (Değişiklik Yok) ---
 const highlightStyles = `
   .highlight-word { display: inline-block; position: relative; cursor: pointer; transition: all 0.2s ease-in-out; border-bottom: 7px solid #141414; padding-bottom: 0; line-height: 0.9; }
   .highlight-word:hover::before { content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background-image: linear-gradient(to right, #111111, #555555); border-radius: 6px; z-index: -1; transition: all 0.2s ease-in-out; }
@@ -228,22 +240,29 @@ const highlightStyles = `
 
 // --- Ana Sayfa Bileşeni ---
 function WhatWeMade() {
+  // --- VERİ YAPISI İSTEDİĞİNİZ GİBİ GÜNCELLENDİ ---
   const videoData = [
     {
       id: 1,
       videoSrc: video1,
       title: "BRAVE CF X CREATOR",
+      // Masaüstü için yan yana gösterilecek düz liste
       stats: [
-        { value: 27.2, label: "M IG Views" },
-        { value: 6.7, label: "M TikTok Views" },
+        { value: 27.2, label: "M IG" },
+        { value: 6.7, label: "M TikTok" },
         { value: NaN, label: "Fully Creator-Led" },
       ],
+      // Mobil için özel satır yapısı
       mobileStatRows: [
         [
-          { value: 27.2, label: "M IG Views" },
-          { value: 6.7, label: "M TikTok Views" },
+          // İlk satır
+          { value: 27.2, label: "M IG" },
+          { value: 6.7, label: "M TikTok" },
         ],
-        [{ value: NaN, label: "Fully Creator-Led" }],
+        [
+          // İkinci satır
+          { value: NaN, label: "Fully Creator-Led" },
+        ],
       ],
     },
     {
@@ -251,13 +270,14 @@ function WhatWeMade() {
       videoSrc: video2,
       title: "LAMBORGHINI YACHT",
       stats: [
-        { value: 690, label: "K IG Views" },
-        { value: 640, label: "K TikTok Views" },
+        { value: 690, label: "K IG" },
+        { value: 640, label: "K TIKTOK" },
       ],
       mobileStatRows: [
         [
-          { value: 690, label: "K IG Views" },
-          { value: 640, label: "K TikTok Views" },
+          // Tek satır
+          { value: 690, label: "K IG" },
+          { value: 640, label: "K TIKTOK" },
         ],
       ],
     },
@@ -266,13 +286,14 @@ function WhatWeMade() {
       videoSrc: video3,
       title: "DUBAI TIMELAPSE",
       stats: [
-        { value: 297, label: "K IG Views" },
-        { value: 245, label: "K TikTok Views" },
+        { value: 297, label: "K IG" },
+        { value: 245, label: "K TIKTOK" },
       ],
       mobileStatRows: [
         [
-          { value: 297, label: "K IG Views" },
-          { value: 245, label: "K TikTok Views" },
+          // Tek satır
+          { value: 297, label: "K IG" },
+          { value: 245, label: "K TIKTOK" },
         ],
       ],
     },
@@ -284,8 +305,12 @@ function WhatWeMade() {
 
   useEffect(() => {
     const handleResize = () => {
-      if (window.innerWidth < 768) setBreakpoint("mobile");
-      else setBreakpoint("desktop");
+      if (window.innerWidth < 992) {
+        // Breakpoint'i md ve lg arası bir değere ayarlayabiliriz (Bootstrap'e göre)
+        setBreakpoint("mobile");
+      } else {
+        setBreakpoint("desktop");
+      }
     };
     handleResize();
     window.addEventListener("resize", handleResize);
@@ -305,6 +330,8 @@ function WhatWeMade() {
       fontSize: breakpoint === "mobile" ? "2.8rem" : "4.5rem",
       marginBottom: "4rem",
       textAlign: "left",
+      paddingLeft: "15px", // Başlığın kenara yapışmasını engeller
+      paddingRight: "15px",
     },
     videoWrapper: { height: breakpoint === "mobile" ? "105vh" : "110vh" },
     secondaryVideoWrapper: {
@@ -351,12 +378,6 @@ function WhatWeMade() {
           ...baseFont,
           paddingTop: "5rem",
           paddingBottom: "5rem",
-          // --- DEĞİŞİKLİK BURADA ---
-          // Mobil cihazlarda yan boşlukları (padding) sıfırlayarak videoların ekranı daha fazla kaplamasını sağlıyoruz.
-          // Masaüstünde orijinal boşluk değeri korunur.
-          paddingLeft: breakpoint === "mobile" ? "0px" : "15px",
-          paddingRight: breakpoint === "mobile" ? "0px" : "15px",
-          // --- DEĞİŞİKLİK SONU ---
           overflowX: "hidden",
         }}
       >
