@@ -8,7 +8,7 @@ import video1 from "../assets/video/1.mp4";
 import video2 from "../assets/video/2.mp4";
 import video3 from "../assets/video/3.mp4";
 
-// --- ErrorBoundary Bileşeni (TAM HALİ) ---
+// --- ErrorBoundary Bileşeni ---
 class ErrorBoundary extends React.Component {
   state = { hasError: false };
   static getDerivedStateFromError(error) {
@@ -25,7 +25,7 @@ class ErrorBoundary extends React.Component {
   }
 }
 
-// --- AnimatedStat Bileşeni (TAM HALİ) ---
+// --- AnimatedStat Bileşeni ---
 function AnimatedStat({ value, label, inView }) {
   const { number } = useSpring({
     from: { number: 0 },
@@ -81,13 +81,16 @@ function AnimatedStat({ value, label, inView }) {
   );
 }
 
-// --- VideoCard Bileşeni (TAM HALİ) ---
-function VideoCard({ videoSrc, title, stats, wrapperStyle }) {
+// --- VideoCard Bileşeni (DEĞİŞİKLİK) ---
+// breakpoint prop'u eklendi
+function VideoCard({ videoSrc, title, stats, wrapperStyle, breakpoint }) {
   const { ref, inView } = useInView({ triggerOnce: true, threshold: 0.5 });
+
   const cardStyles = {
     frame: {
       backgroundColor: "#000000",
-      padding: "12px",
+      // YENİ: Padding mobil için azaltıldı, video daha geniş görünecek
+      padding: breakpoint === "mobile" ? "8px" : "12px",
       height: "100%",
       display: "flex",
       flexDirection: "column",
@@ -118,6 +121,7 @@ function VideoCard({ videoSrc, title, stats, wrapperStyle }) {
     },
     statsContainer: { display: "flex", gap: "0.75rem", flexWrap: "wrap" },
   };
+
   return (
     <div ref={ref} style={wrapperStyle}>
       <div style={cardStyles.frame}>
@@ -147,47 +151,13 @@ function VideoCard({ videoSrc, title, stats, wrapperStyle }) {
 
 // --- FİNAL STİLLER ---
 const highlightStyles = `
-  .highlight-word {
-    display: inline-block;
-    position: relative; /* ::before ve ::after'ı konumlandırmak için gerekli */
-    cursor: pointer;
-    transition: all 0.2s ease-in-out;
-    border-bottom: 7px solid #141414;
-    padding-bottom: 0;
-    line-height: 0.9;
-  }
-  .highlight-word:hover::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-image: linear-gradient(to right, #111111, #555555);
-    border-radius: 6px;
-    z-index: -1; /* Bu katmanı metnin ve diğer her şeyin arkasına gönderir */
-    transition: all 0.2s ease-in-out; /* Yumuşak geçiş için eklendi */
-  }
-  .highlight-word:hover {
-    color: #FFFFFF;
-    border-bottom-color: transparent; /* Orijinal border'ı gizliyoruz çünkü yerine ::after gelecek */
-    padding: 0.5rem 1rem;
-    border-radius: 6px;
-    transform: rotate(-2deg); /* Döndürme efekti geri eklendi */
-    line-height: 1.2;
-  }
-  .highlight-word:hover::after {
-    content: '';
-    position: absolute;
-    left: 1rem;
-    right: 1rem;
-    bottom: 0.5rem;
-    height: 7px;
-    background-color: #FFFFFF;
-  }
+  .highlight-word { display: inline-block; position: relative; cursor: pointer; transition: all 0.2s ease-in-out; border-bottom: 7px solid #141414; padding-bottom: 0; line-height: 0.9; }
+  .highlight-word:hover::before { content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background-image: linear-gradient(to right, #111111, #555555); border-radius: 6px; z-index: -1; transition: all 0.2s ease-in-out; }
+  .highlight-word:hover { color: #FFFFFF; border-bottom-color: transparent; padding: 0.5rem 1rem; border-radius: 6px; transform: rotate(-2deg); line-height: 1.2; }
+  .highlight-word:hover::after { content: ''; position: absolute; left: 1rem; right: 1rem; bottom: 0.5rem; height: 7px; background-color: #FFFFFF; }
 `;
 
-// --- Ana Sayfa Bileşeni ---
+// --- Ana Sayfa Bileşeni (DEĞİŞİKLİK) ---
 function WhatWeMade() {
   const videoData = [
     {
@@ -248,11 +218,12 @@ function WhatWeMade() {
       marginBottom: "4rem",
       textAlign: "left",
     },
+    // YENİ: Mobil video yüksekliği 85vh'ye çıkarıldı.
     videoWrapper: {
-      height: breakpoint === "mobile" ? "70vh" : "110vh",
+      height: breakpoint === "mobile" ? "85vh" : "110vh",
     },
     secondaryVideoWrapper: {
-      height: breakpoint === "mobile" ? "70vh" : "110vh",
+      height: breakpoint === "mobile" ? "85vh" : "110vh",
     },
     promoText: {
       fontWeight: 500,
@@ -265,7 +236,8 @@ function WhatWeMade() {
     button: {
       cursor: "pointer",
       padding: "16px 0",
-      width: breakpoint === "mobile" ? "160px" : "240px", // Mobilde buton genişliği biraz azaltıldı
+      // YENİ: Mobil buton genişliği yan yana sığacak şekilde ayarlandı.
+      width: breakpoint === "mobile" ? "140px" : "240px",
       fontSize: breakpoint === "mobile" ? "1.1rem" : "1.3rem",
       borderRadius: "35px",
       border: "2px solid #141414",
@@ -310,24 +282,30 @@ function WhatWeMade() {
 
           <Row className="mb-4">
             <Col xs={12}>
+              {/* YENİ: breakpoint prop'u VideoCard'a gönderiliyor */}
               <VideoCard
                 {...videoData[0]}
                 wrapperStyle={responsiveStyles.videoWrapper}
+                breakpoint={breakpoint}
               />
             </Col>
           </Row>
 
           <Row className="gy-4">
             <Col xs={12} md={6}>
+              {/* YENİ: breakpoint prop'u VideoCard'a gönderiliyor */}
               <VideoCard
                 {...videoData[1]}
                 wrapperStyle={responsiveStyles.secondaryVideoWrapper}
+                breakpoint={breakpoint}
               />
             </Col>
             <Col xs={12} md={6}>
+              {/* YENİ: breakpoint prop'u VideoCard'a gönderiliyor */}
               <VideoCard
                 {...videoData[2]}
                 wrapperStyle={responsiveStyles.secondaryVideoWrapper}
+                breakpoint={breakpoint}
               />
             </Col>
           </Row>
@@ -345,10 +323,8 @@ function WhatWeMade() {
           </Row>
 
           <Row className="justify-content-center">
-            <Col
-              xs="auto"
-              className="d-flex flex-wrap justify-content-center gap-3"
-            >
+            {/* YENİ: flex-wrap kaldırıldı, butonlar her zaman yan yana kalacak */}
+            <Col xs="auto" className="d-flex justify-content-center gap-3">
               <button
                 style={whatsAppButtonStyle}
                 onClick={handleWhatsAppClick}
