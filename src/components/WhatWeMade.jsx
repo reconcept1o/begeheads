@@ -220,7 +220,7 @@ function WhatWeMade() {
     },
     // YENİ: Mobil video yüksekliği 85vh'ye çıkarıldı.
     videoWrapper: {
-      height: breakpoint === "mobile" ? "85vh" : "110vh",
+      height: breakpoint === "mobile" ? "125vh" : "110vh",
     },
     secondaryVideoWrapper: {
       height: breakpoint === "mobile" ? "85vh" : "110vh",
