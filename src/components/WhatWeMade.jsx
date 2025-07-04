@@ -81,16 +81,15 @@ function AnimatedStat({ value, label, inView }) {
   );
 }
 
-// --- VideoCard Bileşeni (GÜNCELLENMİŞ HALİ) ---
+// --- VideoCard Bileşeni (DEĞİŞİKLİK) ---
+// breakpoint prop'u eklendi
 function VideoCard({ videoSrc, title, stats, wrapperStyle, breakpoint }) {
   const { ref, inView } = useInView({ triggerOnce: true, threshold: 0.5 });
-
-  const numericStats = stats.filter((stat) => !isNaN(stat.value));
-  const labelOnlyStat = stats.find((stat) => isNaN(stat.value));
 
   const cardStyles = {
     frame: {
       backgroundColor: "#000000",
+      // YENİ: Padding mobil için azaltıldı, video daha geniş görünecek
       padding: breakpoint === "mobile" ? "6px" : "12px",
       height: "100%",
       display: "flex",
@@ -109,31 +108,18 @@ function VideoCard({ videoSrc, title, stats, wrapperStyle, breakpoint }) {
       backgroundColor: "#000000",
       padding: "1rem 1.25rem",
       display: "flex",
-      gap: "1rem",
-      flexDirection: breakpoint === "mobile" ? "column" : "row",
-      alignItems: breakpoint === "mobile" ? "flex-start" : "center",
       justifyContent: "space-between",
+      alignItems: "center",
+      flexWrap: "wrap",
+      gap: "1rem",
     },
     title: {
       fontSize: "clamp(1.2rem, 3vw, 1.5rem)",
       color: "#FFFFFF",
       fontWeight: 600,
       margin: 0,
-      flexShrink: 0,
     },
-    allStatsWrapper: {
-      display: "flex",
-      flexDirection: breakpoint === "mobile" ? "column" : "row",
-      gap: "0.75rem",
-      alignItems: "flex-start",
-    },
-    // Sadece sayısal istatistikleri yan yana tutan sarmalayıcı
-    numericStatsContainer: {
-      display: "flex",
-      gap: "0.75rem",
-      // DEĞİŞİKLİK: 'wrap' yerine 'nowrap' kullanılarak istatistiklerin alt satıra kayması engellendi.
-      flexWrap: "nowrap",
-    },
+    statsContainer: { display: "flex", gap: "0.75rem", flexWrap: "wrap" },
   };
 
   return (
@@ -152,20 +138,10 @@ function VideoCard({ videoSrc, title, stats, wrapperStyle, breakpoint }) {
         </div>
         <div style={cardStyles.infoBar}>
           <h3 style={cardStyles.title}>{title}</h3>
-
-          <div style={cardStyles.allStatsWrapper}>
-            <div style={cardStyles.numericStatsContainer}>
-              {numericStats.map((stat, index) => (
-                <AnimatedStat key={index} {...stat} inView={inView} />
-              ))}
-            </div>
-            {labelOnlyStat && (
-              <AnimatedStat
-                key="label-only"
-                {...labelOnlyStat}
-                inView={inView}
-              />
-            )}
+          <div style={cardStyles.statsContainer}>
+            {stats.map((stat, index) => (
+              <AnimatedStat key={index} {...stat} inView={inView} />
+            ))}
           </div>
         </div>
       </div>
@@ -181,7 +157,7 @@ const highlightStyles = `
   .highlight-word:hover::after { content: ''; position: absolute; left: 1rem; right: 1rem; bottom: 0.5rem; height: 7px; background-color: #FFFFFF; }
 `;
 
-// --- Ana Sayfa Bileşeni ---
+// --- Ana Sayfa Bileşeni (DEĞİŞİKLİK) ---
 function WhatWeMade() {
   const videoData = [
     {
@@ -242,6 +218,7 @@ function WhatWeMade() {
       marginBottom: "4rem",
       textAlign: "left",
     },
+    // YENİ: Mobil video yüksekliği 85vh'ye çıkarıldı.
     videoWrapper: {
       height: breakpoint === "mobile" ? "105vh" : "110vh",
     },
@@ -259,6 +236,7 @@ function WhatWeMade() {
     button: {
       cursor: "pointer",
       padding: "16px 0",
+      // YENİ: Mobil buton genişliği yan yana sığacak şekilde ayarlandı.
       width: breakpoint === "mobile" ? "140px" : "240px",
       fontSize: breakpoint === "mobile" ? "1.1rem" : "1.3rem",
       borderRadius: "35px",
@@ -304,6 +282,7 @@ function WhatWeMade() {
 
           <Row className="mb-4">
             <Col xs={12}>
+              {/* YENİ: breakpoint prop'u VideoCard'a gönderiliyor */}
               <VideoCard
                 {...videoData[0]}
                 wrapperStyle={responsiveStyles.videoWrapper}
@@ -314,6 +293,7 @@ function WhatWeMade() {
 
           <Row className="gy-4">
             <Col xs={12} md={6}>
+              {/* YENİ: breakpoint prop'u VideoCard'a gönderiliyor */}
               <VideoCard
                 {...videoData[1]}
                 wrapperStyle={responsiveStyles.secondaryVideoWrapper}
@@ -321,6 +301,7 @@ function WhatWeMade() {
               />
             </Col>
             <Col xs={12} md={6}>
+              {/* YENİ: breakpoint prop'u VideoCard'a gönderiliyor */}
               <VideoCard
                 {...videoData[2]}
                 wrapperStyle={responsiveStyles.secondaryVideoWrapper}
@@ -342,6 +323,7 @@ function WhatWeMade() {
           </Row>
 
           <Row className="justify-content-center">
+            {/* YENİ: flex-wrap kaldırıldı, butonlar her zaman yan yana kalacak */}
             <Col xs="auto" className="d-flex justify-content-center gap-3">
               <button
                 style={whatsAppButtonStyle}
