@@ -195,13 +195,13 @@ function Home() {
   const buttonBaseStyle = {
     cursor: "pointer",
     padding: "14px 0",
-    fontSize: isMobile ? "1.5rem" : "1.7rem",
+    fontSize: isMobile ? "1.1rem" : "1.7rem",
     borderRadius: "35px",
     transition: "all 0.3s ease",
     fontWeight: 500,
     // --- 1. DEĞİŞİKLİK ---
     // Mobil'de butonların yan yana sığabilmesi için genişliği küçültüyoruz.
-    width: isMobile ? "160px" : "220px",
+    width: isMobile ? "140px" : "220px",
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
