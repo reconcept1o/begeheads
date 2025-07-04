@@ -93,7 +93,6 @@ function AnimatedStat({ value, label, inView, breakpoint }) {
 }
 
 // --- VideoCard Bileşeni (NİHAİ ÇÖZÜM) ---
-// Mobil'de infoBar'ın yönü değiştirilerek sorun kökten çözüldü.
 function VideoCard({
   videoSrc,
   title,
@@ -123,14 +122,13 @@ function VideoCard({
       borderRadius: "12px",
     },
     video: { width: "100%", height: "100%", objectFit: "cover" },
-    // KİLİT DEĞİŞİKLİK: Mobil'de flexDirection 'column' olarak ayarlandı.
     infoBar: {
       backgroundColor: "#000000",
       padding: "1rem 1.25rem",
       display: "flex",
       alignItems: "center",
       gap: "1rem",
-      flexDirection: isMobile ? "column" : "row", // MOBİLDE DİKEY, DESKTOP'TA YATAY
+      flexDirection: isMobile ? "column" : "row",
       justifyContent: isMobile ? "center" : "space-between",
     },
     title: {
@@ -142,9 +140,8 @@ function VideoCard({
     },
     statsContainer: {
       display: "flex",
-      width: "100%", // Stats'ın tam genişliği kullanmasını sağlar
+      width: "100%",
       justifyContent: "center",
-      // Not: Bu container içindeki render mantığı artık doğru çalışacak.
     },
   };
 
@@ -166,7 +163,6 @@ function VideoCard({
           <h3 style={cardStyles.title}>{title}</h3>
           <div style={cardStyles.statsContainer}>
             {isMobile && mobileStatRows ? (
-              // MOBİL GÖRÜNÜM: Tanımlanmış satırları render et
               <div
                 style={{
                   display: "flex",
@@ -197,7 +193,6 @@ function VideoCard({
                 ))}
               </div>
             ) : (
-              // DESKTOP GÖRÜNÜMÜ: Orijinal flat diziyi render et
               <div
                 style={{
                   display: "flex",
@@ -233,7 +228,6 @@ const highlightStyles = `
 
 // --- Ana Sayfa Bileşeni ---
 function WhatWeMade() {
-  // Veri yapısı, mobil için özel satırları içeriyor. Bu yapı doğru.
   const videoData = [
     {
       id: 1,
@@ -357,8 +351,12 @@ function WhatWeMade() {
           ...baseFont,
           paddingTop: "5rem",
           paddingBottom: "5rem",
-          paddingLeft: "15px",
-          paddingRight: "15px",
+          // --- DEĞİŞİKLİK BURADA ---
+          // Mobil cihazlarda yan boşlukları (padding) sıfırlayarak videoların ekranı daha fazla kaplamasını sağlıyoruz.
+          // Masaüstünde orijinal boşluk değeri korunur.
+          paddingLeft: breakpoint === "mobile" ? "0px" : "15px",
+          paddingRight: breakpoint === "mobile" ? "0px" : "15px",
+          // --- DEĞİŞİKLİK SONU ---
           overflowX: "hidden",
         }}
       >
