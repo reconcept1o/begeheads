@@ -1,49 +1,43 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Container, Row, Col } from "react-bootstrap";
-
-// Swiper.js
 import { Swiper, SwiperSlide } from "swiper/react";
 import { FreeMode, Scrollbar, Navigation } from "swiper/modules";
 
-// Gerekli CSS dosyaları
 import "swiper/css";
 import "swiper/css/free-mode";
 import "swiper/css/scrollbar";
 import "swiper/css/navigation";
 
-// Resimler
+// Resimler ve veriler
 import image1 from "../assets/bts/11.webp";
 import image2 from "../assets/bts/22.webp";
 import image3 from "../assets/bts/33.webp";
 
-// VERİLER (Her birine benzersiz bir 'id' ekledik)
 const btsData = [
   {
     id: 1,
     image: image1,
     text: "We brought creators to China...",
-    link: "...",
+    link: "https://example.com/china",
   },
   {
     id: 2,
     image: image2,
     text: "Producing on-water video content...",
-    link: "...",
+    link: "https://example.com/video",
   },
   {
     id: 3,
     image: image3,
     text: "Bringing a top USA influencer...",
-    link: "...",
+    link: "https://example.com/influencer",
   },
 ];
 
-// --- ÖZEL SANAL DÖNGÜ MANTIĞI ---
 const bufferSize = btsData.length;
 const startBuffer = btsData.slice(-bufferSize);
 const endBuffer = btsData.slice(0, bufferSize);
 const virtualData = [...startBuffer, ...btsData, ...endBuffer];
-// --- BİTTİ ---
 
 const socialLinks = [
   { name: "Instagram", href: "https://instagram.com" },
@@ -51,7 +45,6 @@ const socialLinks = [
   { name: "LinkedIn", href: "https://linkedin.com" },
 ];
 
-// STİLLER
 const styles = {
   mainContainer: {
     backgroundColor: "#000000",
@@ -63,10 +56,12 @@ const styles = {
   headerRow: { alignItems: "center", marginBottom: "3rem" },
   btsTitle: { fontSize: "2rem", fontWeight: "bold", textAlign: "left" },
   slideCard: {
-    borderRadius: "2px",
+    borderRadius: "16px",
     overflow: "hidden",
     boxShadow: "0 8px 20px rgba(0, 0, 0, 0.25)",
-  },
+    transition: "transform 0.3s ease",
+    cursor: "pointer",
+  }, // İmleci pointer yaptık
   image: {
     display: "block",
     width: "100%",
@@ -127,15 +122,18 @@ function SocialButton({ text, href, style }) {
   );
 }
 
-function BtsSlide({ item }) {
+// DEĞİŞTİ: Component artık 'onClick' prop'unu alıyor
+function BtsSlide({ item, onClick }) {
   const [isHovered, setIsHovered] = useState(false);
   const buttonStyle = {
     ...styles.slideButton,
     color: isHovered ? "#FFFFFF" : "#000000",
     backgroundColor: isHovered ? "#000000" : "transparent",
   };
+
   return (
-    <div style={styles.slideCard}>
+    // DEĞİŞTİ: Ana div'e onClick olayı bağlandı
+    <div style={styles.slideCard} onClick={onClick}>
       <img src={item.image} alt="Behind the scenes" style={styles.image} />
       <div style={styles.slideContent}>
         <p style={styles.slideText}>{item.text}</p>
@@ -146,6 +144,9 @@ function BtsSlide({ item }) {
           style={buttonStyle}
           onMouseEnter={() => setIsHovered(true)}
           onMouseLeave={() => setIsHovered(false)}
+          // NİHAİ ÇÖZÜM: Linke tıklanıldığında, olayın karta yayılmasını engelliyoruz.
+          // Bu, kartın onClick'ini tetiklemesini önler ve linkin normal çalışmasını sağlar.
+          onClick={(e) => e.stopPropagation()}
         >
           SEE MORE
         </a>
@@ -156,28 +157,27 @@ function BtsSlide({ item }) {
 
 function Bts() {
   const isTeleporting = useRef(false);
+  // YENİ: Animasyon durumunu tutan basit bir boolean state
+  const [isScaledDown, setIsScaledDown] = useState(false);
+  const swiperRef = useRef(null);
 
-  // DÜZELTİLMİŞ DÖNGÜ MANTIĞI
+  // YENİ: Animasyonu açıp kapatan basit bir fonksiyon
+  const toggleScale = () => {
+    setIsScaledDown((prevState) => !prevState);
+  };
+
   const handleTransitionEnd = (swiper) => {
-    // Eğer bu olay, bizim yaptığımız bir "ışınlanma" sonucu tetiklendiyse,
-    // sadece kilidi kaldır ve hiçbir şey yapma.
     if (isTeleporting.current) {
       isTeleporting.current = false;
       return;
     }
-
-    // Eğer olay kullanıcı tarafından başlatıldıysa, pozisyonu kontrol et.
     const realSlidesCount = btsData.length;
-
-    // Sona gelip sahte alana girerse
     if (swiper.activeIndex >= realSlidesCount + bufferSize) {
-      isTeleporting.current = true; // Işınlanmadan önce kilitle
-      swiper.slideTo(swiper.activeIndex - realSlidesCount, 0); // Anında ve sessizce gerçek alana ışınla
-    }
-    // Başa gelip sahte alana girerse
-    else if (swiper.activeIndex < bufferSize) {
-      isTeleporting.current = true; // Işınlanmadan önce kilitle
-      swiper.slideTo(swiper.activeIndex + realSlidesCount, 0); // Anında ve sessizce gerçek alana ışınla
+      isTeleporting.current = true;
+      swiper.slideTo(swiper.activeIndex - realSlidesCount, 0);
+    } else if (swiper.activeIndex < bufferSize) {
+      isTeleporting.current = true;
+      swiper.slideTo(swiper.activeIndex + realSlidesCount, 0);
     }
   };
 
@@ -189,6 +189,7 @@ function Bts() {
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
+
   const socialButtonStyle = {
     padding: breakpoint === "mobile" ? "0.5rem 1rem" : "0.75rem 1.5rem",
     fontSize: breakpoint === "mobile" ? "0.8rem" : "1rem",
@@ -203,6 +204,7 @@ function Bts() {
     <div style={styles.mainContainer}>
       <style>{animationStyles}</style>
       <Container fluid="lg">
+        {/* Header kısmı aynı */}
         <Row style={styles.headerRow}>
           <Col
             xs={12}
@@ -232,26 +234,37 @@ function Bts() {
         <Row>
           <Col xs={12}>
             <Swiper
+              ref={swiperRef}
               freeMode={true}
-              // Swiper başladığında, kullanıcıyı sahte alanın hemen sonrasına, yani gerçek listenin başına taşı
-              onSwiper={(swiper) => swiper.slideTo(bufferSize, 0)}
-              // DÜZELTME: Sadece onTransitionEnd olayını kullanarak döngüyü her zaman kontrol et
+              onSwiper={(swiper) => {
+                swiperRef.current = swiper;
+                swiper.slideTo(bufferSize, 0);
+              }}
               onTransitionEnd={handleTransitionEnd}
               modules={[FreeMode, Scrollbar, Navigation]}
               slidesPerView={"auto"}
               spaceBetween={40}
               scrollbar={{ draggable: true, hide: false }}
               navigation={true}
-              grabCursor={true}
             >
-              {virtualData.map((item, index) => (
-                <SwiperSlide
-                  key={`${item.id}-${index}`}
-                  style={{ width: "80%", maxWidth: "420px" }}
-                >
-                  <BtsSlide item={item} />
-                </SwiperSlide>
-              ))}
+              {virtualData.map((item, index) => {
+                // DEĞİŞTİ: Animasyon artık basit state'e bağlı
+                const slideStyle = {
+                  width: "80%",
+                  maxWidth: "420px",
+                  transition: "transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1)",
+                  transform: isScaledDown ? "scale(0.95)" : "scale(1)",
+                };
+                return (
+                  <SwiperSlide key={`${item.id}-${index}`} style={slideStyle}>
+                    <BtsSlide
+                      item={item}
+                      // DEĞİŞTİ: Basit toggle fonksiyonunu gönderiyoruz
+                      onClick={toggleScale}
+                    />
+                  </SwiperSlide>
+                );
+              })}
             </Swiper>
           </Col>
         </Row>
