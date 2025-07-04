@@ -3,6 +3,9 @@ import { Container, Row, Col } from "react-bootstrap";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { FreeMode, Scrollbar, Navigation } from "swiper/modules";
 
+// İkonlar için import (react-icons kütüphanesi gereklidir)
+import { FaInstagram, FaYoutube, FaLinkedin } from "react-icons/fa";
+
 import "swiper/css";
 import "swiper/css/free-mode";
 import "swiper/css/scrollbar";
@@ -39,12 +42,14 @@ const startBuffer = btsData.slice(-bufferSize);
 const endBuffer = btsData.slice(0, bufferSize);
 const virtualData = [...startBuffer, ...btsData, ...endBuffer];
 
+// DEĞİŞTİ: Sosyal medya linkleri ikon bilgisi ile güncellendi
 const socialLinks = [
-  { name: "Instagram", href: "https://instagram.com" },
-  { name: "YouTube", href: "https://youtube.com" },
-  { name: "LinkedIn", href: "https://linkedin.com" },
+  { name: "Instagram", href: "https://instagram.com", icon: <FaInstagram /> },
+  { name: "YouTube", href: "https://youtube.com", icon: <FaYoutube /> },
+  { name: "LinkedIn", href: "https://linkedin.com", icon: <FaLinkedin /> },
 ];
 
+// STİLLER
 const styles = {
   mainContainer: {
     backgroundColor: "#000000",
@@ -60,8 +65,8 @@ const styles = {
     overflow: "hidden",
     boxShadow: "0 8px 20px rgba(0, 0, 0, 0.25)",
     transition: "transform 0.3s ease",
-    cursor: "pointer",
-  }, // İmleci pointer yaptık
+    cursor: "grab",
+  },
   image: {
     display: "block",
     width: "100%",
@@ -83,12 +88,20 @@ const styles = {
     display: "inline-block",
     backgroundColor: "transparent",
     color: "#000000",
-    padding: "0.75rem 1.5rem",
-    borderRadius: "16px",
-    textDecoration: "none",
+    padding: "0.5rem 0.25rem",
     fontWeight: "bold",
-    transition: "all 0.3s ease",
-    border: "2px solid #000000",
+    transition: "color 0.3s ease",
+    textDecoration: "underline",
+    textUnderlineOffset: "6px",
+    border: "none",
+    cursor: "pointer",
+  },
+  // YENİ: Mobil ikon linkleri için stil
+  mobileIconLink: {
+    color: "#FFFFFF",
+    fontSize: "1.8rem", // İkon boyutu
+    textDecoration: "none",
+    transition: "opacity 0.3s ease",
   },
 };
 
@@ -99,15 +112,20 @@ const animationStyles = `
   .swiper-scrollbar-drag { background: #FFFFFF !important; }
   .swiper-button-next, .swiper-button-prev { color: #FFFFFF !important; }
   @media (max-width: 768px) { .swiper-button-next, .swiper-button-prev { display: none; } }
+  .card-active { cursor: grabbing !important; }
+  .mobile-icon-link:hover { opacity: 0.7; }
 `;
 
+// DEĞİŞTİ: Sosyal medya butonlarının stili güncellendi
 function SocialButton({ text, href, style }) {
   const [isHovered, setIsHovered] = useState(false);
+
   const finalStyle = {
     ...style,
-    backgroundColor: isHovered ? "#000000" : "#FFFFFF",
-    color: isHovered ? "#FFFFFF" : "#000000",
+    backgroundColor: isHovered ? "#FFFFFF" : "#000000",
+    color: isHovered ? "#000000" : "#FFFFFF",
   };
+
   return (
     <a
       href={href}
@@ -122,18 +140,20 @@ function SocialButton({ text, href, style }) {
   );
 }
 
-// DEĞİŞTİ: Component artık 'onClick' prop'unu alıyor
-function BtsSlide({ item, onClick }) {
+function BtsSlide({ item, onPress, isActive }) {
   const [isHovered, setIsHovered] = useState(false);
   const buttonStyle = {
     ...styles.slideButton,
-    color: isHovered ? "#FFFFFF" : "#000000",
-    backgroundColor: isHovered ? "#000000" : "transparent",
+    color: isHovered ? "#555555" : "#000000",
   };
 
   return (
-    // DEĞİŞTİ: Ana div'e onClick olayı bağlandı
-    <div style={styles.slideCard} onClick={onClick}>
+    <div
+      style={styles.slideCard}
+      className={isActive ? "card-active" : ""}
+      onMouseDown={onPress}
+      onTouchStart={onPress}
+    >
       <img src={item.image} alt="Behind the scenes" style={styles.image} />
       <div style={styles.slideContent}>
         <p style={styles.slideText}>{item.text}</p>
@@ -144,9 +164,8 @@ function BtsSlide({ item, onClick }) {
           style={buttonStyle}
           onMouseEnter={() => setIsHovered(true)}
           onMouseLeave={() => setIsHovered(false)}
-          // NİHAİ ÇÖZÜM: Linke tıklanıldığında, olayın karta yayılmasını engelliyoruz.
-          // Bu, kartın onClick'ini tetiklemesini önler ve linkin normal çalışmasını sağlar.
-          onClick={(e) => e.stopPropagation()}
+          onMouseDown={(e) => e.stopPropagation()}
+          onTouchStart={(e) => e.stopPropagation()}
         >
           SEE MORE
         </a>
@@ -157,14 +176,24 @@ function BtsSlide({ item, onClick }) {
 
 function Bts() {
   const isTeleporting = useRef(false);
-  // YENİ: Animasyon durumunu tutan basit bir boolean state
-  const [isScaledDown, setIsScaledDown] = useState(false);
-  const swiperRef = useRef(null);
+  const [isPressed, setIsPressed] = useState(false);
+  const pressTimer = useRef(null);
 
-  // YENİ: Animasyonu açıp kapatan basit bir fonksiyon
-  const toggleScale = () => {
-    setIsScaledDown((prevState) => !prevState);
+  const handlePressStart = (event) => {
+    if (event.type === "mousedown" && event.button !== 0) return;
+    clearTimeout(pressTimer.current);
+    pressTimer.current = setTimeout(() => setIsPressed(true), 150);
   };
+
+  const handlePressEnd = () => {
+    clearTimeout(pressTimer.current);
+    setIsPressed(false);
+  };
+
+  useEffect(() => {
+    document.addEventListener("mouseup", handlePressEnd);
+    return () => document.removeEventListener("mouseup", handlePressEnd);
+  }, []);
 
   const handleTransitionEnd = (swiper) => {
     if (isTeleporting.current) {
@@ -181,20 +210,14 @@ function Bts() {
     }
   };
 
-  const [breakpoint, setBreakpoint] = useState("desktop");
-  useEffect(() => {
-    const handleResize = () =>
-      setBreakpoint(window.innerWidth < 768 ? "mobile" : "desktop");
-    handleResize();
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
-
+  // DEĞİŞTİ: Masaüstü sosyal medya butonlarının temel stili güncellendi
   const socialButtonStyle = {
-    padding: breakpoint === "mobile" ? "0.5rem 1rem" : "0.75rem 1.5rem",
-    fontSize: breakpoint === "mobile" ? "0.8rem" : "1rem",
+    padding: "0.75rem 1.5rem",
+    fontSize: "1rem",
     borderRadius: "20px",
     border: "2px solid #FFFFFF",
+    backgroundColor: "#000000",
+    color: "#FFFFFF",
     textDecoration: "none",
     fontWeight: "bold",
     transition: "all 0.3s ease",
@@ -204,21 +227,18 @@ function Bts() {
     <div style={styles.mainContainer}>
       <style>{animationStyles}</style>
       <Container fluid="lg">
-        {/* Header kısmı aynı */}
+        {/* DEĞİŞTİ: Başlık satırının yapısı (Col düzeni) güncellendi */}
         <Row style={styles.headerRow}>
-          <Col
-            xs={12}
-            md={4}
-            className="d-flex justify-content-center justify-content-md-start mb-4 mb-md-0"
-          >
+          <Col xs={6} md={6}>
             <h2 style={styles.btsTitle} className="animated-shine-text">
               BTS
             </h2>
           </Col>
+          {/* Sadece masaüstünde görünen butonlar */}
           <Col
-            xs={12}
-            md={4}
-            className="d-flex align-items-center justify-content-center gap-2 gap-md-3"
+            xs={6}
+            md={6}
+            className="d-none d-md-flex align-items-center justify-content-end gap-3"
           >
             {socialLinks.map((link) => (
               <SocialButton
@@ -229,43 +249,58 @@ function Bts() {
               />
             ))}
           </Col>
-          <Col xs={12} md={4} className="d-none d-md-block"></Col>
         </Row>
+
         <Row>
           <Col xs={12}>
             <Swiper
-              ref={swiperRef}
               freeMode={true}
-              onSwiper={(swiper) => {
-                swiperRef.current = swiper;
-                swiper.slideTo(bufferSize, 0);
-              }}
+              onSwiper={(swiper) => swiper.slideTo(bufferSize, 0)}
               onTransitionEnd={handleTransitionEnd}
               modules={[FreeMode, Scrollbar, Navigation]}
               slidesPerView={"auto"}
               spaceBetween={40}
               scrollbar={{ draggable: true, hide: false }}
               navigation={true}
+              onSliderMove={handlePressEnd}
+              onTouchEnd={handlePressEnd}
             >
               {virtualData.map((item, index) => {
-                // DEĞİŞTİ: Animasyon artık basit state'e bağlı
                 const slideStyle = {
                   width: "80%",
                   maxWidth: "420px",
                   transition: "transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1)",
-                  transform: isScaledDown ? "scale(0.95)" : "scale(1)",
+                  transform: isPressed ? "scale(0.95)" : "scale(1)",
                 };
                 return (
                   <SwiperSlide key={`${item.id}-${index}`} style={slideStyle}>
                     <BtsSlide
                       item={item}
-                      // DEĞİŞTİ: Basit toggle fonksiyonunu gönderiyoruz
-                      onClick={toggleScale}
+                      onPress={(e) => handlePressStart(e)}
+                      isActive={isPressed}
                     />
                   </SwiperSlide>
                 );
               })}
             </Swiper>
+          </Col>
+        </Row>
+
+        {/* YENİ: Sadece mobilde görünen ikonlar */}
+        <Row className="d-block d-md-none mt-4">
+          <Col xs={12} className="d-flex justify-content-start gap-4">
+            {socialLinks.map((link) => (
+              <a
+                key={link.name}
+                href={link.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={styles.mobileIconLink}
+                className="mobile-icon-link"
+              >
+                {link.icon}
+              </a>
+            ))}
           </Col>
         </Row>
       </Container>
