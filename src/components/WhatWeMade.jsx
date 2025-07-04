@@ -8,7 +8,7 @@ import video1 from "../assets/video/1.mp4";
 import video2 from "../assets/video/2.mp4";
 import video3 from "../assets/video/3.mp4";
 
-// --- Diğer Bileşenler (Değişiklik yok) ---
+// --- ErrorBoundary Bileşeni (TAM HALİ) ---
 class ErrorBoundary extends React.Component {
   state = { hasError: false };
   static getDerivedStateFromError(error) {
@@ -24,6 +24,8 @@ class ErrorBoundary extends React.Component {
     return this.props.children;
   }
 }
+
+// --- AnimatedStat Bileşeni (TAM HALİ) ---
 function AnimatedStat({ value, label, inView }) {
   const { number } = useSpring({
     from: { number: 0 },
@@ -78,6 +80,8 @@ function AnimatedStat({ value, label, inView }) {
     </div>
   );
 }
+
+// --- VideoCard Bileşeni (TAM HALİ) ---
 function VideoCard({ videoSrc, title, stats, wrapperStyle }) {
   const { ref, inView } = useInView({ triggerOnce: true, threshold: 0.5 });
   const cardStyles = {
@@ -140,18 +144,50 @@ function VideoCard({ videoSrc, title, stats, wrapperStyle }) {
     </div>
   );
 }
-// ---
 
-// --- FİNAL STİLLER (Değişiklik yok) ---
+// --- FİNAL STİLLER ---
 const highlightStyles = `
-  /* ... stil kodlarınız burada ... */
-  .highlight-word { display: inline-block; position: relative; cursor: pointer; transition: all 0.2s ease-in-out; border-bottom: 7px solid #141414; padding-bottom: 0; line-height: 0.9; }
-  .highlight-word:hover::before { content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background-image: linear-gradient(to right, #111111, #555555); border-radius: 6px; z-index: -1; transition: all 0.2s ease-in-out; }
-  .highlight-word:hover { color: #FFFFFF; border-bottom-color: transparent; padding: 0.5rem 1rem; border-radius: 6px; transform: rotate(-2deg); line-height: 1.2; }
-  .highlight-word:hover::after { content: ''; position: absolute; left: 1rem; right: 1rem; bottom: 0.5rem; height: 7px; background-color: #FFFFFF; }
+  .highlight-word {
+    display: inline-block;
+    position: relative; /* ::before ve ::after'ı konumlandırmak için gerekli */
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+    border-bottom: 7px solid #141414;
+    padding-bottom: 0;
+    line-height: 0.9;
+  }
+  .highlight-word:hover::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: linear-gradient(to right, #111111, #555555);
+    border-radius: 6px;
+    z-index: -1; /* Bu katmanı metnin ve diğer her şeyin arkasına gönderir */
+    transition: all 0.2s ease-in-out; /* Yumuşak geçiş için eklendi */
+  }
+  .highlight-word:hover {
+    color: #FFFFFF;
+    border-bottom-color: transparent; /* Orijinal border'ı gizliyoruz çünkü yerine ::after gelecek */
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    transform: rotate(-2deg); /* Döndürme efekti geri eklendi */
+    line-height: 1.2;
+  }
+  .highlight-word:hover::after {
+    content: '';
+    position: absolute;
+    left: 1rem;
+    right: 1rem;
+    bottom: 0.5rem;
+    height: 7px;
+    background-color: #FFFFFF;
+  }
 `;
 
-// --- Ana Sayfa Bileşeni (DEĞİŞİKLİKLER BURADA) ---
+// --- Ana Sayfa Bileşeni ---
 function WhatWeMade() {
   const videoData = [
     {
@@ -212,11 +248,9 @@ function WhatWeMade() {
       marginBottom: "4rem",
       textAlign: "left",
     },
-    // YENİ: Video yüksekliği mobilde ayarlandı, masaüstünde korundu.
     videoWrapper: {
       height: breakpoint === "mobile" ? "70vh" : "110vh",
     },
-    // YENİ: İkinci ve üçüncü videolar için daha kısa bir yükseklik.
     secondaryVideoWrapper: {
       height: breakpoint === "mobile" ? "70vh" : "110vh",
     },
@@ -231,7 +265,7 @@ function WhatWeMade() {
     button: {
       cursor: "pointer",
       padding: "16px 0",
-      width: breakpoint === "mobile" ? "180px" : "240px",
+      width: breakpoint === "mobile" ? "160px" : "240px", // Mobilde buton genişliği biraz azaltıldı
       fontSize: breakpoint === "mobile" ? "1.1rem" : "1.3rem",
       borderRadius: "35px",
       border: "2px solid #141414",
@@ -257,9 +291,6 @@ function WhatWeMade() {
     <ErrorBoundary>
       <style>{highlightStyles}</style>
 
-      {/* Artık özel stil gerekmiyor, Bootstrap sınıfları kullanılıyor.
-          <style>{customLayoutStyles}</style> */}
-
       <div
         style={{
           ...baseFont,
@@ -267,6 +298,7 @@ function WhatWeMade() {
           paddingBottom: "5rem",
           paddingLeft: "15px",
           paddingRight: "15px",
+          overflowX: "hidden",
         }}
       >
         <Container fluid>
@@ -285,7 +317,6 @@ function WhatWeMade() {
             </Col>
           </Row>
 
-          {/* YENİ: Mobilde alt alta, masaüstünde yan yana dizilim ve artırılmış dikey boşluk (gy-4) */}
           <Row className="gy-4">
             <Col xs={12} md={6}>
               <VideoCard
@@ -313,9 +344,11 @@ function WhatWeMade() {
             </Col>
           </Row>
 
-          {/* YENİ: Butonların mobil düzeni iyileştirildi */}
           <Row className="justify-content-center">
-            <Col xs="auto" className="d-grid d-sm-flex gap-3">
+            <Col
+              xs="auto"
+              className="d-flex flex-wrap justify-content-center gap-3"
+            >
               <button
                 style={whatsAppButtonStyle}
                 onClick={handleWhatsAppClick}
