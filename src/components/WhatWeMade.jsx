@@ -25,39 +25,55 @@ class ErrorBoundary extends React.Component {
   }
 }
 
-// --- AnimatedStat Bileşeni ---
-function AnimatedStat({ value, label, inView }) {
+// --- AnimatedStat Bileşeni (DEĞİŞİKLİK) ---
+// breakpoint prop'u eklendi ve mobil için estetik düzenlemeler yapıldı
+function AnimatedStat({ value, label, inView, breakpoint }) {
   const { number } = useSpring({
     from: { number: 0 },
     number: inView ? value : 0,
     delay: 300,
     config: { mass: 1, tension: 20, friction: 10 },
   });
+
+  const isMobile = breakpoint === "mobile";
+
   const statStyles = {
     container: {
       display: "flex",
       alignItems: "center",
-      gap: "0.5rem",
+      gap: isMobile ? "0.4rem" : "0.5rem",
       color: "#FFFFFF",
-      padding: "0.8rem 1.2rem",
-      borderRadius: "25px",
+      // DEĞİŞİKLİK: Mobil için daha küçük padding
+      padding: isMobile ? "0.5rem 0.9rem" : "0.8rem 1.2rem",
+      // DEĞİŞİKLİK: Mobil için daha az yuvarlak köşe
+      borderRadius: isMobile ? "20px" : "25px",
       backgroundColor: "rgba(255, 255, 255, 0.05)",
       border: "1px solid #FFFFFF",
-      minWidth: "140px",
+      // DEĞİŞİKLİK: Mobil için min-width kaldırıldı, daha esnek
+      minWidth: isMobile ? "auto" : "140px",
       justifyContent: "center",
+      // DEĞİŞİKLİK: Flex container içinde ezilmesini engeller
+      flexShrink: 0,
     },
-    value: { fontSize: "1.5rem", fontWeight: 700, lineHeight: 1 },
+    value: {
+      // DEĞİŞİKLİK: Mobil için daha küçük font
+      fontSize: isMobile ? "1.2rem" : "1.5rem",
+      fontWeight: 700,
+      lineHeight: 1,
+    },
     label: {
-      fontSize: "1rem",
+      // DEĞİŞİKLİK: Mobil için daha küçük font
+      fontSize: isMobile ? "0.8rem" : "1rem",
       fontWeight: 500,
       textTransform: "uppercase",
       opacity: 0.9,
     },
     labelOnly: {
       color: "#FFFFFF",
-      fontSize: "0.9rem",
+      // DEĞİŞİKLİK: Mobil için daha küçük font ve padding
+      fontSize: isMobile ? "0.8rem" : "0.9rem",
       fontWeight: 500,
-      padding: "0.8rem 1.2rem",
+      padding: isMobile ? "0.6rem 1rem" : "0.8rem 1.2rem",
       borderRadius: "16px",
       backgroundColor: "rgba(255, 255, 255, 0.05)",
       border: "1px solid #FFFFFF",
@@ -65,12 +81,15 @@ function AnimatedStat({ value, label, inView }) {
       alignItems: "center",
       justifyContent: "center",
       height: "100%",
-      minWidth: "140px",
+      minWidth: isMobile ? "auto" : "140px",
+      flexShrink: 0,
     },
   };
+
   if (isNaN(value)) {
     return <div style={statStyles.labelOnly}>{label}</div>;
   }
+
   return (
     <div style={statStyles.container}>
       <animated.span style={statStyles.value}>
@@ -81,7 +100,7 @@ function AnimatedStat({ value, label, inView }) {
   );
 }
 
-// --- VideoCard Bileşeni ---
+// --- VideoCard Bileşeni (DEĞİŞİKLİK) ---
 function VideoCard({ videoSrc, title, stats, wrapperStyle, breakpoint }) {
   const { ref, inView } = useInView({ triggerOnce: true, threshold: 0.5 });
 
@@ -104,12 +123,12 @@ function VideoCard({ videoSrc, title, stats, wrapperStyle, breakpoint }) {
     video: { width: "100%", height: "100%", objectFit: "cover" },
     infoBar: {
       backgroundColor: "#000000",
-      padding: breakpoint === "mobile" ? "0.5rem 0.75rem" : "1rem 1.25rem",
+      padding: "1rem 1.25rem",
       display: "flex",
       justifyContent: "space-between",
       alignItems: "center",
       flexWrap: "wrap",
-      gap: "0.5rem",
+      gap: "1rem",
     },
     title: {
       fontSize: "clamp(1.2rem, 3vw, 1.5rem)",
@@ -119,10 +138,14 @@ function VideoCard({ videoSrc, title, stats, wrapperStyle, breakpoint }) {
     },
     statsContainer: {
       display: "flex",
-      gap: breakpoint === "mobile" ? "0.5rem" : "0.75rem",
-      flexWrap: "nowrap", // YENİ: Wrapping engellendi, stats yan yana kalacak
-      overflowX: breakpoint === "mobile" ? "auto" : "visible", // Mobil için yatay kaydırma
-      whiteSpace: "nowrap", // Metin kırılmasını engeller
+      gap: "0.75rem",
+      flexWrap: "wrap",
+      ...(breakpoint === "mobile" && {
+        flexWrap: "nowrap",
+        overflowX: "auto",
+        width: "100%",
+        paddingBottom: "8px",
+      }),
     },
   };
 
@@ -143,8 +166,14 @@ function VideoCard({ videoSrc, title, stats, wrapperStyle, breakpoint }) {
         <div style={cardStyles.infoBar}>
           <h3 style={cardStyles.title}>{title}</h3>
           <div style={cardStyles.statsContainer}>
+            {/* DEĞİŞİKLİK: breakpoint prop'u AnimatedStat'a aktarılıyor */}
             {stats.map((stat, index) => (
-              <AnimatedStat key={index} {...stat} inView={inView} />
+              <AnimatedStat
+                key={index}
+                {...stat}
+                inView={inView}
+                breakpoint={breakpoint}
+              />
             ))}
           </div>
         </div>
@@ -159,6 +188,10 @@ const highlightStyles = `
   .highlight-word:hover::before { content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background-image: linear-gradient(to right, #111111, #555555); border-radius: 6px; z-index: -1; transition: all 0.2s ease-in-out; }
   .highlight-word:hover { color: #FFFFFF; border-bottom-color: transparent; padding: 0.5rem 1rem; border-radius: 6px; transform: rotate(-2deg); line-height: 1.2; }
   .highlight-word:hover::after { content: ''; position: absolute; left: 1rem; right: 1rem; bottom: 0.5rem; height: 7px; background-color: #FFFFFF; }
+  
+  /* Mobil için scrollbar'ı gizleme */
+  .statsContainer::-webkit-scrollbar { display: none; }
+  .statsContainer { -ms-overflow-style: none; scrollbar-width: none; }
 `;
 
 // --- Ana Sayfa Bileşeni ---
@@ -222,9 +255,7 @@ function WhatWeMade() {
       marginBottom: "4rem",
       textAlign: "left",
     },
-    videoWrapper: {
-      height: breakpoint === "mobile" ? "105vh" : "110vh",
-    },
+    videoWrapper: { height: breakpoint === "mobile" ? "105vh" : "110vh" },
     secondaryVideoWrapper: {
       height: breakpoint === "mobile" ? "85vh" : "110vh",
     },
@@ -264,7 +295,6 @@ function WhatWeMade() {
   return (
     <ErrorBoundary>
       <style>{highlightStyles}</style>
-
       <div
         style={{
           ...baseFont,
@@ -281,7 +311,6 @@ function WhatWeMade() {
               <h1 style={responsiveStyles.title}>What We Made</h1>
             </Col>
           </Row>
-
           <Row className="mb-4">
             <Col xs={12}>
               <VideoCard
@@ -291,7 +320,6 @@ function WhatWeMade() {
               />
             </Col>
           </Row>
-
           <Row className="gy-4">
             <Col xs={12} md={6}>
               <VideoCard
@@ -308,7 +336,6 @@ function WhatWeMade() {
               />
             </Col>
           </Row>
-
           <Row className="justify-content-center mt-5">
             <Col>
               <p style={responsiveStyles.promoText}>
@@ -320,7 +347,6 @@ function WhatWeMade() {
               </p>
             </Col>
           </Row>
-
           <Row className="justify-content-center">
             <Col xs="auto" className="d-flex justify-content-center gap-3">
               <button
