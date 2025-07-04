@@ -11,10 +11,16 @@ import video3 from "../assets/video/3.mp4";
 // --- ErrorBoundary Bileşeni ---
 class ErrorBoundary extends React.Component {
   state = { hasError: false };
-  static getDerivedStateFromError(error) { return { hasError: true }; }
-  componentDidCatch(error, errorInfo) { console.error("ErrorBoundary bir hata yakaladı:", error, errorInfo); }
+  static getDerivedStateFromError(error) {
+    return { hasError: true };
+  }
+  componentDidCatch(error, errorInfo) {
+    console.error("ErrorBoundary bir hata yakaladı:", error, errorInfo);
+  }
   render() {
-    if (this.state.hasError) { return <h1>Something went wrong. Please refresh the page.</h1>; }
+    if (this.state.hasError) {
+      return <h1>Something went wrong. Please refresh the page.</h1>;
+    }
     return this.props.children;
   }
 }
@@ -28,80 +34,150 @@ function AnimatedStat({ value, label, inView }) {
     config: { mass: 1, tension: 20, friction: 10 },
   });
   const statStyles = {
-    container: { display: "flex", alignItems: "center", gap: "0.5rem", color: "#FFFFFF", padding: "0.8rem 1.2rem", borderRadius: "25px", backgroundColor: "rgba(255, 255, 255, 0.05)", border: "1px solid #FFFFFF", minWidth: "140px", justifyContent: "center", },
+    container: {
+      display: "flex",
+      alignItems: "center",
+      gap: "0.5rem",
+      color: "#FFFFFF",
+      padding: "0.8rem 1.2rem",
+      borderRadius: "25px",
+      backgroundColor: "rgba(255, 255, 255, 0.05)",
+      border: "1px solid #FFFFFF",
+      minWidth: "140px",
+      justifyContent: "center",
+    },
     value: { fontSize: "1.5rem", fontWeight: 700, lineHeight: 1 },
-    label: { fontSize: "1rem", fontWeight: 500, textTransform: "uppercase", opacity: 0.9, },
-    labelOnly: { width: '100%', textAlign: 'center', color: "#FFFFFF", fontSize: "0.9rem", fontWeight: 500, padding: "0.8rem 1.2rem", borderRadius: "16px", backgroundColor: "rgba(255, 255, 255, 0.05)", border: "1px solid #FFFFFF", display: "flex", alignItems: "center", justifyContent: "center", height: "100%", },
+    label: {
+      fontSize: "1rem",
+      fontWeight: 500,
+      textTransform: "uppercase",
+      opacity: 0.9,
+    },
+    labelOnly: {
+      color: "#FFFFFF",
+      fontSize: "0.9rem",
+      fontWeight: 500,
+      padding: "0.8rem 1.2rem",
+      borderRadius: "16px",
+      backgroundColor: "rgba(255, 255, 255, 0.05)",
+      border: "1px solid #FFFFFF",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      height: "100%",
+      minWidth: "140px",
+    },
   };
-  if (isNaN(value)) { return <div style={statStyles.labelOnly}>{label}</div>; }
+  if (isNaN(value)) {
+    return <div style={statStyles.labelOnly}>{label}</div>;
+  }
   return (
     <div style={statStyles.container}>
-      <animated.span style={statStyles.value}>{number.to((n) => (n < 10 ? n.toFixed(1) : n.toFixed(0)))}</animated.span>
+      <animated.span style={statStyles.value}>
+        {number.to((n) => (n < 10 ? n.toFixed(1) : n.toFixed(0)))}
+      </animated.span>
       <span style={statStyles.label}>{label}</span>
     </div>
   );
 }
 
-// --- VideoCard Bileşeni (ANA DEĞİŞİKLİK BURADA) ---
+// --- VideoCard Bileşeni (GÜNCELLENMİŞ HALİ) ---
+// Bu bileşen mobil düzende istenen katmanlı yapıyı oluşturacak şekilde güncellendi.
 function VideoCard({ videoSrc, title, stats, wrapperStyle, breakpoint }) {
   const { ref, inView } = useInView({ triggerOnce: true, threshold: 0.5 });
 
-  // YENİ: İstatistikleri sayısal ve etiket olarak iki gruba ayırıyoruz.
-  const numericStats = stats.filter(stat => !isNaN(stat.value));
-  const labelOnlyStats = stats.filter(stat => isNaN(stat.value));
+  // İstatistikleri sayısal olanlar ve sadece etiket olanlar olarak ayırıyoruz.
+  const numericStats = stats.filter((stat) => !isNaN(stat.value));
+  const labelOnlyStat = stats.find((stat) => isNaN(stat.value));
 
   const cardStyles = {
     frame: {
       backgroundColor: "#000000",
-      // YENİ: Mobil video genişliğini artırmak için padding daha da azaltıldı.
-      padding: breakpoint === 'mobile' ? '4px' : '12px',
+      padding: breakpoint === "mobile" ? "6px" : "12px",
       height: "100%",
       display: "flex",
       flexDirection: "column",
       borderRadius: "1rem",
       boxShadow: "0 10px 30px rgba(0,0,0,0.3)",
     },
-    videoWrapper: { flexGrow: 1, overflow: "hidden", position: "relative", borderRadius: "12px", },
-    video: { width: "100%", height: "100%", objectFit: "cover" },
-    infoBar: { backgroundColor: "#000000", padding: "1rem 1.25rem", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "1rem", },
-    title: { fontSize: "clamp(1.2rem, 3vw, 1.5rem)", color: "#FFFFFF", fontWeight: 600, margin: 0, },
-    // YENİ: Ana istatistik konteyneri grupları dikeyde hizalayacak.
-    statsContainer: {
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'flex-end', // Sağ tarafa hizala
-        gap: '0.5rem', // Gruplar arası boşluk
+    videoWrapper: {
+      flexGrow: 1,
+      overflow: "hidden",
+      position: "relative",
+      borderRadius: "12px",
     },
-    // YENİ: Sayısal istatistikleri yan yana getirecek olan wrapper.
-    numericStatsWrapper: {
-        display: 'flex',
-        gap: '0.75rem',
-        flexWrap: 'wrap', // Çok fazla stat olursa alt satıra at
-        justifyContent: 'flex-end'
-    }
+    video: { width: "100%", height: "100%", objectFit: "cover" },
+    // --- BİLGİ ÇUBUĞU STİLLERİ GÜNCELLENDİ ---
+    infoBar: {
+      backgroundColor: "#000000",
+      padding: "1rem 1.25rem",
+      display: "flex",
+      gap: "1rem",
+      // Mobilde dikey (kolon), masaüstünde yatay (satır) dizilim
+      flexDirection: breakpoint === "mobile" ? "column" : "row",
+      // Mobilde sola hizalı, masaüstünde dikeyde ortalı
+      alignItems: breakpoint === "mobile" ? "flex-start" : "center",
+      // Masaüstünde başlık ve istatistikleri iki uca yaslar
+      justifyContent: "space-between",
+    },
+    title: {
+      fontSize: "clamp(1.2rem, 3vw, 1.5rem)",
+      color: "#FFFFFF",
+      fontWeight: 600,
+      margin: 0,
+      flexShrink: 0,
+    },
+    // Tüm istatistikleri saran genel bir sarmalayıcı
+    allStatsWrapper: {
+      display: "flex",
+      // Mobilde istatistik gruplarını (sayısal ve etiket) alt alta dizer
+      flexDirection: breakpoint === "mobile" ? "column" : "row",
+      gap: "0.75rem",
+      alignItems: "flex-start", // Grupları sola hizalı tutar
+    },
+    // Sadece sayısal istatistikleri yan yana tutan sarmalayıcı
+    numericStatsContainer: {
+      display: "flex",
+      gap: "0.75rem",
+      flexWrap: "wrap",
+    },
   };
 
   return (
     <div ref={ref} style={wrapperStyle}>
       <div style={cardStyles.frame}>
         <div style={cardStyles.videoWrapper}>
-          <video style={cardStyles.video} autoPlay muted loop playsInline loading="lazy" src={videoSrc} />
+          <video
+            style={cardStyles.video}
+            autoPlay
+            muted
+            loop
+            playsInline
+            loading="lazy"
+            src={videoSrc}
+          />
         </div>
+        {/* --- BİLGİ ÇUBUĞU JSX YAPISI GÜNCELLENDİ --- */}
         <div style={cardStyles.infoBar}>
           <h3 style={cardStyles.title}>{title}</h3>
-          
-          {/* YENİ RENDER LOGIC */}
-          <div style={cardStyles.statsContainer}>
-            {/* Önce sayısal olanları yan yana render et */}
-            <div style={cardStyles.numericStatsWrapper}>
-                {numericStats.map((stat, index) => (
-                    <AnimatedStat key={`num-${index}`} {...stat} inView={inView} />
-                ))}
+
+          <div style={cardStyles.allStatsWrapper}>
+            {/* Sayısal istatistikler her zaman bu container içinde yan yana olacak */}
+            <div style={cardStyles.numericStatsContainer}>
+              {numericStats.map((stat, index) => (
+                <AnimatedStat key={index} {...stat} inView={inView} />
+              ))}
             </div>
-            {/* Sonra sadece etiket olanları altlarında render et */}
-            {labelOnlyStats.map((stat, index) => (
-                <AnimatedStat key={`label-${index}`} {...stat} inView={inView} />
-            ))}
+
+            {/* Eğer sadece etiket olan bir istatistik varsa, onu ayrı olarak render et */}
+            {/* `allStatsWrapper`'ın flex-direction'ı sayesinde mobilde alta gelecektir */}
+            {labelOnlyStat && (
+              <AnimatedStat
+                key="label-only"
+                {...labelOnlyStat}
+                inView={inView}
+              />
+            )}
           </div>
         </div>
       </div>
@@ -120,9 +196,34 @@ const highlightStyles = `
 // --- Ana Sayfa Bileşeni ---
 function WhatWeMade() {
   const videoData = [
-    { id: 1, videoSrc: video1, title: "BRAVE CF X CREATOR", stats: [ { value: 27.2, label: "M IG Views" }, { value: 6.7, label: "M TikTok Views" }, { value: NaN, label: "Fully Creator-Led" }, ], },
-    { id: 2, videoSrc: video2, title: "LAMBORGHINI YACHT", stats: [ { value: 690, label: "K IG Views" }, { value: 640, label: "K TikTok Views" }, ], },
-    { id: 3, videoSrc: video3, title: "DUBAI TIMELAPSE", stats: [ { value: 297, label: "K IG Views" }, { value: 245, label: "K TikTok Views" }, ], },
+    {
+      id: 1,
+      videoSrc: video1,
+      title: "BRAVE CF X CREATOR",
+      stats: [
+        { value: 27.2, label: "M IG Views" },
+        { value: 6.7, label: "M TikTok Views" },
+        { value: NaN, label: "Fully Creator-Led" }, // NaN değeri özel düzeni tetikler
+      ],
+    },
+    {
+      id: 2,
+      videoSrc: video2,
+      title: "LAMBORGHINI YACHT",
+      stats: [
+        { value: 690, label: "K IG Views" },
+        { value: 640, label: "K TikTok Views" },
+      ],
+    },
+    {
+      id: 3,
+      videoSrc: video3,
+      title: "DUBAI TIMELAPSE",
+      stats: [
+        { value: 297, label: "K IG Views" },
+        { value: 245, label: "K TikTok Views" },
+      ],
+    },
   ];
 
   const [breakpoint, setBreakpoint] = useState("desktop");
@@ -130,48 +231,146 @@ function WhatWeMade() {
   const [isMailHovered, setIsMailHovered] = useState(false);
 
   useEffect(() => {
-    const handleResize = () => { if (window.innerWidth < 768) setBreakpoint("mobile"); else setBreakpoint("desktop"); };
+    const handleResize = () => {
+      if (window.innerWidth < 768) setBreakpoint("mobile");
+      else setBreakpoint("desktop");
+    };
     handleResize();
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  const handleWhatsAppClick = () => window.open("https://wa.me/YOUR_PHONE_NUMBER", "_blank");
-  const handleMailClick = () => (window.location.href = "mailto:YOUR_EMAIL_ADDRESS");
+  const handleWhatsAppClick = () =>
+    window.open("https://wa.me/YOUR_PHONE_NUMBER", "_blank");
+  const handleMailClick = () =>
+    (window.location.href = "mailto:YOUR_EMAIL_ADDRESS");
 
   const baseFont = { fontFamily: "'Outfit', sans-serif" };
 
   const responsiveStyles = {
-    title: { fontWeight: 300, fontSize: breakpoint === "mobile" ? "2.8rem" : "4.5rem", marginBottom: "4rem", textAlign: "left", },
-    videoWrapper: { height: breakpoint === "mobile" ? "85vh" : "110vh", },
-    secondaryVideoWrapper: { height: breakpoint === "mobile" ? "85vh" : "110vh", },
-    promoText: { fontWeight: 500, fontSize: breakpoint === "mobile" ? "2.8rem" : "5rem", lineHeight: 1.2, margin: "5rem 0", textAlign: "center", color: "#141414", },
-    button: { cursor: "pointer", padding: "16px 0", width: breakpoint === "mobile" ? "140px" : "240px", fontSize: breakpoint === "mobile" ? "1.1rem" : "1.3rem", borderRadius: "35px", border: "2px solid #141414", fontWeight: 500, textAlign: "center", transition: "all 0.3s ease", ...baseFont, },
+    title: {
+      fontWeight: 300,
+      fontSize: breakpoint === "mobile" ? "2.8rem" : "4.5rem",
+      marginBottom: "4rem",
+      textAlign: "left",
+    },
+    videoWrapper: {
+      height: breakpoint === "mobile" ? "105vh" : "110vh",
+    },
+    secondaryVideoWrapper: {
+      height: breakpoint === "mobile" ? "85vh" : "110vh",
+    },
+    promoText: {
+      fontWeight: 500,
+      fontSize: breakpoint === "mobile" ? "2.8rem" : "5rem",
+      lineHeight: 1.2,
+      margin: "5rem 0",
+      textAlign: "center",
+      color: "#141414",
+    },
+    button: {
+      cursor: "pointer",
+      padding: "16px 0",
+      width: breakpoint === "mobile" ? "140px" : "240px",
+      fontSize: breakpoint === "mobile" ? "1.1rem" : "1.3rem",
+      borderRadius: "35px",
+      border: "1px solid #141414",
+      fontWeight: 500,
+      textAlign: "center",
+      transition: "all 0.3s ease",
+      ...baseFont,
+    },
   };
 
-  const whatsAppButtonStyle = { ...responsiveStyles.button, backgroundColor: isWhatsAppHovered ? "#141414" : "#FFFFFF", color: isWhatsAppHovered ? "#FFFFFF" : "#141414", };
-  const mailButtonStyle = { ...responsiveStyles.button, backgroundColor: isMailHovered ? "#141414" : "#FFFFFF", color: isMailHovered ? "#FFFFFF" : "#141414", };
+  const whatsAppButtonStyle = {
+    ...responsiveStyles.button,
+    backgroundColor: isWhatsAppHovered ? "#141414" : "#FFFFFF",
+    color: isWhatsAppHovered ? "#FFFFFF" : "#141414",
+  };
+  const mailButtonStyle = {
+    ...responsiveStyles.button,
+    backgroundColor: isMailHovered ? "#141414" : "#FFFFFF",
+    color: isMailHovered ? "#FFFFFF" : "#141414",
+  };
 
   return (
     <ErrorBoundary>
       <style>{highlightStyles}</style>
-      <div style={{ ...baseFont, paddingTop: "5rem", paddingBottom: "5rem", paddingLeft: "15px", paddingRight: "15px", overflowX: "hidden" }} >
+
+      <div
+        style={{
+          ...baseFont,
+          paddingTop: "5rem",
+          paddingBottom: "5rem",
+          paddingLeft: "15px",
+          paddingRight: "15px",
+          overflowX: "hidden",
+        }}
+      >
         <Container fluid>
-          <Row><Col><h1 style={responsiveStyles.title}>What We Made</h1></Col></Row>
+          <Row>
+            <Col>
+              <h1 style={responsiveStyles.title}>What We Made</h1>
+            </Col>
+          </Row>
+
           <Row className="mb-4">
-            <Col xs={12}><VideoCard {...videoData[0]} wrapperStyle={responsiveStyles.videoWrapper} breakpoint={breakpoint} /></Col>
+            <Col xs={12}>
+              <VideoCard
+                {...videoData[0]}
+                wrapperStyle={responsiveStyles.videoWrapper}
+                breakpoint={breakpoint}
+              />
+            </Col>
           </Row>
+
           <Row className="gy-4">
-            <Col xs={12} md={6}><VideoCard {...videoData[1]} wrapperStyle={responsiveStyles.secondaryVideoWrapper} breakpoint={breakpoint} /></Col>
-            <Col xs={12} md={6}><VideoCard {...videoData[2]} wrapperStyle={responsiveStyles.secondaryVideoWrapper} breakpoint={breakpoint} /></Col>
+            <Col xs={12} md={6}>
+              <VideoCard
+                {...videoData[1]}
+                wrapperStyle={responsiveStyles.secondaryVideoWrapper}
+                breakpoint={breakpoint}
+              />
+            </Col>
+            <Col xs={12} md={6}>
+              <VideoCard
+                {...videoData[2]}
+                wrapperStyle={responsiveStyles.secondaryVideoWrapper}
+                breakpoint={breakpoint}
+              />
+            </Col>
           </Row>
+
           <Row className="justify-content-center mt-5">
-            <Col><p style={responsiveStyles.promoText}>We shoot <span className="highlight-word">fast</span>, <br />we edit smart and we do <br />it with <span className="highlight-word">creators</span> who know <br />how to read the moment.</p></Col>
+            <Col>
+              <p style={responsiveStyles.promoText}>
+                We shoot <span className="highlight-word">fast</span>, <br />
+                we edit smart and we do <br />
+                it with <span className="highlight-word">creators</span> who
+                know <br />
+                how to read the moment.
+              </p>
+            </Col>
           </Row>
+
           <Row className="justify-content-center">
             <Col xs="auto" className="d-flex justify-content-center gap-3">
-              <button style={whatsAppButtonStyle} onClick={handleWhatsAppClick} onMouseEnter={() => setIsWhatsAppHovered(true)} onMouseLeave={() => setIsWhatsAppHovered(false)}>WhatsApp</button>
-              <button style={mailButtonStyle} onClick={handleMailClick} onMouseEnter={() => setIsMailHovered(true)} onMouseLeave={() => setIsMailHovered(false)}>Mail</button>
+              <button
+                style={whatsAppButtonStyle}
+                onClick={handleWhatsAppClick}
+                onMouseEnter={() => setIsWhatsAppHovered(true)}
+                onMouseLeave={() => setIsWhatsAppHovered(false)}
+              >
+                WhatsApp
+              </button>
+              <button
+                style={mailButtonStyle}
+                onClick={handleMailClick}
+                onMouseEnter={() => setIsMailHovered(true)}
+                onMouseLeave={() => setIsMailHovered(false)}
+              >
+                Mail
+              </button>
             </Col>
           </Row>
         </Container>
