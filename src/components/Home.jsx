@@ -195,7 +195,7 @@ function Home() {
   const buttonBaseStyle = {
     cursor: "pointer",
     padding: "14px 0",
-    fontSize: isMobile ? "0.8rem" : "1.5rem",
+    fontSize: isMobile ? "1.5rem" : "1.7rem",
     borderRadius: "35px",
     transition: "all 0.3s ease",
     fontWeight: 500,
