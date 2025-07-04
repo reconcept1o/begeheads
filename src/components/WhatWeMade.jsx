@@ -92,8 +92,8 @@ function AnimatedStat({ value, label, inView, breakpoint }) {
   );
 }
 
-// --- VideoCard Bileşeni (DEĞİŞİKLİK) ---
-// Mobil için özel satır düzenini render edecek şekilde güncellendi
+// --- VideoCard Bileşeni (NİHAİ ÇÖZÜM) ---
+// Mobil'de infoBar'ın yönü değiştirilerek sorun kökten çözüldü.
 function VideoCard({
   videoSrc,
   title,
@@ -123,28 +123,28 @@ function VideoCard({
       borderRadius: "12px",
     },
     video: { width: "100%", height: "100%", objectFit: "cover" },
+    // KİLİT DEĞİŞİKLİK: Mobil'de flexDirection 'column' olarak ayarlandı.
     infoBar: {
       backgroundColor: "#000000",
       padding: "1rem 1.25rem",
       display: "flex",
-      justifyContent: isMobile ? "center" : "space-between",
       alignItems: "center",
-      flexWrap: "wrap",
       gap: "1rem",
+      flexDirection: isMobile ? "column" : "row", // MOBİLDE DİKEY, DESKTOP'TA YATAY
+      justifyContent: isMobile ? "center" : "space-between",
     },
     title: {
       fontSize: "clamp(1.2rem, 3vw, 1.5rem)",
       color: "#FFFFFF",
       fontWeight: 600,
       margin: 0,
-      textAlign: "center", // Başlığın mobil'de ortalı durmasını sağlar
+      textAlign: "center",
     },
-    // Bu container artık sadece bir sarmalayıcı görevi görüyor
     statsContainer: {
       display: "flex",
-      gap: "0.75rem",
-      flexWrap: "wrap",
+      width: "100%", // Stats'ın tam genişliği kullanmasını sağlar
       justifyContent: "center",
+      // Not: Bu container içindeki render mantığı artık doğru çalışacak.
     },
   };
 
@@ -164,11 +164,9 @@ function VideoCard({
         </div>
         <div style={cardStyles.infoBar}>
           <h3 style={cardStyles.title}>{title}</h3>
-
-          {/* DEĞİŞİKLİK: Mobil ve Desktop için koşullu render etme */}
           <div style={cardStyles.statsContainer}>
             {isMobile && mobileStatRows ? (
-              // MOBİL GÖRÜNÜM: İç içe geçmiş diziyi render et
+              // MOBİL GÖRÜNÜM: Tanımlanmış satırları render et
               <div
                 style={{
                   display: "flex",
@@ -199,15 +197,24 @@ function VideoCard({
                 ))}
               </div>
             ) : (
-              // DESKTOP GÖRÜNÜMÜ (veya mobil için fallback): Orijinal flat diziyi render et
-              stats.map((stat, index) => (
-                <AnimatedStat
-                  key={index}
-                  {...stat}
-                  inView={inView}
-                  breakpoint={breakpoint}
-                />
-              ))
+              // DESKTOP GÖRÜNÜMÜ: Orijinal flat diziyi render et
+              <div
+                style={{
+                  display: "flex",
+                  gap: "0.75rem",
+                  flexWrap: "wrap",
+                  justifyContent: "center",
+                }}
+              >
+                {stats.map((stat, index) => (
+                  <AnimatedStat
+                    key={index}
+                    {...stat}
+                    inView={inView}
+                    breakpoint={breakpoint}
+                  />
+                ))}
+              </div>
             )}
           </div>
         </div>
@@ -226,20 +233,18 @@ const highlightStyles = `
 
 // --- Ana Sayfa Bileşeni ---
 function WhatWeMade() {
-  // DEĞİŞİKLİK: Veri yapısı mobil için özel satırları içerecek şekilde güncellendi.
+  // Veri yapısı, mobil için özel satırları içeriyor. Bu yapı doğru.
   const videoData = [
     {
       id: 1,
       videoSrc: video1,
       title: "BRAVE CF X CREATOR",
       stats: [
-        // Bu dizi masaüstü ve fallback için kullanılır
-        { value: 27.2, label: "M   IG Views" },
+        { value: 27.2, label: "M IG Views" },
         { value: 6.7, label: "M TikTok Views" },
-        { value: NaN, label: "FULLY CREATOR-LED" },
+        { value: NaN, label: "Fully Creator-Led" },
       ],
       mobileStatRows: [
-        // Bu dizi sadece mobil için kullanılır
         [
           { value: 27.2, label: "M IG Views" },
           { value: 6.7, label: "M TikTok Views" },
