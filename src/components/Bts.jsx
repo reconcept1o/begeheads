@@ -3,10 +3,13 @@ import { Container, Row, Col } from "react-bootstrap";
 
 // Swiper.js
 import { Swiper, SwiperSlide } from "swiper/react";
-import { EffectCoverflow, Pagination, Navigation } from "swiper/modules";
+// Bu özel çözüm için FreeMode, Scrollbar ve Navigation modüllerini kullanıyoruz.
+import { FreeMode, Scrollbar, Navigation } from "swiper/modules";
+
+// Gerekli CSS dosyaları
 import "swiper/css";
-import "swiper/css/effect-coverflow";
-import "swiper/css/pagination";
+import "swiper/css/free-mode";
+import "swiper/css/scrollbar";
 import "swiper/css/navigation";
 
 // Resimler
@@ -14,31 +17,41 @@ import image1 from "../assets/bts/11.webp";
 import image2 from "../assets/bts/22.webp";
 import image3 from "../assets/bts/33.webp";
 
-// VERİLER
+// VERİLER (Her birine benzersiz bir 'id' ekledik)
 const btsData = [
   {
+    id: 1,
     image: image1,
     text: "We brought creators to China and put them in the cage, turning them into the story that pulls every eye to BRAVE.",
     link: "https://www.instagram.com/p/Czet215y5a3/",
   },
   {
+    id: 2,
     image: image2,
     text: "Producing on-water video content is proof that our limits don’t exist. Check out this shoot for the UAE’s best-known yacht agency.",
     link: "https://www.instagram.com/p/Czdo_aISLej/",
   },
   {
+    id: 3,
     image: image3,
     text: "Bringing a top USA influencer to film with Dubai’s biggest luxury car rental. Wild, right? Check the result.",
     link: "https://www.instagram.com/p/Czc6eQnSdaE/",
   },
 ];
 
+// --- ÖZEL SANAL DÖNGÜ MANTIĞI ---
+// Başa ve sona, geçişlerin kesintisiz görünmesi için fazladan slaytlar ekliyoruz.
+const bufferSize = btsData.length;
+const startBuffer = btsData.slice(-bufferSize); // Orijinal listenin sonunu al
+const endBuffer = btsData.slice(0, bufferSize); // Orijinal listenin başını al
+const virtualData = [...startBuffer, ...btsData, ...endBuffer]; // Sanal listeyi oluştur: [son, ORİJİNAL, baş]
+// --- BİTTİ ---
+
 const socialLinks = [
   { name: "Instagram", href: "https://instagram.com" },
   { name: "YouTube", href: "https://youtube.com" },
   { name: "LinkedIn", href: "https://linkedin.com" },
 ];
-
 
 const styles = {
   mainContainer: {
@@ -55,36 +68,47 @@ const styles = {
     width: "100%",
     aspectRatio: "4 / 5",
     objectFit: "cover",
-    borderRadius: "24px",
-    border: "2px solid #000000",
   },
-  textCard: {
+  // DEĞİŞİKLİK: Metin alanı için beyaz arka planlı tasarım
+  slideContent: {
     backgroundColor: "#FFFFFF",
-    color: "#000000",
+    color: "#000000", // Metin rengi siyah olacak
     borderRadius: "24px",
     padding: "1.5rem",
     marginTop: "1.5rem",
-    border: "2px solid #000000",
-    boxShadow: "0 8px 20px rgba(0, 0, 0, 0.25)",
   },
-  text: { fontSize: "1.1rem", lineHeight: 1.6, marginBottom: "1.5rem" },
-  seeMoreButton: {
+  slideText: {
+    fontSize: "1.1rem",
+    lineHeight: 1.6,
+    marginBottom: "1.5rem",
+    color: "#000000", // Rengi explicit olarak siyah yapıyoruz.
+  },
+  // DEĞİŞİKLİK: Beyaz arka plana uygun buton tasarımı
+  slideButton: {
     display: "inline-block",
-    backgroundColor: "#FFFFFF",
-    color: "#000000",
+    backgroundColor: "transparent",
+    color: "#000000", // Normalde siyah metin
     padding: "0.75rem 1.5rem",
     borderRadius: "16px",
     textDecoration: "none",
     fontWeight: "bold",
     transition: "all 0.3s ease",
-    border: "2px solid #000000",
+    border: "2px solid #000000", // Siyah çerçeve
   },
 };
 
 const animationStyles = `
   @keyframes shine { from { background-position: -200% center; } to { background-position: 200% center; } }
   .animated-shine-text { background: linear-gradient(90deg, #fff 40%, #555 50%, #fff 60%); background-size: 200% auto; color: #000; background-clip: text; -webkit-background-clip: text; -webkit-text-fill-color: transparent; animation: shine 4s linear infinite; }
-  .swiper-pagination-bullet { background-color: #FFFFFF !important; }
+  
+  /* Scrollbar (kaydırma çubuğu) stilleri */
+  .swiper-scrollbar {
+    background: rgba(255, 255, 255, 0.2) !important;
+    bottom: -10px !important;
+    height: 4px !important;
+  }
+  .swiper-scrollbar-drag { background: #FFFFFF !important; }
+
   .swiper-button-next, .swiper-button-prev { color: #FFFFFF !important; }
   @media (max-width: 768px) { .swiper-button-next, .swiper-button-prev { display: none; } }
 `;
@@ -92,7 +116,7 @@ const animationStyles = `
 function SocialButton({ text, href, style }) {
   const [isHovered, setIsHovered] = useState(false);
   const finalStyle = {
-    ...style, // Dışarıdan gelen ana stil
+    ...style,
     backgroundColor: isHovered ? "#000000" : "#FFFFFF",
     color: isHovered ? "#FFFFFF" : "#000000",
   };
@@ -110,18 +134,19 @@ function SocialButton({ text, href, style }) {
   );
 }
 
-function SlideContent({ item }) {
+function BtsSlide({ item }) {
   const [isHovered, setIsHovered] = useState(false);
   const buttonStyle = {
-    ...styles.seeMoreButton,
+    ...styles.slideButton,
+    // Hover efekti: siyah arka plan, beyaz metin
     color: isHovered ? "#FFFFFF" : "#000000",
-    backgroundColor: isHovered ? "#000000" : "#FFFFFF",
+    backgroundColor: isHovered ? "#000000" : "transparent",
   };
   return (
     <div>
-      <img src={item.image} alt="" style={styles.image} />
-      <div style={styles.textCard}>
-        <p style={styles.text}>{item.text}</p>
+      <img src={item.image} alt="Behind the scenes" style={styles.image} />
+      <div style={styles.slideContent}>
+        <p style={styles.slideText}>{item.text}</p>
         <a
           href={item.link}
           target="_blank"
@@ -137,33 +162,41 @@ function SlideContent({ item }) {
   );
 }
 
-// ANA BTS BİLEŞENİ
 function Bts() {
-  const swiperRef = useRef(null);
-  
-  const [breakpoint, setBreakpoint] = useState("desktop");
+  const isTeleporting = useRef(false);
 
+  // Kaydırma bittiğinde, sahte bir alandaysak gerçek alana ışınlama fonksiyonu
+  const handleMomentumEnd = (swiper) => {
+    if (isTeleporting.current) return;
+
+    const realSlidesCount = btsData.length;
+    // Eğer sondaki sahte alana geldiyse
+    if (swiper.activeIndex >= realSlidesCount + bufferSize) {
+      isTeleporting.current = true;
+      swiper.slideTo(swiper.activeIndex - realSlidesCount, 0); // Anında ve sessizce gerçek alana ışınla
+    }
+    // Eğer baştaki sahte alana geldiyse
+    else if (swiper.activeIndex < bufferSize) {
+      isTeleporting.current = true;
+      swiper.slideTo(swiper.activeIndex + realSlidesCount, 0); // Anında ve sessizce gerçek alana ışınla
+    }
+  };
+
+  const handleTransitionEnd = () => {
+    isTeleporting.current = false;
+  };
+
+  const [breakpoint, setBreakpoint] = useState("desktop");
   useEffect(() => {
-    const handleResize = () => {
+    const handleResize = () =>
       setBreakpoint(window.innerWidth < 768 ? "mobile" : "desktop");
-    };
-    handleResize(); // İlk yüklemede çalıştır
+    handleResize();
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      if (swiperRef.current) {
-        swiperRef.current.slideToLoop(0, 0);
-      }
-    }, 100);
-    return () => clearTimeout(timer);
-  }, []);
-
   const socialButtonStyle = {
-    padding: breakpoint === "mobile" ? "0.5rem 1rem" : "0.75rem 1.5rem", // Mobilde daha az padding
-    fontSize: breakpoint === "mobile" ? "0.8rem" : "1rem", // Mobilde daha küçük yazı
+    padding: breakpoint === "mobile" ? "0.5rem 1rem" : "0.75rem 1.5rem",
+    fontSize: breakpoint === "mobile" ? "0.8rem" : "1rem",
     borderRadius: "20px",
     border: "2px solid #FFFFFF",
     textDecoration: "none",
@@ -188,7 +221,7 @@ function Bts() {
           <Col
             xs={12}
             md={4}
-            className="d-flex align-items-center justify-content-center gap-2 gap-md-3" // Mobil için gap-2
+            className="d-flex align-items-center justify-content-center gap-2 gap-md-3"
           >
             {socialLinks.map((link) => (
               <SocialButton
@@ -204,31 +237,26 @@ function Bts() {
         <Row>
           <Col xs={12}>
             <Swiper
-              onSwiper={(swiper) => {
-                swiperRef.current = swiper;
-              }}
-              effect={"coverflow"}
-              grabCursor={true}
-              centeredSlides={true}
-              loop={true}
+              // İSTEDİĞİN İKİ ÖZELLİĞİ BİRLEŞTİREN AYARLAR
+              freeMode={true} // FAREYİ BIRAKTIĞIN YERDE KALMASINI SAĞLAR
+              // SANAL DÖNGÜ OLAYLARI
+              onSwiper={(swiper) => swiper.slideTo(bufferSize, 0)}
+              onMomentumScrollEnd={handleMomentumEnd}
+              onTransitionEnd={handleTransitionEnd}
+              // Diğer responsive ve kullanışlılık ayarları
+              modules={[FreeMode, Scrollbar, Navigation]}
               slidesPerView={"auto"}
-              coverflowEffect={{
-                rotate: 0,
-                stretch: 50,
-                depth: 150,
-                modifier: 1,
-                slideShadows: false,
-              }}
-              pagination={{ clickable: true }}
+              spaceBetween={40}
+              scrollbar={{ draggable: true, hide: false }}
               navigation={true}
-              modules={[EffectCoverflow, Pagination, Navigation]}
+              grabCursor={true}
             >
-              {btsData.map((item, index) => (
+              {virtualData.map((item, index) => (
                 <SwiperSlide
-                  key={index}
+                  key={`${item.id}-${index}`}
                   style={{ width: "80%", maxWidth: "420px" }}
                 >
-                  <SlideContent item={item} />
+                  <BtsSlide item={item} />
                 </SwiperSlide>
               ))}
             </Swiper>

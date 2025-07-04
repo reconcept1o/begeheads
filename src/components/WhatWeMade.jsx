@@ -1,173 +1,202 @@
 import React, { useState, useEffect } from "react";
-import { Container, Row, Col, Card } from "react-bootstrap";
+import { Container, Row, Col } from "react-bootstrap";
 import { useInView } from "react-intersection-observer";
 import { useSpring, animated } from "react-spring";
 
-
+// Videolarınızı projenizdeki doğru yoldan import ettiğinizden emin olun
 import video1 from "../assets/video/1.mp4";
 import video2 from "../assets/video/2.mp4";
 import video3 from "../assets/video/3.mp4";
 
+// --- Diğer Bileşenler (Değişiklik yok) ---
 class ErrorBoundary extends React.Component {
   state = { hasError: false };
-
   static getDerivedStateFromError(error) {
-  
     return { hasError: true };
   }
-
   componentDidCatch(error, errorInfo) {
-  
     console.error("ErrorBoundary bir hata yakaladı:", error, errorInfo);
   }
-
-
   render() {
     if (this.state.hasError) {
- 
       return <h1>Something went wrong. Please refresh the page.</h1>;
     }
-   
     return this.props.children;
   }
 }
-
-
-function AnimatedStat({ value, unit, label, inView }) {
+function AnimatedStat({ value, label, inView }) {
   const { number } = useSpring({
     from: { number: 0 },
     number: inView ? value : 0,
     delay: 300,
     config: { mass: 1, tension: 20, friction: 10 },
   });
-
   const statStyles = {
-    wrapper: {
-      minWidth: "110px",
-      padding: "0.75rem 1rem",
-      borderRadius: "12px",
-      backgroundColor: "rgba(255, 255, 255, 0.1)",
-      backdropFilter: "blur(10px)",
-      border: "1px solid rgba(255, 255, 255, 0.2)",
-      textAlign: "center",
-      color: "#FFFFFF",
-    },
-    valueContainer: {
+    container: {
       display: "flex",
+      alignItems: "center",
+      gap: "0.5rem",
+      color: "#FFFFFF",
+      padding: "0.8rem 1.2rem",
+      borderRadius: "25px",
+      backgroundColor: "rgba(255, 255, 255, 0.05)",
+      border: "1px solid #FFFFFF",
+      minWidth: "140px",
       justifyContent: "center",
-      alignItems: "baseline",
-      gap: "0.2rem",
     },
-    value: { fontSize: "2rem", fontWeight: 700, lineHeight: 1 },
-    unit: { fontSize: "1.2rem", fontWeight: 600, textTransform: "uppercase" },
+    value: { fontSize: "1.5rem", fontWeight: 700, lineHeight: 1 },
     label: {
-      fontSize: "0.8rem",
+      fontSize: "1rem",
       fontWeight: 500,
-      marginTop: "0.25rem",
-      opacity: 0.8,
       textTransform: "uppercase",
+      opacity: 0.9,
+    },
+    labelOnly: {
+      color: "#FFFFFF",
+      fontSize: "0.9rem",
+      fontWeight: 500,
+      padding: "0.8rem 1.2rem",
+      borderRadius: "16px",
+      backgroundColor: "rgba(255, 255, 255, 0.05)",
+      border: "1px solid #FFFFFF",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      height: "100%",
+      minWidth: "140px",
     },
   };
-
   if (isNaN(value)) {
-    return (
-      <div style={{ ...statStyles.wrapper, padding: "1.25rem 1rem" }}>
-        {label}
-      </div>
-    );
+    return <div style={statStyles.labelOnly}>{label}</div>;
   }
-
   return (
-    <div style={statStyles.wrapper}>
-      <div style={statStyles.valueContainer}>
-        <animated.span style={statStyles.value}>
-          {number.to((n) => n.toFixed(1))}
-        </animated.span>
-        <span style={statStyles.unit}>{unit}</span>
-      </div>
-      <div style={statStyles.label}>{label}</div>
+    <div style={statStyles.container}>
+      <animated.span style={statStyles.value}>
+        {number.to((n) => (n < 10 ? n.toFixed(1) : n.toFixed(0)))}
+      </animated.span>
+      <span style={statStyles.label}>{label}</span>
     </div>
   );
 }
-
-
 function VideoCard({ videoSrc, title, stats, wrapperStyle }) {
-  const { ref, inView } = useInView({
-    triggerOnce: true,
-    threshold: 0.4,
-  });
-
+  const { ref, inView } = useInView({ triggerOnce: true, threshold: 0.5 });
   const cardStyles = {
-    card: {
-      height: "100%",
-      border: "2px solid #000000",
-      borderRadius: "1rem",
-      overflow: "hidden",
-      position: "relative",
+    frame: {
       backgroundColor: "#000000",
-      boxShadow: "0 10px 30px rgba(0,0,0,0.3)",
-    },
-    video: { width: "100%", height: "100%", objectFit: "cover" },
-    overlay: {
-      padding: "1.5rem",
+      padding: "12px",
+      height: "100%",
       display: "flex",
       flexDirection: "column",
+      borderRadius: "1rem",
+      boxShadow: "0 10px 30px rgba(0,0,0,0.3)",
+    },
+    videoWrapper: {
+      flexGrow: 1,
+      overflow: "hidden",
+      position: "relative",
+      borderRadius: "12px",
+    },
+    video: { width: "100%", height: "100%", objectFit: "cover" },
+    infoBar: {
+      backgroundColor: "#000000",
+      padding: "1rem 1.25rem",
+      display: "flex",
       justifyContent: "space-between",
-      alignItems: "flex-start",
-      background:
-        "linear-gradient(180deg, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0) 40%, rgba(0,0,0,0.8) 100%)",
+      alignItems: "center",
+      flexWrap: "wrap",
+      gap: "1rem",
     },
     title: {
-      fontSize: "clamp(1.5rem, 4vw, 2rem)",
+      fontSize: "clamp(1.2rem, 3vw, 1.5rem)",
       color: "#FFFFFF",
-      fontWeight: 700,
+      fontWeight: 600,
+      margin: 0,
     },
-    statsContainer: { display: "flex", gap: "1rem", flexWrap: "wrap" },
+    statsContainer: { display: "flex", gap: "0.75rem", flexWrap: "wrap" },
   };
-
   return (
     <div ref={ref} style={wrapperStyle}>
-      <Card style={cardStyles.card}>
-        <video
-          style={cardStyles.video}
-          autoPlay
-          muted
-          loop
-          playsInline
-          loading="lazy"
-          src={videoSrc}
-        />
-        <Card.ImgOverlay style={cardStyles.overlay}>
+      <div style={cardStyles.frame}>
+        <div style={cardStyles.videoWrapper}>
+          <video
+            style={cardStyles.video}
+            autoPlay
+            muted
+            loop
+            playsInline
+            loading="lazy"
+            src={videoSrc}
+          />
+        </div>
+        <div style={cardStyles.infoBar}>
           <h3 style={cardStyles.title}>{title}</h3>
           <div style={cardStyles.statsContainer}>
             {stats.map((stat, index) => (
               <AnimatedStat key={index} {...stat} inView={inView} />
             ))}
           </div>
-        </Card.ImgOverlay>
-      </Card>
+        </div>
+      </div>
     </div>
   );
 }
+// ---
 
-// --- SHINE ANIMASYONU İÇİN STİLLER ---
-const animationStyles = `
-  @keyframes shine {
-    0% { background-position: -200% center; }
-    100% { background-position: 200% center; }
-  }
-  .animated-text-shine {
-    background-image: linear-gradient(90deg, #000000 0%, #444444 25%, #ffffff 50%, #444444 75%, #000000 100%);
-    background-size: 200% auto;
-    color: transparent;
-    -webkit-background-clip: text;
-    background-clip: text;
-    animation: shine 5s linear infinite;
+// --- FİNAL STİLLER ---
+const highlightStyles = `
+  .highlight-word {
     display: inline-block;
+    position: relative; /* ::before ve ::after'ı konumlandırmak için gerekli */
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+    border-bottom: 7px solid #141414;
+    padding-bottom: 0;
+    line-height: 0.9;
+  }
+
+  /* YENİ: Arka planı oluşturacak olan katman */
+  .highlight-word:hover::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: linear-gradient(to right, #111111, #555555);
+    border-radius: 6px;
+    z-index: -1; /* Bu katmanı metnin ve diğer her şeyin arkasına gönderir */
+    transition: all 0.2s ease-in-out; /* Yumuşak geçiş için eklendi */
+  }
+
+  .highlight-word:hover {
+    color: #FFFFFF;
+    /* background-image buradan kaldırıldı */
+    border-bottom-color: transparent; /* Orijinal border'ı gizliyoruz çünkü yerine ::after gelecek */
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    transform: rotate(-2deg); /* Döndürme efekti geri eklendi */
+    line-height: 1.2;
+  }
+
+  /* Alt çizgi, ::before'dan (arka plan) daha üst katmanda kalır */
+  .highlight-word:hover::after {
+    content: '';
+    position: absolute;
+    left: 1rem;
+    right: 1rem;
+    bottom: 0.5rem;
+    height: 7px;
+    background-color: #FFFFFF;
   }
 `;
 
+const customLayoutStyles = `
+  .row-gap-15px {
+    --bs-gutter-x: 15px;
+  }
+`;
 
+// --- Ana Sayfa Bileşeni ---
 function WhatWeMade() {
   const videoData = [
     {
@@ -175,8 +204,8 @@ function WhatWeMade() {
       videoSrc: video1,
       title: "BRAVE CF X CREATOR",
       stats: [
-        { value: 27.2, unit: "M", label: "IG Views" },
-        { value: 6.7, unit: "M", label: "TikTok Views" },
+        { value: 27.2, label: "M IG Views" },
+        { value: 6.7, label: "M TikTok Views" },
         { value: NaN, label: "Fully Creator-Led" },
       ],
     },
@@ -185,8 +214,8 @@ function WhatWeMade() {
       videoSrc: video2,
       title: "LAMBORGHINI YACHT",
       stats: [
-        { value: 690, unit: "K", label: "IG Views" },
-        { value: 640, unit: "K", label: "TikTok Views" },
+        { value: 690, label: "K IG Views" },
+        { value: 640, label: "K TikTok Views" },
       ],
     },
     {
@@ -194,8 +223,8 @@ function WhatWeMade() {
       videoSrc: video3,
       title: "DUBAI TIMELAPSE",
       stats: [
-        { value: 297, unit: "K", label: "IG Views" },
-        { value: 245, unit: "K", label: "TikTok Views" },
+        { value: 297, label: "K IG Views" },
+        { value: 245, label: "K TikTok Views" },
       ],
     },
   ];
@@ -206,7 +235,7 @@ function WhatWeMade() {
 
   useEffect(() => {
     const handleResize = () => {
-      if (window.innerWidth < 992) setBreakpoint("mobile");
+      if (window.innerWidth < 768) setBreakpoint("mobile");
       else setBreakpoint("desktop");
     };
     handleResize();
@@ -222,27 +251,20 @@ function WhatWeMade() {
   const baseFont = { fontFamily: "'Outfit', sans-serif" };
 
   const responsiveStyles = {
-    container: {
-      ...baseFont,
-      paddingTop: "5rem",
-      paddingBottom: "5rem",
-      textAlign: "center",
-    },
     title: {
-      fontWeight: 700,
-      fontSize: breakpoint === "mobile" ? "3.5rem" : "5rem",
+      fontWeight: 300,
+      fontSize: breakpoint === "mobile" ? "2.8rem" : "4.5rem",
       marginBottom: "4rem",
+      textAlign: "left",
     },
-    mainVideoWrapper: {
-      height: breakpoint === "mobile" ? "70vh" : "90vh",
-      marginBottom: breakpoint === "mobile" ? "2rem" : "5rem",
-    },
-    dualVideoWrapper: { height: breakpoint === "mobile" ? "60vh" : "70vh" },
+    videoWrapper: { height: breakpoint === "mobile" ? "80vh" : "110vh" },
     promoText: {
       fontWeight: 500,
-      fontSize: breakpoint === "mobile" ? "1.8rem" : "3rem",
-      lineHeight: 1.4,
+      fontSize: breakpoint === "mobile" ? "2.8rem" : "5rem",
+      lineHeight: 1.2,
       margin: "5rem 0",
+      textAlign: "center",
+      color: "#141414",
     },
     button: {
       cursor: "pointer",
@@ -260,78 +282,93 @@ function WhatWeMade() {
 
   const whatsAppButtonStyle = {
     ...responsiveStyles.button,
-    backgroundColor: isWhatsAppHovered ? "#FFFFFF" : "#141414",
-    color: isWhatsAppHovered ? "#141414" : "#FFFFFF",
+    backgroundColor: isWhatsAppHovered ? "#141414" : "#FFFFFF",
+    color: isWhatsAppHovered ? "#FFFFFF" : "#141414",
   };
   const mailButtonStyle = {
     ...responsiveStyles.button,
-    backgroundColor: isMailHovered ? "#FFFFFF" : "#141414",
-    color: isMailHovered ? "#141414" : "#FFFFFF",
+    backgroundColor: isMailHovered ? "#141414" : "#FFFFFF",
+    color: isMailHovered ? "#FFFFFF" : "#141414",
   };
 
   return (
     <ErrorBoundary>
-      <style>{animationStyles}</style>
-      <Container fluid="lg" style={responsiveStyles.container}>
-        <Row className="justify-content-center">
-          <Col xs={12}>
-            <h1 style={responsiveStyles.title}>What We Made </h1>
-          </Col>
-        </Row>
-        <Row className="justify-content-center">
-          <Col xs={12}>
-            <VideoCard
-              {...videoData[0]}
-              wrapperStyle={responsiveStyles.mainVideoWrapper}
-            />
-          </Col>
-        </Row>
-        <Row className="justify-content-center g-4">
-          <Col md={6} lg={5}>
-            <VideoCard
-              {...videoData[1]}
-              wrapperStyle={responsiveStyles.dualVideoWrapper}
-            />
-          </Col>
-          <Col md={6} lg={5}>
-            <VideoCard
-              {...videoData[2]}
-              wrapperStyle={responsiveStyles.dualVideoWrapper}
-            />
-          </Col>
-        </Row>
-        <Row className="justify-content-center">
-          <Col lg={9}>
-            <p style={responsiveStyles.promoText}>
-              We shoot <span className="animated-text-shine">fast</span>, <br />
-              we edit smart and we do <br />
-              it with <span className="animated-text-shine">creators</span> who
-              know <br />
-              how to read the moment.
-            </p>
-          </Col>
-        </Row>
-        <Row className="justify-content-center">
-          <Col xs="auto" className="d-grid d-sm-flex gap-3">
-            <button
-              style={whatsAppButtonStyle}
-              onClick={handleWhatsAppClick}
-              onMouseEnter={() => setIsWhatsAppHovered(true)}
-              onMouseLeave={() => setIsWhatsAppHovered(false)}
-            >
-              WhatsApp
-            </button>
-            <button
-              style={mailButtonStyle}
-              onClick={handleMailClick}
-              onMouseEnter={() => setIsMailHovered(true)}
-              onMouseLeave={() => setIsMailHovered(false)}
-            >
-              Mail
-            </button>
-          </Col>
-        </Row>
-      </Container>
+      <style>{highlightStyles}</style>
+      <style>{customLayoutStyles}</style>
+
+      <div
+        style={{
+          ...baseFont,
+          paddingTop: "5rem",
+          paddingBottom: "5rem",
+          paddingLeft: "30px",
+          paddingRight: "30px",
+        }}
+      >
+        <Container fluid>
+          <Row>
+            <Col>
+              <h1 style={responsiveStyles.title}>What We Made</h1>
+            </Col>
+          </Row>
+
+          <Row className="mb-4">
+            <Col xs={12}>
+              <VideoCard
+                {...videoData[0]}
+                wrapperStyle={responsiveStyles.videoWrapper}
+              />
+            </Col>
+          </Row>
+
+          <Row className="row-gap-15px gy-3">
+            <Col xs={6}>
+              <VideoCard
+                {...videoData[1]}
+                wrapperStyle={responsiveStyles.videoWrapper}
+              />
+            </Col>
+            <Col xs={6}>
+              <VideoCard
+                {...videoData[2]}
+                wrapperStyle={responsiveStyles.videoWrapper}
+              />
+            </Col>
+          </Row>
+
+          <Row className="justify-content-center mt-5">
+            <Col>
+              <p style={responsiveStyles.promoText}>
+                We shoot <span className="highlight-word">fast</span>, <br />
+                we edit smart and we do <br />
+                it with <span className="highlight-word">creators</span> who
+                know <br />
+                how to read the moment.
+              </p>
+            </Col>
+          </Row>
+          <Row className="justify-content-center">
+            <Col xs="auto" className="d-grid d-sm-flex gap-3">
+              <button
+                style={whatsAppButtonStyle}
+                onClick={handleWhatsAppClick}
+                onMouseEnter={() => setIsWhatsAppHovered(true)}
+                onMouseLeave={() => setIsWhatsAppHovered(false)}
+              >
+                WhatsApp
+              </button>
+              <button
+                style={mailButtonStyle}
+                onClick={handleMailClick}
+                onMouseEnter={() => setIsMailHovered(true)}
+                onMouseLeave={() => setIsMailHovered(false)}
+              >
+                Mail
+              </button>
+            </Col>
+          </Row>
+        </Container>
+      </div>
     </ErrorBoundary>
   );
 }

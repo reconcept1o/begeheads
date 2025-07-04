@@ -1,7 +1,5 @@
 import React, { useRef, useEffect, useState, useCallback } from "react";
 import BegeadsScene from "../Animation/BegeadsScene";
-// YENİ: Yükleme animasyonu bileşenini import ediyoruz
-import LoadingAnimation from "../Animation/LoadingAnimation";
 
 // Asset'leri import ediyoruz
 import backgroundUrl from "../assets/Background.png";
@@ -27,11 +25,9 @@ function Home() {
   const [headerText, setHeaderText] = useState(TARGET_TEXT);
   const animationIntervalRef = useRef(null);
 
-  // Bu kısımların hiçbiri değişmedi, olduğu gibi çalışmaya devam ediyor.
   useEffect(() => {
     if (!mountRef.current) return;
     const handleLoadComplete = () =>
-      // Animasyonun bitmesi için minimum süre tanıyoruz.
       setTimeout(() => setIsSceneLoaded(true), 3000);
 
     const assetPaths = {
@@ -93,7 +89,7 @@ function Home() {
     /* ...değişiklik yok... */
   };
 
-  // --- STYLES (Değişiklik yok) ---
+  // --- STYLES ---
   const rootStyle = {
     position: "relative",
     width: "100%",
@@ -104,21 +100,6 @@ function Home() {
     backgroundPosition: "center",
     overflow: "hidden",
     fontFamily: "'Outfit', sans-serif",
-  };
-  const loadingOverlayStyle = {
-    position: "fixed",
-    top: 0,
-    left: 0,
-    width: "100%",
-    height: "100%",
-    backgroundColor: "#141414",
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    zIndex: 1000,
-    transition: "opacity 0.8s ease-out 1s",
-    opacity: isSceneLoaded ? 0 : 1,
-    pointerEvents: isSceneLoaded ? "none" : "auto",
   };
   const contentContainerStyle = {
     position: "absolute",
@@ -214,11 +195,11 @@ function Home() {
   const buttonBaseStyle = {
     cursor: "pointer",
     padding: "14px 0",
-    fontSize: isMobile ? "1.1rem" : "1.2rem",
+    fontSize: isMobile ? "1.1rem" : "1.7rem",
     borderRadius: "35px",
     transition: "all 0.3s ease",
     fontWeight: 500,
-    width: "150px",
+    width: "220px",
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
@@ -228,7 +209,7 @@ function Home() {
   const buttonDefaultStyle = {
     backgroundColor: "transparent",
     color: "#FFFFFF",
-    border: "2px solid #FFFFFF",
+    border: "1px solid #FFFFFF",
   };
   const buttonHoverStyle = {
     backgroundColor: "#FFFFFF",
@@ -238,13 +219,6 @@ function Home() {
 
   return (
     <div style={rootStyle}>
-      {/* YÜKLEME EKRANI GÜNCELLENDİ */}
-      <div style={loadingOverlayStyle}>
-        {/* Eski "Coming" yazısı yerine yeni animasyon bileşenimiz geldi */}
-        <LoadingAnimation />
-      </div>
-
-      {/* Aşağıdaki kısımlarda hiçbir değişiklik yok */}
       <div style={contentContainerStyle}>
         <img src={logoUrl} alt="Logo" style={logoStyle} />
         <p style={subtitleStyle}>
