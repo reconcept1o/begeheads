@@ -168,7 +168,7 @@ function Home() {
     justifyContent: "center",
     alignItems: "center",
     width: "100%",
-    flexWrap: "wrap", // Yan yana sığmazsa alt satıra atar, bu kalmalı. Genişliği ayarlayarak sığmasını sağlayacağız.
+    flexWrap: "wrap",
     gap: isMobile ? "15px" : "20px",
     marginTop: isMobile ? "40px" : "50px",
     opacity: isSceneLoaded ? 1 : 0,
@@ -194,14 +194,16 @@ function Home() {
   };
   const buttonBaseStyle = {
     cursor: "pointer",
-    padding: "14px 0",
+    // --- YÜKSEKLİK DEĞİŞİKLİĞİ ---
+    // Mobil'de dikey padding'i 14px'ten 12px'e düşürerek yüksekliği azaltıyoruz.
+    padding: isMobile ? "12px 0" : "14px 0",
     fontSize: isMobile ? "1.1rem" : "1.7rem",
     borderRadius: "35px",
     transition: "all 0.3s ease",
     fontWeight: 500,
-    // --- 1. DEĞİŞİKLİK ---
-    // Mobil'de butonların yan yana sığabilmesi için genişliği küçültüyoruz.
-    width: isMobile ? "140px" : "220px",
+    // --- GENİŞLİK DEĞİŞİKLİĞİ ---
+    // Mobil'de genişliği 140px'ten 150px'e çıkararak biraz genişletiyoruz.
+    width: isMobile ? "150px" : "220px",
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
@@ -211,14 +213,12 @@ function Home() {
   const buttonDefaultStyle = {
     backgroundColor: "transparent",
     color: "#FFFFFF",
-    border: "1px solid #FFFFFF", // Kenarlık zaten 1px, bu doğru.
+    border: "1px solid #FFFFFF",
   };
   const buttonHoverStyle = {
     backgroundColor: "#FFFFFF",
     color: "#000000",
-    // --- 2. DEĞİŞİKLİK ---
-    // Mobil'de üzerine gelince kenarlığın 1px kalmasını, masaüstünde 2px olmasını sağlıyoruz.
-    border: isMobile ? "1px solid #FFFFFF" : "1px solid #FFFFFF",
+    border: "1px solid #FFFFFF", // Önceki isteğinizle bu satırı 1px'e sabitlemiştik.
   };
 
   return (
