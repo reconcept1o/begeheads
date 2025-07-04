@@ -224,28 +224,35 @@ const highlightStyles = `
   .highlight-word:hover { color: #FFFFFF; border-bottom-color: transparent; padding: 0.5rem 1rem; border-radius: 6px; transform: rotate(-2deg); line-height: 1.2; }
   .highlight-word:hover::after { content: ''; position: absolute; left: 1rem; right: 1rem; bottom: 0.5rem; height: 7px; background-color: #FFFFFF; }
 
-  /* GÜNCELLEME: Mobil cihazlar için hover animasyonunu devre dışı bırakma */
+  /* GÜNCELLEME: Mobil cihazlarda hover animasyonunu statik hale getirme */
   @media (max-width: 991px) {
     .highlight-word {
-      border-bottom: none; /* Alttaki çizgiyi kaldır */
-      cursor: default; /* İmleci normal yap */
-      line-height: 1.2; /* Satır yüksekliğini çevre metinle eşitle */
-      padding-bottom: 0;
-    }
-    
-    /* Mobil'de hover olunca hiçbir stil değişikliği olmamasını sağla */
-    .highlight-word:hover {
-      color: inherit; /* Rengi değiştirme */
-      transform: none; /* Döndürme efektini iptal et */
-      padding: 0; /* Ekstra padding verme */
-      border-radius: 0;
+      /* Masaüstü hover stillerini doğrudan mobil base stili yap */
+      color: #FFFFFF;
       border-bottom-color: transparent;
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      transform: rotate(-2deg);
+      line-height: 1.2;
+      cursor: default; /* Mobil'de imleç normal olsun */
+      transition: none; /* Mobil'de geçiş animasyonuna gerek yok */
     }
 
-    /* Mobil'de hover olunca oluşan ::before ve ::after elementlerini tamamen kaldır */
-    .highlight-word:hover::before,
-    .highlight-word:hover::after {
-      content: none;
+    /* Arka planı (::before) ve iç çizgiyi (::after) kalıcı olarak ekle */
+    .highlight-word::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-image: linear-gradient(to right, #111111, #555555);
+      border-radius: 6px;
+      z-index: -1;
+    }
+    .highlight-word::after {
+      content: '';
+      position: absolute;
+      left: 1rem; right: 1rem; bottom: 0.5rem;
+      height: 7px;
+      background-color: #FFFFFF;
     }
   }
 `;
