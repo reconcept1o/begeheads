@@ -1,104 +1,167 @@
-import React, { useState, useRef } from "react";
+import React, { useState } from "react";
 import { Container, Row, Col } from "react-bootstrap";
-import { useInView } from "react-intersection-observer";
+import { FaArrowUp } from "react-icons/fa";
 
 import logo from "../assets/logo.svg";
 
+// --- VERİLER ---
 const contactLinks = [
   { text: "Message us", href: "https://wa.me/YOUR_PHONE_NUMBER" },
   { text: "Email us", href: "mailto:YOUR_EMAIL_ADDRESS" },
 ];
 
 const socialLinks = [
-  { text: "Instagram", href: "https://instagram.com" },
-  { text: "LinkedIn", href: "https://linkedin.com" },
-  { text: "YouTube", href: "https://youtube.com" },
+  { text: "INSTAGRAM", href: "https://instagram.com" },
+  { text: "LINKEDIN", href: "https://linkedin.com" },
+  { text: "YOUTUBE", href: "https://youtube.com" },
 ];
+
+// --- RESPONSIVE STİLLER (YENİ) ---
+const responsiveStyles = `
+  @media (max-width: 767.98px) {
+    .footer-main-row {
+      flex-direction: column;
+      align-items: flex-start !important;
+      gap: 2.5rem; /* Mobil sütunlar arası boşluk */
+    }
+    .footer-contact-links {
+      display: none !important; /* "Message us" linklerini mobilde gizle */
+    }
+    .footer-address-col {
+      order: 2; /* Adresi 2. sıraya al */
+      text-align: left !important;
+    }
+    .footer-social-col {
+      order: 1; /* Sosyal medyayı 1. sıraya al */
+      text-align: left !important;
+      align-items: flex-start !important;
+    }
+    .footer-social-link {
+      text-decoration: underline !important; /* Sosyal medya linklerine alt çizgi ekle */
+      text-underline-offset: 6px;
+    }
+    .footer-main {
+      padding: 4rem 1.5rem !important; /* Mobil için iç boşlukları ayarla */
+    }
+    .footer-logo-row {
+      margin-top: 2rem !important;
+      margin-bottom: 2rem !important;
+    }
+    .footer-reg-symbol {
+       font-size: 1.5rem !important; /* ® sembolünü mobilde küçült */
+    }
+  }
+`;
 
 // --- STİL NESNELERİ ---
 const styles = {
   footer: {
-    backgroundColor: "#0A0A0A",
-    color: "#888888",
-    padding: "5rem 0 3rem 0",
+    backgroundColor: "#FFFFFF",
+    color: "#000000",
+    padding: "6rem 2rem 4rem 2rem",
     fontFamily: "'Outfit', sans-serif",
-    textAlign: "center",
-    overflow: "hidden",
     position: "relative",
+    borderTop: "1px solid #E0E0E0",
   },
-  glowLine: {
-    position: "absolute",
-    top: 0,
-    left: 0,
-    right: 0,
-    height: "1px",
-    background:
-      "linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent)",
+  addressBlock: {
+    textAlign: "left",
   },
-  logoContainer: {
-    perspective: "1000px",
+  addressTitle: {
+    fontWeight: "bold",
+    marginBottom: "0.5rem",
+  },
+  addressText: {
+    lineHeight: 1.6,
+  },
+  mainLinks: {
+    textAlign: "center",
+    display: "flex",
+    gap: "3rem",
+    justifyContent: "center",
+  },
+  mainLink: {
+    color: "#000000",
+    textDecoration: "underline",
+    textUnderlineOffset: "8px",
+    fontSize: "1.75rem",
+    fontWeight: "500",
+    transition: "opacity 0.3s ease",
+  },
+  socialBlock: {
+    textAlign: "right",
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "flex-end",
+    gap: "0.5rem",
+  },
+  socialLink: {
+    color: "#000000",
+    textDecoration: "none",
+    fontWeight: "500",
+    transition: "opacity 0.3s ease",
+  },
+  logoRow: {
+    marginTop: "4rem",
+    marginBottom: "4rem",
+    position: "relative",
+    textAlign: "center",
   },
   logo: {
-   
-    width: "95%",
-    maxWidth: "630px",
+    width: "100%",
+    maxWidth: "800px",
     height: "auto",
-    filter: "brightness(0) invert(1)",
-    margin: "3rem auto",
-    transition: "transform 0.1s linear",
-    position: "relative",
-    overflow: "hidden",
-    borderRadius: "10px",
   },
-  address: { fontSize: "1.1rem", lineHeight: 1.7 },
-  linkGroup: {
-    display: "flex",
-    justifyContent: "center",
-    gap: "2.5rem",
-    flexWrap: "wrap",
+  regSymbol: {
+    position: "absolute",
+    top: "0",
+    right: "0",
+    fontSize: "2rem",
   },
-  link: {
-    color: "#EAEAEA",
-    textDecoration: "none",
-    transition: "color 0.3s ease",
-    fontWeight: "bold",
-    fontSize: "1.2rem",
-  },
-  legalRow: { marginTop: "4rem" },
   legalLink: {
-    color: "#888888",
+    color: "#000000",
     textDecoration: "none",
     fontSize: "0.9rem",
-    transition: "color 0.3s ease",
+    transition: "opacity 0.3s ease",
+  },
+  toTop: {
+    position: "absolute",
+    top: "2rem",
+    right: "2rem",
+    textAlign: "center",
+    cursor: "pointer",
+    transition: "opacity 0.3s ease",
+  },
+  toTopIcon: {
+    border: "1px solid #000000",
+    borderRadius: "50%",
+    padding: "0.5rem",
+    width: "40px",
+    height: "40px",
+    marginBottom: "0.25rem",
+  },
+  toTopText: {
+    fontSize: "0.8rem",
   },
 };
 
-
-function AnimatedElement({ children, delay = 0 }) {
-  const { ref, inView } = useInView({ triggerOnce: true, threshold: 0.1 });
-  const style = {
-    transition: `opacity 0.8s ease ${delay}s, transform 0.8s ease ${delay}s`,
-    opacity: inView ? 1 : 0,
-    transform: inView ? "translateY(0)" : "translateY(30px)",
-  };
-  return (
-    <div ref={ref} style={style}>
-      {children}
-    </div>
-  );
-}
-
-function HoverLink({ href, style, children }) {
+function HoverLink({
+  href,
+  style,
+  children,
+  target = "_blank",
+  className = "",
+}) {
   const [isHovered, setIsHovered] = useState(false);
-  const finalStyle = { ...style, color: isHovered ? "#FFFFFF" : style.color };
+  const finalStyle = { ...style, opacity: isHovered ? 0.6 : 1 };
   return (
     <a
       href={href}
-      target="_blank"
+      target={target}
       rel="noopener noreferrer"
       style={finalStyle}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
+      className={className}
     >
       {children}
     </a>
@@ -106,62 +169,58 @@ function HoverLink({ href, style, children }) {
 }
 
 function Footer() {
-  const [logoStyle, setLogoStyle] = useState({});
-  const footerRef = useRef(null);
-
-  const handleMouseMove = (e) => {
-    if (!footerRef.current) return;
-    const { left, top, width, height } =
-      footerRef.current.getBoundingClientRect();
-    const x = e.clientX - left;
-    const y = e.clientY - top;
-    const rotateX = (y / height - 0.5) * -20;
-    const rotateY = (x / width - 0.5) * 20;
-
-    setLogoStyle({
-      transform: `rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(1.02)`,
-      boxShadow: `inset 0 0 150px 50px rgba(255,255,255,0.05), 0 0 50px 10px rgba(255,255,255,0.03)`,
-    });
-  };
-
-  const handleMouseLeave = () => {
-    setLogoStyle({
-      transform: "rotateX(0deg) rotateY(0deg) scale(1)",
-      boxShadow: "none",
+  const scrollToTop = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
     });
   };
 
   return (
-    <footer
-      style={styles.footer}
-      ref={footerRef}
-      onMouseMove={handleMouseMove}
-      onMouseLeave={handleMouseLeave}
-    >
-      <div style={styles.glowLine}></div>
-      <Container>
-        <AnimatedElement delay={0}>
-          <Row className="justify-content-center mb-4">
-            <Col md={6} lg={5} className="mb-4 mb-md-0">
-              <div style={styles.linkGroup}>
+    <>
+      <style>{responsiveStyles}</style>
+      <footer style={styles.footer} className="footer-main">
+        <Container fluid>
+          <div style={styles.toTop} onClick={scrollToTop}>
+            <FaArrowUp style={styles.toTopIcon} />
+            <div style={styles.toTopText}>to top</div>
+          </div>
+
+          <Row className="align-items-start footer-main-row">
+            <Col md={4} className="footer-address-col">
+              <div style={styles.addressBlock}>
+                <div style={styles.addressTitle}>BEGEADS</div>
+                <p style={styles.addressText}>
+                  Musterstraße 15 <br />
+                  1010 Vienna, Austria
+                </p>
+              </div>
+            </Col>
+
+            <Col
+              md={4}
+              style={styles.mainLinks}
+              className="footer-contact-links"
+            >
+              {contactLinks.map((link) => (
+                <HoverLink
+                  key={link.text}
+                  href={link.href}
+                  style={styles.mainLink}
+                >
+                  {link.text}
+                </HoverLink>
+              ))}
+            </Col>
+
+            <Col md={4}>
+              <div style={styles.socialBlock} className="footer-social-col">
                 {socialLinks.map((link) => (
                   <HoverLink
                     key={link.text}
                     href={link.href}
-                    style={styles.link}
-                  >
-                    {link.text}
-                  </HoverLink>
-                ))}
-              </div>
-            </Col>
-            <Col md={6} lg={5}>
-              <div style={styles.linkGroup}>
-                {contactLinks.map((link) => (
-                  <HoverLink
-                    key={link.text}
-                    href={link.href}
-                    style={styles.link}
+                    style={styles.socialLink}
+                    className="footer-social-link"
                   >
                     {link.text}
                   </HoverLink>
@@ -169,42 +228,30 @@ function Footer() {
               </div>
             </Col>
           </Row>
-        </AnimatedElement>
 
-        <AnimatedElement delay={0.2}>
-          <Row>
-            <Col style={styles.logoContainer}>
-              <img
-                src={logo}
-                alt="BEGEADS Logo"
-                style={{ ...styles.logo, ...logoStyle }}
-              />
-            </Col>
-          </Row>
-        </AnimatedElement>
-
-        <AnimatedElement delay={0.4}>
-          <Row className="justify-content-center">
-            <Col md={8} lg={6}>
-              <p style={styles.address}>
-                Hernalser Hauptstrasse 21 <br />
-                1170 Vienna, Austria
-              </p>
-            </Col>
-          </Row>
-        </AnimatedElement>
-
-        <AnimatedElement delay={0.6}>
-          <Row style={styles.legalRow}>
+          <Row style={styles.logoRow} className="footer-logo-row">
             <Col>
-              <HoverLink href="/privacy-policy" style={styles.legalLink}>
-                Imprint & Privacy Policy
+              <img src={logo} alt="BEGEADS Logo" style={styles.logo} />
+              <sup style={styles.regSymbol} className="footer-reg-symbol">
+                ®
+              </sup>
+            </Col>
+          </Row>
+
+          <Row>
+            <Col className="text-start">
+              <HoverLink
+                href="/privacy-policy"
+                style={styles.legalLink}
+                target="_self"
+              >
+                Privacy statement
               </HoverLink>
             </Col>
           </Row>
-        </AnimatedElement>
-      </Container>
-    </footer>
+        </Container>
+      </footer>
+    </>
   );
 }
 
