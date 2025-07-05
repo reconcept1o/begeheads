@@ -1,16 +1,15 @@
-import React, { useState, useEffect, useRef } from "react"; // Added useEffect and useRef for mobile functionality
+import React, { useState, useEffect, useRef } from "react";
 import { Container, Row, Col } from "react-bootstrap";
 import { useInView } from "react-intersection-observer";
-import Ready from "./Ready";
 
-// Icons for navigation (using SVG or any icon library)
+// Icons for navigation (Updated fill color)
 const LeftArrow = () => (
-  <svg width="24" height="24" viewBox="0 0 24 24" fill="white">
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="black">
     <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z" />
   </svg>
 );
 const RightArrow = () => (
-  <svg width="24" height="24" viewBox="0 0 24 24" fill="white">
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="black">
     <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z" />
   </svg>
 );
@@ -35,29 +34,66 @@ const styles = {
   mainContainer: {
     backgroundColor: "#F7F7F7",
     color: "#121212",
-    padding: "4rem 0", // Reduced padding for mobile
+    padding: "8rem 0",
     fontFamily: "'Outfit', sans-serif",
     overflowX: "hidden",
   },
   mainTitle: {
-    fontSize: "clamp(2rem, 8vw, 3rem)", // Adjusted size for mobile
-    fontWeight: 400,
+    fontSize: "clamp(1rem, 3vw, 3rem)",
+    fontWeight: 300,
     textAlign: "left",
-    marginBottom: "3rem", // Reduced margin for mobile
+    marginBottom: "6rem",
     color: "black",
   },
-  carouselContainer: {
-    position: "relative",
-    width: "100%",
-    overflow: "hidden",
+  // Mobile-specific title style to override margin
+  mobileHeaderTitle: {
+    fontSize: "clamp(1.5rem, 5vw, 2rem)",
+    fontWeight: 300,
+    color: "black",
+    margin: 0,
   },
   featureCard: {
     height: "100%",
     display: "flex",
     flexDirection: "column",
-    padding: "1.5rem", // Reduced padding for mobile
+    padding: "2rem",
     borderRadius: "16px",
-    backgroundColor: "#000000", // Default black background for mobile
+    transition: "all 0.3s ease",
+    border: "none",
+    position: "relative",
+  },
+  featureTitle: {
+    fontSize: "2.5rem",
+    fontWeight: 700,
+    color: "black",
+    marginBottom: "18rem",
+    minHeight: "7rem",
+  },
+  featureText: {
+    fontSize: "1.2rem",
+    lineHeight: 1.7,
+    color: "#555555",
+    flexGrow: 1,
+  },
+  activeCard: {
+    backgroundColor: "#000000",
+    color: "#FFFFFF",
+    marginTop: "10px",
+  },
+  carouselContainer: {
+    position: "relative",
+    width: "100%",
+    height: "400px",
+    overflow: "hidden",
+    display: "none", // Hidden by default, shown in media query
+  },
+  mobileCard: {
+    height: "100%",
+    display: "flex",
+    flexDirection: "column",
+    padding: "1.5rem",
+    borderRadius: "16px",
+    backgroundColor: "#000000",
     color: "#FFFFFF",
     transition: "transform 0.3s ease",
     position: "absolute",
@@ -65,37 +101,18 @@ const styles = {
     left: "0",
     width: "100%",
   },
-  featureTitle: {
-    fontSize: "1.8rem", // Reduced size for mobile
+  mobileTitle: {
+    fontSize: "1.8rem",
     fontWeight: 700,
-    color: "#FFFFFF", // White by default on mobile
-    marginBottom: "8rem", // Maintained large spacing
-    minHeight: "5rem", // Reduced minHeight for mobile
+    color: "#FFFFFF",
+    marginBottom: "8rem",
+    minHeight: "5rem",
   },
-  featureText: {
-    fontSize: "1rem", // Reduced size for mobile
+  mobileText: {
+    fontSize: "1rem",
     lineHeight: 1.5,
-    color: "#CCCCCC", // Lighter gray for contrast on black
+    color: "#CCCCCC",
     flexGrow: 1,
-  },
-  arrow: {
-    position: "absolute",
-    top: "50%",
-    transform: "translateY(-50%)",
-    cursor: "pointer",
-    zIndex: 10,
-  },
-  leftArrow: {
-    left: "10px",
-  },
-  rightArrow: {
-    right: "10px",
-  },
-  desktop: {
-    display: "block",
-  },
-  mobile: {
-    display: "none",
   },
 };
 
@@ -103,28 +120,28 @@ const styles = {
 const mobileStyles = `
   @media (max-width: 768px) {
     .desktop {
-      display: none;
+      display: none !important;
     }
     .mobile {
-      display: block;
+      display: block !important;
     }
-    .featureCard {
-      padding: 1.5rem;
-      font-size: 1rem;
+    .mobile-header {
+      display: flex !important;
     }
-    .featureTitle {
-      font-size: 1.8rem;
-      margin-bottom: 8rem;
+    .carouselContainer {
+      display: block !important;
+      height: auto !important;
     }
-    .featureText {
-      font-size: 1rem;
+    .mobileCard {
+      height: auto !important;
     }
   }
 `;
 
-// --- ANİMASYONLU BİLEŞEN ---
-function FeatureCard({ title, text, delay, isActive }) {
+// --- ANİMASYONLU BİLEŞEN (Desktop) ---
+function FeatureCard({ title, text, delay }) {
   const { ref, inView } = useInView({ triggerOnce: true, threshold: 0.1 });
+  const [isHovered, setIsHovered] = useState(false);
 
   const animationStyle = {
     opacity: inView ? 1 : 0,
@@ -135,21 +152,53 @@ function FeatureCard({ title, text, delay, isActive }) {
   const cardStyle = {
     ...styles.featureCard,
     ...animationStyle,
-    transform: isActive ? "translateX(0)" : "translateX(100%)", // Slide effect
+    ...(isHovered ? { ...styles.activeCard } : {}),
   };
 
   const titleStyle = {
     ...styles.featureTitle,
+    color: isHovered ? "#FFFFFF" : "black",
   };
 
   const textStyle = {
     ...styles.featureText,
+    color: isHovered ? "#FFFFFF" : "#555555",
+  };
+
+  return (
+    <div
+      ref={ref}
+      style={cardStyle}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      className="desktop"
+    >
+      <h4 style={titleStyle}>{title}</h4>
+      <p style={textStyle}>{text}</p>
+    </div>
+  );
+}
+
+// --- MOBILE CAROUSEL COMPONENT ---
+function MobileFeatureCard({ title, text, isActive }) {
+  const { ref, inView } = useInView({ triggerOnce: true, threshold: 0.1 });
+
+  const animationStyle = {
+    opacity: inView ? 1 : 0,
+    transform: inView ? "translateY(0)" : "translateY(50px)",
+    transition: `all 0.8s cubic-bezier(0.2, 0.8, 0.2, 1)`,
+  };
+
+  const cardStyle = {
+    ...styles.mobileCard,
+    ...animationStyle,
+    transform: isActive ? "translateX(0)" : "translateX(100%)",
   };
 
   return (
     <div ref={ref} style={cardStyle} className="mobile">
-      <h4 style={titleStyle}>{title}</h4>
-      <p style={textStyle}>{text}</p>
+      <h4 style={styles.mobileTitle}>{title}</h4>
+      <p style={styles.mobileText}>{text}</p>
     </div>
   );
 }
@@ -159,7 +208,6 @@ function HowItWorks() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const touchRef = useRef(null);
 
-  // Infinite loop logic
   const nextSlide = () => {
     setCurrentIndex((prev) => (prev + 1) % featuresData.length);
   };
@@ -170,7 +218,6 @@ function HowItWorks() {
     );
   };
 
-  // Handle touch events for swipe
   useEffect(() => {
     const touchArea = touchRef.current;
     let touchStartX = 0;
@@ -186,10 +233,10 @@ function HowItWorks() {
 
     const handleTouchEnd = () => {
       if (touchStartX - touchEndX > 50) {
-        nextSlide(); // Swipe left
+        nextSlide();
       }
       if (touchStartX - touchEndX < -50) {
-        prevSlide(); // Swipe right
+        prevSlide();
       }
     };
 
@@ -211,12 +258,44 @@ function HowItWorks() {
   return (
     <div style={styles.mainContainer}>
       <Container>
-        <Row className="justify-content-center">
+        {/* --- Desktop Title --- */}
+        <Row className="justify-content-center desktop">
           <Col md={10}>
             <h2 style={styles.mainTitle}>HOW IT WORKS?</h2>
           </Col>
         </Row>
-        {/* Desktop Version */}
+
+        {/* --- Mobile Header (Title + Arrows) --- */}
+        <Row
+          className="mobile-header"
+          style={{
+            display: "none", // Hidden by default, shown by media query
+            justifyContent: "space-between",
+            alignItems: "center",
+            paddingBottom: "1rem",
+            marginBottom: "2rem",
+            borderBottom: "1px solid black",
+          }}
+        >
+          <Col xs="auto">
+            <h2 style={styles.mobileHeaderTitle}>HOW IT WORKS?</h2>
+          </Col>
+          <Col xs="auto">
+            <div style={{ display: "flex", alignItems: "center" }}>
+              <div
+                onClick={prevSlide}
+                style={{ cursor: "pointer", marginRight: "0.5rem" }}
+              >
+                <LeftArrow />
+              </div>
+              <div onClick={nextSlide} style={{ cursor: "pointer" }}>
+                <RightArrow />
+              </div>
+            </div>
+          </Col>
+        </Row>
+
+        {/* --- Desktop Feature Cards --- */}
         <Row
           className="g-0 desktop"
           style={{
@@ -244,29 +323,13 @@ function HowItWorks() {
             </Col>
           ))}
         </Row>
-        {/* Mobile Version */}
+
+        {/* --- Mobile Carousel --- */}
         <div className="mobile" style={styles.carouselContainer} ref={touchRef}>
-          <FeatureCard
-            {...featuresData[currentIndex]}
-            delay={0}
-            isActive={true}
-          />
-          <div
-            style={{ ...styles.arrow, ...styles.leftArrow }}
-            onClick={prevSlide}
-          >
-            <LeftArrow />
-          </div>
-          <div
-            style={{ ...styles.arrow, ...styles.rightArrow }}
-            onClick={nextSlide}
-          >
-            <RightArrow />
-          </div>
+          <MobileFeatureCard {...featuresData[currentIndex]} isActive={true} />
         </div>
-        <Ready />
       </Container>
-      <style>{mobileStyles}</style> {/* Inject media query styles */}
+      <style>{mobileStyles}</style>
     </div>
   );
 }

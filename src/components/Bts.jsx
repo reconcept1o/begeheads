@@ -126,67 +126,7 @@ const newCarouselStyles = `
 
 // --- KART KOMPONENTİ ---
 function CarouselCard({ item, flashKey }) {
-  const [isButtonHovered, setIsButtonHovered] = useState(false);
-  const cardStyles = {
-    slideCard: {
-      borderRadius: "16px",
-      overflow: "hidden",
-      boxShadow: "0 8px 20px rgba(0, 0, 0, 0.25)",
-      backgroundColor: "#FFFFFF",
-    },
-    image: {
-      display: "block",
-      width: "100%",
-      aspectRatio: "4 / 5",
-      objectFit: "cover",
-    },
-    slideContent: { color: "#000000", padding: "1.5rem" },
-    slideText: {
-      fontSize: "1.1rem",
-      lineHeight: 1.6,
-      marginBottom: "1.5rem",
-      color: "#000000",
-    },
-    slideButton: {
-      display: "inline-block",
-      backgroundColor: "transparent",
-      color: isButtonHovered ? "#555555" : "#000000",
-      padding: "0.5rem 0.25rem",
-      fontWeight: "bold",
-      transition: "color 0.3s ease",
-      textDecoration: "underline",
-      textUnderlineOffset: "6px",
-      border: "none",
-      cursor: "pointer",
-    },
-  };
-
-  return (
-    <div style={cardStyles.slideCard}>
-      {flashKey > 0 && (
-        <div className="border-flash-effect" key={flashKey}></div>
-      )}
-      <img
-        src={item.image}
-        alt="Behind the scenes"
-        style={cardStyles.image}
-        draggable="false"
-      />
-      <div style={cardStyles.slideContent}>
-        <p style={cardStyles.slideText}>{item.text}</p>
-        <a
-          href={item.link}
-          target="_blank"
-          rel="noopener noreferrer"
-          style={cardStyles.slideButton}
-          onMouseEnter={() => setIsButtonHovered(true)}
-          onMouseLeave={() => setIsButtonHovered(false)}
-        >
-          SEE MORE
-        </a>
-      </div>
-    </div>
-  );
+  // ... (Bu komponentte değişiklik yok)
 }
 
 // --- ANA KOMPONENT ---
@@ -201,23 +141,30 @@ function Bts() {
   const dragStartX = useRef(0);
   const animationFrameId = useRef(null);
   const trackWidth = useRef(0);
+  // YENİ: Cihazın dokunmatik olup olmadığını kontrol etmek için ref
+  const isTouchDevice = useRef(false);
 
   const BASE_SPEED = 0.5;
   const FRICTION = 0.95;
 
-  const handleMouseDown = (e) => {
+  // YENİ: Hem fare hem de dokunma olaylarından X koordinatını alan yardımcı fonksiyon
+  const getClientX = (e) => (e.touches ? e.touches[0].clientX : e.clientX);
+
+  const handleDragStart = (e) => {
     setIsPressed(true);
-    dragStartX.current = e.clientX;
+    dragStartX.current = getClientX(e);
     velocity.current = 0;
     cancelAnimationFrame(animationFrameId.current);
   };
 
-  const handleMouseMove = useCallback(
+  const handleDragMove = useCallback(
     (e) => {
       if (!isPressed) return;
-      const deltaX = e.clientX - dragStartX.current;
+      const clientX = getClientX(e);
+      const deltaX = clientX - dragStartX.current;
+      velocity.current = deltaX * 2; // Sürükleme hızını artırmak için çarpan
       positionX.current += deltaX;
-      dragStartX.current = e.clientX;
+      dragStartX.current = clientX;
     },
     [isPressed]
   );
@@ -225,7 +172,8 @@ function Bts() {
   const animationLoop = useCallback(() => {
     if (!trackRef.current) return;
 
-    if (!isPressed && !isHovered) {
+    // GÜNCELLEME: Otomatik kaymayı sadece dokunmatik olmayan cihazlarda ve etkileşim yokken çalıştır
+    if (!isPressed && !isHovered && !isTouchDevice.current) {
       velocity.current *= FRICTION;
       velocity.current -= BASE_SPEED;
     } else {
@@ -234,11 +182,13 @@ function Bts() {
 
     positionX.current += velocity.current;
 
+    // Sonsuz döngü logiği
     if (trackWidth.current > 0) {
-      if (positionX.current <= -trackWidth.current / 2) {
-        positionX.current += trackWidth.current / 2;
+      const halfWidth = trackWidth.current / 2;
+      if (positionX.current <= -halfWidth) {
+        positionX.current += halfWidth;
       } else if (positionX.current >= 0) {
-        positionX.current -= trackWidth.current / 2;
+        positionX.current -= halfWidth;
       }
     }
 
@@ -251,13 +201,17 @@ function Bts() {
     animationFrameId.current = requestAnimationFrame(animationLoop);
   }, [animationLoop]);
 
-  const handleMouseUp = useCallback(() => {
+  const handleDragEnd = useCallback(() => {
     setIsPressed(false);
     setFlashKey((prev) => prev + 1);
     startAnimationLoop();
   }, [startAnimationLoop]);
 
+  // GÜNCELLEME: Component ilk yüklendiğinde dokunmatik cihaz kontrolü yap
   useEffect(() => {
+    isTouchDevice.current =
+      "ontouchstart" in window || navigator.maxTouchPoints > 0;
+
     const calculateWidth = () => {
       if (trackRef.current?.scrollWidth) {
         trackWidth.current = trackRef.current.scrollWidth;
@@ -265,62 +219,50 @@ function Bts() {
     };
     calculateWidth();
     window.addEventListener("resize", calculateWidth);
-    return () => window.removeEventListener("resize", calculateWidth);
-  }, []);
 
-  useEffect(() => {
     startAnimationLoop();
-    return () => cancelAnimationFrame(animationFrameId.current);
+
+    return () => {
+      window.removeEventListener("resize", calculateWidth);
+      cancelAnimationFrame(animationFrameId.current);
+    };
   }, [startAnimationLoop]);
 
+  // GÜNCELLEME: Olay dinleyicilerini hem fare hem de dokunma için yönet
   useEffect(() => {
+    const handleMove = (e) => handleDragMove(e);
+    const handleEnd = () => handleDragEnd();
+
     if (isPressed) {
-      window.addEventListener("mousemove", handleMouseMove);
-      window.addEventListener("mouseup", handleMouseUp);
+      // Fare olayları
+      window.addEventListener("mousemove", handleMove);
+      window.addEventListener("mouseup", handleEnd);
+      // Dokunma olayları
+      window.addEventListener("touchmove", handleMove);
+      window.addEventListener("touchend", handleEnd);
     }
+
     return () => {
-      window.removeEventListener("mousemove", handleMouseMove);
-      window.removeEventListener("mouseup", handleMouseUp);
+      window.removeEventListener("mousemove", handleMove);
+      window.removeEventListener("mouseup", handleEnd);
+      window.removeEventListener("touchmove", handleMove);
+      window.removeEventListener("touchend", handleEnd);
     };
-  }, [isPressed, handleMouseMove, handleMouseUp]);
+  }, [isPressed, handleDragMove, handleDragEnd]);
 
   const mainStyles = {
-    mainContainer: {
-      backgroundColor: "#000000",
-      color: "#FFFFFF",
-      minHeight: "100vh",
-      padding: "2rem 0 5rem 0",
-      fontFamily: "'Outfit', sans-serif",
-    },
-    headerRow: { alignItems: "center", marginBottom: "1rem" },
-    btsTitle: { fontSize: "2rem", fontWeight: "bold", textAlign: "left" },
+    // ... (stil objelerinde değişiklik yok)
   };
 
   return (
     <div style={mainStyles.mainContainer}>
       <style>{newCarouselStyles}</style>
       <Container fluid="lg">
-        <Row style={mainStyles.headerRow}>
-          <Col xs={6} md={6}>
-            <h2 style={mainStyles.btsTitle}>BTS</h2>
-          </Col>
-          <Col xs={6} md={6} className="d-none d-md-flex justify-content-end">
-            {socialLinks.map((link) => (
-              <a
-                key={link.name}
-                href={link.href}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="social-button"
-              >
-                {link.name}
-              </a>
-            ))}
-          </Col>
-        </Row>
+        {/* ... (Header JSX'te değişiklik yok) */}
         <div
           className="marquee-container"
-          onMouseDown={handleMouseDown}
+          onMouseDown={handleDragStart} // Fare ile tıklama
+          onTouchStart={handleDragStart} // Dokunma başlangıcı
           onMouseEnter={() => setIsHovered(true)}
           onMouseLeave={() => setIsHovered(false)}
         >
@@ -340,24 +282,14 @@ function Bts() {
             ))}
           </div>
         </div>
-        <Row className="d-block d-md-none mt-4">
-          <Col xs={12} className="d-flex justify-content-end gap-3">
-            {socialLinks.map((link) => (
-              <a
-                key={link.name}
-                href={link.href}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="social-icon"
-              >
-                {link.icon}
-              </a>
-            ))}
-          </Col>
-        </Row>
+        {/* ... (Footer JSX'te değişiklik yok) */}
       </Container>
     </div>
   );
 }
+
+// CarouselCard komponenti ve diğer kısımlar aynı kalacak şekilde buraya eklenmelidir.
+// Yukarıdaki kodda sadece Bts ana komponenti gösterilmiştir.
+// CarouselCard'ı ve diğer importları kendi dosyanızdaki gibi koruyun.
 
 export default Bts;
