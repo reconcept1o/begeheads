@@ -1,5 +1,8 @@
+// BegeadsScene.js
+
 import * as THREE from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
+import { SVGLoader } from "three/examples/jsm/loaders/SVGLoader.js";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
@@ -14,12 +17,11 @@ class BegeadsScene {
     this.scene = new THREE.Scene();
     this.camera = new THREE.PerspectiveCamera(20, 1, 0.1, 1000);
 
-    // Büyüteç efekti için renderer ayarları
     this.renderer = new THREE.WebGLRenderer({
       antialias: true,
       alpha: true,
     });
-    this.renderer.autoClear = false; // <<< KRİTİK!
+    this.renderer.autoClear = false;
     this.renderer.outputColorSpace = THREE.SRGBColorSpace;
     this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
     this.renderer.toneMappingExposure = 1.25;
@@ -29,6 +31,7 @@ class BegeadsScene {
     this.pointer = new THREE.Vector2();
     this.viewport = { width: 2, height: 2 };
 
+    this.logoMesh = null;
     this.shapesGroup = null;
     this.shapesGroup2 = null;
     this.lookAtTarget1 = new THREE.Vector3();
@@ -79,10 +82,12 @@ class BegeadsScene {
     this.showCanvas();
     this.animate();
   }
+
   showCanvas() {
     if (this.renderer.domElement) this.renderer.domElement.style.opacity = "1";
     this.handleResize();
   }
+
   updateViewport() {
     const z = this.camera.position.z;
     const fov = this.camera.fov * (Math.PI / 180);
@@ -106,36 +111,78 @@ class BegeadsScene {
   }
 
   async loadAssets() {
-    try {
-      await this.loadGLTFModel();
-    } catch (e) {
-      console.error(e);
-    }
+    this.loadGLTFModel();
+    this.loadAndCreateLogoShapes();
   }
 
   loadGLTFModel() {
-    return new Promise((resolve, reject) => {
-      const loader = new GLTFLoader(this.loadingManager);
-      loader.load(
-        this.assetPaths.gltf,
-        (gltf) => {
-          const geometry = gltf.scene.children[0]?.geometry;
-          if (geometry) this.createAnimatedLetters(geometry);
-          resolve();
-        },
-        undefined,
-        reject
+    const loader = new GLTFLoader(this.loadingManager);
+    loader.load(this.assetPaths.gltf, (gltf) => {
+      const geometry = gltf.scene.children[0]?.geometry;
+      if (geometry) this.createAnimatedLetters(geometry);
+    });
+  }
+
+  loadAndCreateLogoShapes() {
+    const loader = new SVGLoader(this.loadingManager);
+    loader.load(this.assetPaths.logo, (data) => {
+      const paths = data.paths;
+      const group = new THREE.Group();
+
+      const box = new THREE.Box3().setFromObject(
+        new THREE.Group().add(
+          ...paths.map(
+            (p) =>
+              new THREE.Mesh(
+                new THREE.ShapeGeometry(SVGLoader.createShapes(p)[0])
+              )
+          )
+        )
       );
+      const size = new THREE.Vector3();
+      box.getSize(size);
+      const center = new THREE.Vector3();
+      box.getCenter(center);
+
+      const material = new THREE.MeshBasicMaterial({
+        color: 0xffffff,
+        side: THREE.DoubleSide,
+      });
+
+      for (let i = 0; i < paths.length; i++) {
+        const path = paths[i];
+        const shapes = SVGLoader.createShapes(path);
+
+        for (let j = 0; j < shapes.length; j++) {
+          const shape = shapes[j];
+          const geometry = new THREE.ShapeGeometry(shape);
+          const mesh = new THREE.Mesh(geometry, material);
+          group.add(mesh);
+        }
+      }
+
+      const scale = (this.viewport.height * 0.45) / size.y;
+      group.scale.set(scale, scale, scale);
+      group.position.x = -center.x * scale;
+
+      // GÜNCELLEME: Logoyu "2 tık" daha yukarı çektik (0.6 -> 0.85)
+      group.position.y = (this.viewport.height / 2) * 0.85;
+
+      group.position.z = -0.5;
+      group.rotation.x = Math.PI;
+
+      this.logoMesh = group;
+      this.scene.add(this.logoMesh);
     });
   }
 
   createAnimatedLetters(geometry) {
     const material = new THREE.MeshPhysicalMaterial({
       metalness: 0,
-      roughness: 0.05,
+      roughness: 0.2,
       transmission: 1.0,
-      thickness: 2.5,
-      ior: 1.2,
+      thickness: 2,
+      ior: 1.3,
       envMap: this.scene.environment,
       envMapIntensity: 1.8,
     });
@@ -284,6 +331,7 @@ class BegeadsScene {
     this.pointer.x = (event.clientX / window.innerWidth) * 2 - 1;
     this.pointer.y = -(event.clientY / window.innerHeight) * 2 + 1;
   }
+
   handleResize() {
     if (!this.container) return;
     const rect = this.container.getBoundingClientRect();
@@ -291,6 +339,7 @@ class BegeadsScene {
     this.camera.updateProjectionMatrix();
     this.renderer.setSize(rect.width, rect.height);
     this.updateViewport();
+
     if (this.basePositions.group1 && this.basePositions.group2) {
       const scaleFactor = Math.max(15, Math.min(25, 30 / this.viewport.width));
       this.shapesGroup.scale.setScalar(this.viewport.width * scaleFactor);
@@ -314,11 +363,13 @@ class BegeadsScene {
       }
     }
   }
+
   dispose() {
     if (this.gsapAnimations) this.gsapAnimations.forEach((anim) => anim.kill());
     if (this.scrollTrigger) this.scrollTrigger.kill();
     window.removeEventListener("mousemove", this.boundHandleMouseMove);
     window.removeEventListener("resize", this.boundHandleResize);
+
     this.scene.traverse((object) => {
       if (object.geometry) object.geometry.dispose();
       if (object.material) {

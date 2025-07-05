@@ -1,4 +1,6 @@
-import React, { useRef, useEffect, useState } from "react";
+// Home.js
+
+import React, { useRef, useEffect, useState, useCallback } from "react";
 import BegeadsScene from "../Animation/BegeadsScene";
 
 // Asset'leri import ediyoruz
@@ -12,8 +14,7 @@ import envNy from "../assets/texture3/ny.png";
 import envPz from "../assets/texture3/pz.png";
 import envNz from "../assets/texture3/nz.png";
 
-// --- SİLİNDİ --- Animasyon için kullanılan sabit kaldırıldı.
-// const SCRAMBLE_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ*#?%&@";
+const SCRAMBLE_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ*#?%&@";
 const TARGET_TEXT = "©BEGEADS CREATIVE SPACE";
 
 function Home() {
@@ -22,10 +23,8 @@ function Home() {
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
   const [isWhatsAppHovered, setIsWhatsAppHovered] = useState(false);
   const [isMailHovered, setIsMailHovered] = useState(false);
-
-  // --- SİLİNDİ --- Animasyon state'i ve ref'i kaldırıldı.
-  // const [headerText, setHeaderText] = useState(TARGET_TEXT);
-  // const animationIntervalRef = useRef(null);
+  const [headerText, setHeaderText] = useState(TARGET_TEXT);
+  const animationIntervalRef = useRef(null);
 
   useEffect(() => {
     if (!mountRef.current) return;
@@ -34,6 +33,7 @@ function Home() {
 
     const assetPaths = {
       gltf: gltfUrl,
+      logo: logoUrl,
       envMap: [envPx, envNx, envPy, envNy, envPz, envNz],
     };
 
@@ -55,12 +55,34 @@ function Home() {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  // --- SİLİNDİ --- Scramble animasyonunu çalıştıran fonksiyon kaldırıldı.
-  // const runScrambleAnimation = useCallback(() => { ... });
+  const runScrambleAnimation = useCallback(() => {
+    let iteration = 0;
+    clearInterval(animationIntervalRef.current);
+    animationIntervalRef.current = setInterval(() => {
+      const newText = TARGET_TEXT.split("")
+        .map((letter, index) => {
+          if (index < iteration) return TARGET_TEXT[index];
+          return SCRAMBLE_CHARS[
+            Math.floor(Math.random() * SCRAMBLE_CHARS.length)
+          ];
+        })
+        .join("");
+      setHeaderText(newText);
+      if (iteration >= TARGET_TEXT.length)
+        clearInterval(animationIntervalRef.current);
+      iteration += 1 / 3;
+    }, 30);
+  }, []);
 
-  // --- SİLİNDİ --- Animasyonu başlatan ve temizleyen useEffect'ler kaldırıldı.
-  // useEffect(() => { ... }, [isSceneLoaded, runScrambleAnimation]);
-  // useEffect(() => { ... }, []);
+  useEffect(() => {
+    if (isSceneLoaded) {
+      setTimeout(runScrambleAnimation, 700);
+    }
+  }, [isSceneLoaded, runScrambleAnimation]);
+
+  useEffect(() => {
+    return () => clearInterval(animationIntervalRef.current);
+  }, []);
 
   const handleWhatsAppClick = () => {
     window.open("https://wa.me/YOUR_PHONE_NUMBER", "_blank");
@@ -69,7 +91,6 @@ function Home() {
     window.location.href = "mailto:YOUR_EMAIL_ADDRESS";
   };
 
-  // --- STYLES --- (Stil tanımlamalarında değişiklik yok)
   const rootStyle = {
     position: "relative",
     width: "100%",
@@ -81,6 +102,7 @@ function Home() {
     overflow: "hidden",
     fontFamily: "'Outfit', sans-serif",
   };
+
   const contentContainerStyle = {
     position: "absolute",
     top: 0,
@@ -90,20 +112,14 @@ function Home() {
     zIndex: 3,
     display: "flex",
     flexDirection: "column",
-    justifyContent: "center",
+    justifyContent: "flex-end",
     alignItems: "center",
     padding: "20px",
+    // GÜNCELLEME: İçeriği "biraz daha" aşağı çektik (12vh -> 6vh, 8vh -> 5vh)
+    paddingBottom: isMobile ? "5vh" : "6vh",
     boxSizing: "border-box",
   };
-  const logoStyle = {
-    width: "100%",
-    height: "auto",
-    maxHeight: isMobile ? "35vh" : "45vh",
-    objectFit: "contain",
-    filter: "brightness(0) invert(1)",
-    opacity: isSceneLoaded ? 0.5 : 0,
-    transition: "opacity 1s ease-in",
-  };
+
   const subtitleStyle = {
     color: "white",
     textAlign: "center",
@@ -111,11 +127,12 @@ function Home() {
     fontSize: isMobile ? "1rem" : "1.2rem",
     fontWeight: 300,
     lineHeight: 1.6,
-    marginTop: isMobile ? "20px" : "30px",
+    marginTop: 0,
     maxWidth: isMobile ? "90vw" : "600px",
     opacity: isSceneLoaded ? 1 : 0,
     transition: "opacity 1s ease-in 0.3s",
   };
+
   const canvasContainerStyle = {
     position: "absolute",
     top: 0,
@@ -200,7 +217,6 @@ function Home() {
   return (
     <div style={rootStyle}>
       <div style={contentContainerStyle}>
-        <img src={logoUrl} alt="Logo" style={logoStyle} />
         <p style={subtitleStyle}>
           You know what you're building. You’ve got the vision and you just need
           the right hands to move it.
@@ -230,15 +246,12 @@ function Home() {
           </button>
         </nav>
       </div>
-
       <div ref={mountRef} style={canvasContainerStyle}></div>
-
       <div style={headerContainerStyle}>
         <header style={headerStyle}>
-          {/* --- DEĞİŞİKLİK ---
-              'onMouseEnter' olayı kaldırıldı ve metin doğrudan 'TARGET_TEXT' sabitinden alındı.
-          */}
-          <div style={headerTextStyle}>{TARGET_TEXT}</div>
+          <div style={headerTextStyle} onMouseEnter={runScrambleAnimation}>
+            {headerText}
+          </div>
           <div style={headerLineStyle} />
         </header>
       </div>
