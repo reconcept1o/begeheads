@@ -14,7 +14,7 @@ import envNy from "../assets/texture3/ny.png";
 import envPz from "../assets/texture3/pz.png";
 import envNz from "../assets/texture3/nz.png";
 
-const SCRAMBLE_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ*#?%&@";
+// GÜNCELLEME: Animasyon kaldırıldığı için SCRAMBLE_CHARS kaldırıldı.
 const TARGET_TEXT = "©BEGEADS CREATIVE SPACE";
 
 function Home() {
@@ -23,8 +23,10 @@ function Home() {
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
   const [isWhatsAppHovered, setIsWhatsAppHovered] = useState(false);
   const [isMailHovered, setIsMailHovered] = useState(false);
-  const [headerText, setHeaderText] = useState(TARGET_TEXT);
-  const animationIntervalRef = useRef(null);
+
+  // GÜNCELLEME: headerText state'i ve interval ref'i kaldırıldı.
+  // const [headerText, setHeaderText] = useState(TARGET_TEXT);
+  // const animationIntervalRef = useRef(null);
 
   useEffect(() => {
     if (!mountRef.current) return;
@@ -55,40 +57,20 @@ function Home() {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  const runScrambleAnimation = useCallback(() => {
-    let iteration = 0;
-    clearInterval(animationIntervalRef.current);
-    animationIntervalRef.current = setInterval(() => {
-      const newText = TARGET_TEXT.split("")
-        .map((letter, index) => {
-          if (index < iteration) return TARGET_TEXT[index];
-          return SCRAMBLE_CHARS[
-            Math.floor(Math.random() * SCRAMBLE_CHARS.length)
-          ];
-        })
-        .join("");
-      setHeaderText(newText);
-      if (iteration >= TARGET_TEXT.length)
-        clearInterval(animationIntervalRef.current);
-      iteration += 1 / 3;
-    }, 30);
-  }, []);
+  // GÜNCELLEME: runScrambleAnimation fonksiyonu tamamen kaldırıldı.
+  // const runScrambleAnimation = useCallback(() => { ... });
 
-  useEffect(() => {
-    if (isSceneLoaded) {
-      setTimeout(runScrambleAnimation, 700);
-    }
-  }, [isSceneLoaded, runScrambleAnimation]);
+  // GÜNCELLEME: Animasyonu başlatan useEffect kaldırıldı.
+  // useEffect(() => { ... });
 
-  useEffect(() => {
-    return () => clearInterval(animationIntervalRef.current);
-  }, []);
+  // GÜNCELLEME: Interval'i temizleyen useEffect kaldırıldı.
+  // useEffect(() => { ... });
 
   const handleWhatsAppClick = () => {
-    window.open("https://wa.me/YOUR_PHONE_NUMBER", "_blank");
+    window.open("https://wa.me/905333333333", "_blank"); // Telefon numarasını güncelleyin
   };
   const handleMailClick = () => {
-    window.location.href = "mailto:YOUR_EMAIL_ADDRESS";
+    window.location.href = "mailto:info@begeads.com"; // E-posta adresini güncelleyin
   };
 
   const rootStyle = {
@@ -115,7 +97,6 @@ function Home() {
     justifyContent: "flex-end",
     alignItems: "center",
     padding: "20px",
-    // GÜNCELLEME: İçeriği "biraz daha" aşağı çektik (12vh -> 6vh, 8vh -> 5vh)
     paddingBottom: isMobile ? "5vh" : "6vh",
     boxSizing: "border-box",
   };
@@ -177,7 +158,8 @@ function Home() {
     color: "white",
     marginBottom: "8px",
     letterSpacing: "1px",
-    cursor: "pointer",
+    // GÜNCELLEME: Fare ile üzerine gelince animasyon tetiklenmeyeceği için cursor:pointer kaldırıldı.
+    // cursor: "pointer",
     fontVariantNumeric: "tabular-nums",
   };
   const headerLineStyle = {
@@ -249,9 +231,8 @@ function Home() {
       <div ref={mountRef} style={canvasContainerStyle}></div>
       <div style={headerContainerStyle}>
         <header style={headerStyle}>
-          <div style={headerTextStyle} onMouseEnter={runScrambleAnimation}>
-            {headerText}
-          </div>
+          {/* GÜNCELLEME: onMouseEnter olayı kaldırıldı ve metin doğrudan yazıldı */}
+          <div style={headerTextStyle}>{TARGET_TEXT}</div>
           <div style={headerLineStyle} />
         </header>
       </div>
