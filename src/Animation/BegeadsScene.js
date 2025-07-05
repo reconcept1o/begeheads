@@ -186,8 +186,8 @@ class BegeadsScene {
 
     if (isMobile) {
       // --- MOBİL GÖRÜNÜM MANTIĞI ---
-      // GÜNCELLEME: Logoyu daha büyük yapıp sayfaya oturtmak için sadece genişliğe göre ölçekliyoruz.
-      const mobileScale = (this.viewport.width * 0.9) / size.x;
+      // GÜNCELLEME: Mobil logonun genişlik oranını %90'dan %95'e çıkardık.
+      const mobileScale = (this.viewport.width * 0.95) / size.x;
 
       finalScaleX = mobileScale;
       finalScaleY = mobileScale;
