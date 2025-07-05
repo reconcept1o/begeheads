@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Container, Row, Col } from "react-bootstrap";
 import { FaArrowUp } from "react-icons/fa";
 
+// Logo'nun doğru yolda olduğundan emin olun
 import logo from "../assets/logo.svg";
 
 // --- VERİLER ---
@@ -16,7 +17,7 @@ const socialLinks = [
   { text: "YOUTUBE", href: "https://youtube.com" },
 ];
 
-// --- RESPONSIVE STİLLER (YENİ) ---
+// --- RESPONSIVE STİLLER ---
 const responsiveStyles = `
   @media (max-width: 767.98px) {
     .footer-main-row {
@@ -111,6 +112,7 @@ const styles = {
     maxWidth: "800px",
     height: "auto",
   },
+  // Artık kullanılmadığı için bu stil bloğu silinebilir, ancak zararı yok.
   regSymbol: {
     position: "absolute",
     top: "0",
@@ -232,9 +234,7 @@ function Footer() {
           <Row style={styles.logoRow} className="footer-logo-row">
             <Col>
               <img src={logo} alt="BEGEADS Logo" style={styles.logo} />
-              <sup style={styles.regSymbol} className="footer-reg-symbol">
-                ®
-              </sup>
+              {/* ® sembolünü ekleyen <sup> etiketi buradan kaldırıldı. */}
             </Col>
           </Row>
 
