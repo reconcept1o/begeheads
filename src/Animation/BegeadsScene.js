@@ -135,7 +135,7 @@ class BegeadsScene {
       roughness: 0.05,
       transmission: 1.0,
       thickness: 2.5,
-      ior: 1.5,
+      ior: 1.2,
       envMap: this.scene.environment,
       envMapIntensity: 1.8,
     });

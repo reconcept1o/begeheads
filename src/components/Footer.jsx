@@ -2,10 +2,9 @@ import React, { useState } from "react";
 import { Container, Row, Col } from "react-bootstrap";
 import { FaArrowUp } from "react-icons/fa";
 
-// Logo'nun doğru yolda olduğundan emin olun
 import logo from "../assets/logo.svg";
 
-// --- VERİLER ---
+
 const contactLinks = [
   { text: "Message us", href: "https://wa.me/YOUR_PHONE_NUMBER" },
   { text: "Email us", href: "mailto:YOUR_EMAIL_ADDRESS" },
@@ -112,7 +111,7 @@ const styles = {
     maxWidth: "800px",
     height: "auto",
   },
-  // Artık kullanılmadığı için bu stil bloğu silinebilir, ancak zararı yok.
+
   regSymbol: {
     position: "absolute",
     top: "0",

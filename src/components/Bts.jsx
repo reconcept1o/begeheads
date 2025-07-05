@@ -2,12 +2,12 @@ import React, { useState, useEffect, useRef, useCallback } from "react";
 import { Container, Row, Col } from "react-bootstrap";
 import { FaInstagram, FaYoutube, FaLinkedin } from "react-icons/fa";
 
-// Resimlerinizi import edin (yolların doğru olduğundan emin olun)
+
 import image1 from "../assets/bts/11.webp";
 import image2 from "../assets/bts/22.webp";
 import image3 from "../assets/bts/33.webp";
 
-// --- VERİLER ---
+
 const btsData = [
   {
     id: 1,
@@ -330,7 +330,7 @@ function Bts() {
             ))}
           </Col>
         </Row>
-        {/* GÜNCELLEME: Sınıf adı çakışmayı önlemek için değiştirildi */}
+
         <div
           className="bts-carousel-container"
           onMouseDown={handleDragStart}
@@ -338,7 +338,7 @@ function Bts() {
           onMouseEnter={() => setIsHovered(true)}
           onMouseLeave={() => setIsHovered(false)}
         >
-          {/* GÜNCELLEME: Sınıf adı çakışmayı önlemek için değiştirildi */}
+      
           <div
             ref={trackRef}
             className="bts-carousel-track"

@@ -265,7 +265,7 @@ function HowItWorks() {
           </Col>
         </Row>
 
-        {/* --- Mobile Header (Title + Arrows) --- */}
+    
         <Row
           className="mobile-header"
           style={{
@@ -295,7 +295,6 @@ function HowItWorks() {
           </Col>
         </Row>
 
-        {/* --- Desktop Feature Cards --- */}
         <Row
           className="g-0 desktop"
           style={{
@@ -324,7 +323,7 @@ function HowItWorks() {
           ))}
         </Row>
 
-        {/* --- Mobile Carousel --- */}
+
         <div className="mobile" style={styles.carouselContainer} ref={touchRef}>
           <MobileFeatureCard {...featuresData[currentIndex]} isActive={true} />
         </div>
