@@ -186,8 +186,8 @@ class BegeadsScene {
 
     if (isMobile) {
       // --- MOBİL GÖRÜNÜM MANTIĞI ---
-      // GÜNCELLEME: Mobil logonun genişlik oranını %90'dan %95'e çıkardık.
-      const mobileScale = (this.viewport.width * 0.95) / size.x;
+      // GÜNCELLEME: Mobil logonun genişlik oranını %95'ten %98'e çıkardık.
+      const mobileScale = (this.viewport.width * 0.98) / size.x;
 
       finalScaleX = mobileScale;
       finalScaleY = mobileScale;
@@ -205,7 +205,6 @@ class BegeadsScene {
     this.logoMesh.scale.set(finalScaleX, finalScaleY, finalScaleY);
     this.logoMesh.position.x = -center.x * finalScaleX;
   }
-
   createAnimatedLetters(geometry) {
     const material = new THREE.MeshPhysicalMaterial({
       metalness: 0,
