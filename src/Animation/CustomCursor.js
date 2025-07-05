@@ -1,47 +1,65 @@
 import React, { useEffect, useRef } from "react";
 
 function CustomCursor() {
-  const dotRef = useRef(null);
-  const circleRef = useRef(null);
+  const circleOrangeRef = useRef(null);
+  const circleBlackRef = useRef(null);
+  const timeoutIdRef = useRef(null); // Kaybolma efekti için zamanlayıcı referansı
 
   useEffect(() => {
     let mouseX = 0;
     let mouseY = 0;
-    let circleX = 0;
-    let circleY = 0;
-    const smoothing = 0.1; // Gecikme faktörü, küçüldükçe gecikme artar
+    let orangeX = 0;
+    let orangeY = 0;
+    let blackX = 0;
+    let blackY = 0;
+    const orangeSmoothing = 0.15;
+    const blackSmoothing = 0.08;
+    const newSize = 35; // YENİ: Boyut burada tanımlandı
+    const offset = newSize / 2; // YENİ: Ortalamak için ofset
 
     const handleMouseMove = (e) => {
       mouseX = e.clientX;
       mouseY = e.clientY;
 
-      // Küçük nokta anında hareket eder
-      if (dotRef.current) {
-        dotRef.current.style.transform = `translate3d(${mouseX}px, ${mouseY}px, 0)`;
+      // GÜNCELLEME: Fare hareket edince daireleri görünür yap
+      if (circleOrangeRef.current && circleBlackRef.current) {
+        circleOrangeRef.current.style.opacity = "1";
+        circleBlackRef.current.style.opacity = "1";
       }
 
-      // Link veya buton üzerine gelme kontrolü
-      const target = e.target;
-      if (circleRef.current) {
-        if (target.closest("a") || target.closest("button")) {
-          circleRef.current.classList.add("hovered");
-        } else {
-          circleRef.current.classList.remove("hovered");
+      // Önceki zamanlayıcıyı temizle
+      clearTimeout(timeoutIdRef.current);
+
+      // Fare durduktan 200ms sonra daireleri gizlemek için yeni zamanlayıcı ayarla
+      timeoutIdRef.current = setTimeout(() => {
+        if (circleOrangeRef.current && circleBlackRef.current) {
+          circleOrangeRef.current.style.opacity = "0";
+          circleBlackRef.current.style.opacity = "0";
         }
-      }
+      }, 200);
     };
 
-    // Animasyon döngüsü
     const animate = () => {
-      // Büyük çember yumuşak bir gecikme ile hareket eder (Lerp)
-      const deltaX = mouseX - circleX;
-      const deltaY = mouseY - circleY;
+      const deltaOrangeX = mouseX - orangeX;
+      const deltaOrangeY = mouseY - orangeY;
+      orangeX += deltaOrangeX * orangeSmoothing;
+      orangeY += deltaOrangeY * orangeSmoothing;
 
-      circleX += deltaX * smoothing;
-      circleY += deltaY * smoothing;
+      if (circleOrangeRef.current) {
+        circleOrangeRef.current.style.transform = `translate3d(${
+          orangeX - offset
+        }px, ${orangeY - offset}px, 0)`;
+      }
 
-      if (circleRef.current) {
-        circleRef.current.style.transform = `translate3d(${circleX}px, ${circleY}px, 0)`;
+      const deltaBlackX = mouseX - blackX;
+      const deltaBlackY = mouseY - blackY;
+      blackX += deltaBlackX * blackSmoothing;
+      blackY += deltaBlackY * blackSmoothing;
+
+      if (circleBlackRef.current) {
+        circleBlackRef.current.style.transform = `translate3d(${
+          blackX - offset
+        }px, ${blackY - offset}px, 0)`;
       }
 
       requestAnimationFrame(animate);
@@ -52,13 +70,14 @@ function CustomCursor() {
 
     return () => {
       window.removeEventListener("mousemove", handleMouseMove);
+      clearTimeout(timeoutIdRef.current); // Component kaldırıldığında zamanlayıcıyı temizle
     };
   }, []);
 
   return (
     <>
-      <div ref={dotRef} className="cursor-dot"></div>
-      <div ref={circleRef} className="cursor-circle"></div>
+      <div ref={circleOrangeRef} className="cursor-circle-orange"></div>
+      <div ref={circleBlackRef} className="cursor-circle-black"></div>
     </>
   );
 }

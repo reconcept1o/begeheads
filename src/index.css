@@ -1,47 +1,42 @@
 /* ======================================== */
-/* YENİ EKLENEN ÖZEL İMLEÇ STİLLERİ          */
+/* YENİ EKLENEN ÖZEL İMLEÇ STİLLERİ (V4)      */
 /* ======================================== */
 
-/* Varsayılan fare imlecini tamamen gizle */
-* {
-  cursor: none;
-}
-
-/* Anlık takip eden küçük turuncu nokta */
-.cursor-dot {
+/* Turuncu büyük yuvarlak */
+.cursor-circle-orange {
   position: fixed;
-  top: -5px; /* Yarıçap kadar eksi değer */
-  left: -5px; /* Yarıçap kadar eksi değer */
-  width: 10px;
-  height: 10px;
+  top: 0;
+  left: 0;
+  /* GÜNCELLEME: Boyut 35px olarak küçültüldü */
+  width: 35px;
+  height: 35px;
   background-color: orange;
   border-radius: 50%;
-  z-index: 9999;
-  pointer-events: none; /* Tıklama olaylarını engellemez */
-  transition: transform 0.1s linear;
-}
-
-/* Gecikmeli gelen büyük çember */
-.cursor-circle {
-  position: fixed;
-  top: -20px; /* Yarıçap kadar eksi değer */
-  left: -20px; /* Yarıçap kadar eksi değer */
-  width: 40px;
-  height: 40px;
-  border: 1px solid orange;
-  border-radius: 50%;
-  z-index: 9999;
+  z-index: 9998;
   pointer-events: none;
-  transition: transform 0.2s linear, width 0.3s ease, height 0.3s ease, top 0.3s ease, left 0.3s ease;
+  mix-blend-mode: difference;
+  /* GÜNCELLEME: Opacity geçişi eklendi */
+  transition: transform 0.2s ease-out, opacity 0.3s ease-out;
+  opacity: 0; /* Başlangıçta gizli */
 }
 
-/* Link veya buton üzerine gelindiğinde çemberin alacağı stil */
-.cursor-circle.hovered {
-  width: 60px;
-  height: 60px;
-  top: -30px;
-  left: -30px;
+/* Siyah büyük yuvarlak */
+.cursor-circle-black {
+  position: fixed;
+  top: 0;
+  left: 0;
+  /* GÜNCELLEME: Boyut 35px olarak küçültüldü */
+  width: 35px;
+  height: 35px;
+  background-color: rgba(0, 0, 0, 0.5);
+  border-radius: 50%;
+  z-index: 9997;
+  pointer-events: none;
+  /* GÜNCELLEME: Opacity geçişi eklendi */
+  transition: transform 0.3s ease-out, opacity 0.3s ease-out;
+  opacity: 0; /* Başlangıçta gizli */
 }
+
 
 
 /* ======================================== */
@@ -89,27 +84,27 @@ body {
 .outfit-light {
   font-family: "Outfit", sans-serif;
   font-optical-sizing: auto;
-  font-weight: 300; 
+  font-weight: 300;
   font-style: normal;
 }
 
 .outfit-regular {
   font-family: "Outfit", sans-serif;
   font-optical-sizing: auto;
-  font-weight: 400; 
+  font-weight: 400;
   font-style: normal;
 }
 
 .outfit-bold {
   font-family: "Outfit", sans-serif;
   font-optical-sizing: auto;
-  font-weight: 700; 
+  font-weight: 700;
   font-style: normal;
 }
 
 .outfit-black {
   font-family: "Outfit", sans-serif;
   font-optical-sizing: auto;
-  font-weight: 900; 
+  font-weight: 900;
   font-style: normal;
 }
