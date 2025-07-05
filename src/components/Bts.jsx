@@ -12,37 +12,37 @@ const btsData = [
   {
     id: 1,
     image: image1,
-    text: "We brought creators to China...",
+    text: "We brought creators to China and put them in the cage, turning them into the story that pulls every eye to BRAVE.",
     link: "https://example.com/china",
   },
   {
     id: 2,
     image: image2,
-    text: "Producing on-water video content...",
+    text: "Producing on-water video content is proof that our limits don’t exist. Check out this shoot for the UAE’s best-known yacht agency.",
     link: "https://example.com/video",
   },
   {
     id: 3,
     image: image3,
-    text: "Bringing a top USA influencer...",
+    text: "Bringing a top USA influencer to film with Dubai’s biggest luxury car rental. Wild, right? Check the result.",
     link: "https://example.com/influencer",
   },
   {
     id: 4,
     image: image1,
-    text: "Another project in China...",
+    text: "We brought creators to China and put them in the cage, turning them into the story that pulls every eye to BRAVE.",
     link: "https://example.com/china-2",
   },
   {
     id: 5,
     image: image2,
-    text: "On-water content sequel...",
+    text: "Producing on-water video content is proof that our limits don’t exist. Check out this shoot for the UAE’s best-known yacht agency.",
     link: "https://example.com/video-2",
   },
   {
     id: 6,
     image: image3,
-    text: "USA influencer collaboration...",
+    text: "Bringing a top USA influencer to film with Dubai’s biggest luxury car rental. Wild, right? Check the result.",
     link: "https://example.com/influencer-2",
   },
 ];
