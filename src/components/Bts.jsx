@@ -12,37 +12,37 @@ const btsData = [
   {
     id: 1,
     image: image1,
-    text: "We brought creators to China...",
+    text: "We brought creators to China and put them in the cage, turning them into the story that pulls every eye to BRAVE.",
     link: "https://example.com/china",
   },
   {
     id: 2,
     image: image2,
-    text: "Producing on-water video content...",
+    text: "Producing on-water video content is proof that our limits don’t exist. Check out this shoot for the UAE’s best-known yacht agency.",
     link: "https://example.com/video",
   },
   {
     id: 3,
     image: image3,
-    text: "Bringing a top USA influencer...",
+    text: "Bringing a top USA influencer to film with Dubai’s biggest luxury car rental. Wild, right? Check the result.",
     link: "https://example.com/influencer",
   },
   {
     id: 4,
     image: image1,
-    text: "Another project in China...",
+    text: "We brought creators to China and put them in the cage, turning them into the story that pulls every eye to BRAVE.",
     link: "https://example.com/china-2",
   },
   {
     id: 5,
     image: image2,
-    text: "On-water content sequel...",
+    text: "Producing on-water video content is proof that our limits don’t exist. Check out this shoot for the UAE’s best-known yacht agency.",
     link: "https://example.com/video-2",
   },
   {
     id: 6,
     image: image3,
-    text: "USA influencer collaboration...",
+    text: "Bringing a top USA influencer to film with Dubai’s biggest luxury car rental. Wild, right? Check the result.",
     link: "https://example.com/influencer-2",
   },
 ];
@@ -53,20 +53,21 @@ const socialLinks = [
   { name: "LinkedIn", href: "https://linkedin.com", icon: <FaLinkedin /> },
 ];
 
-// --- STİLLER ---
+// --- STİLLER (SINIF İSİMLERİ GÜNCELLENDİ) ---
 const newCarouselStyles = `
-  /* Stil kodunda değişiklik yok */
-  .marquee-container {
+  /* GÜNCELLEME: Sınıf adı çakışmayı önlemek için değiştirildi */
+  .bts-carousel-container {
     overflow: hidden;
     position: relative;
     width: 100%;
     padding: 1rem 0;
     cursor: grab;
   }
-  .marquee-container:active {
+  .bts-carousel-container:active {
     cursor: grabbing;
   }
-  .marquee-track {
+  /* GÜNCELLEME: Sınıf adı çakışmayı önlemek için değiştirildi */
+  .bts-carousel-track {
     display: flex;
     gap: 40px;
     transition: gap 0.4s ease;
@@ -98,7 +99,7 @@ const newCarouselStyles = `
     color: #FFFFFF;
     text-decoration: none;
     transition: opacity 0.3s ease;
-    border: 3px solid #FFFFFF;
+    border: 1px solid #FFFFFF;
     border-radius: 50%;
     padding: 0.75rem;
     width: 50px;
@@ -127,7 +128,6 @@ const newCarouselStyles = `
 
 // --- KART KOMPONENTİ ---
 function CarouselCard({ item, flashKey }) {
-  // Bu komponentte değişiklik yok
   const [isButtonHovered, setIsButtonHovered] = useState(false);
   const cardStyles = {
     slideCard: {
@@ -203,7 +203,7 @@ function Bts() {
   const animationFrameId = useRef(null);
   const trackWidth = useRef(0);
 
-  const BASE_SPEED = 0.5;
+  const BASE_SPEED = 0.1;
   const FRICTION = 0.95;
 
   const getClientX = (e) => (e.touches ? e.touches[0].clientX : e.clientX);
@@ -220,7 +220,6 @@ function Bts() {
       if (!isPressed) return;
       const clientX = getClientX(e);
       const deltaX = clientX - dragStartX.current;
-      // DÜZELTME: Hız çarpanı kaldırıldı, orijinaldeki gibi sadece pozisyon güncelleniyor.
       positionX.current += deltaX;
       dragStartX.current = clientX;
     },
@@ -230,7 +229,6 @@ function Bts() {
   const animationLoop = useCallback(() => {
     if (!trackRef.current) return;
 
-    // DÜZELTME: Mobilde otomatik akışı sağlamak için dokunmatik cihaz kontrolü kaldırıldı.
     if (!isPressed && !isHovered) {
       velocity.current *= FRICTION;
       velocity.current -= BASE_SPEED;
@@ -299,7 +297,6 @@ function Bts() {
   }, [isPressed, handleDragMove, handleDragEnd]);
 
   const mainStyles = {
-    // Stil objelerinde değişiklik yok
     mainContainer: {
       backgroundColor: "#000000",
       color: "#FFFFFF",
@@ -315,7 +312,6 @@ function Bts() {
     <div style={mainStyles.mainContainer}>
       <style>{newCarouselStyles}</style>
       <Container fluid="lg">
-        {/* Header JSX'te değişiklik yok */}
         <Row style={mainStyles.headerRow}>
           <Col xs={6} md={6}>
             <h2 style={mainStyles.btsTitle}>BTS</h2>
@@ -334,16 +330,18 @@ function Bts() {
             ))}
           </Col>
         </Row>
+        {/* GÜNCELLEME: Sınıf adı çakışmayı önlemek için değiştirildi */}
         <div
-          className="marquee-container"
+          className="bts-carousel-container"
           onMouseDown={handleDragStart}
           onTouchStart={handleDragStart}
           onMouseEnter={() => setIsHovered(true)}
           onMouseLeave={() => setIsHovered(false)}
         >
+          {/* GÜNCELLEME: Sınıf adı çakışmayı önlemek için değiştirildi */}
           <div
             ref={trackRef}
-            className="marquee-track"
+            className="bts-carousel-track"
             style={{ gap: isPressed ? "60px" : "40px" }}
           >
             {[...btsData, ...btsData].map((item, index) => (
@@ -357,7 +355,6 @@ function Bts() {
             ))}
           </div>
         </div>
-        {/* Footer JSX'te değişiklik yok */}
         <Row className="d-block d-md-none mt-4">
           <Col xs={12} className="d-flex justify-content-end gap-3">
             {socialLinks.map((link) => (
