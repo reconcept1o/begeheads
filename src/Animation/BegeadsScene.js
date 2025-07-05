@@ -175,44 +175,34 @@ class BegeadsScene {
     });
   }
 
-  // GÜNCELLEME: Responsive logo yerleşimi için fonksiyon güncellendi
   updateLogoLayout() {
     if (!this.logoMesh || !this.logoOriginalSize) return;
 
     const size = this.logoOriginalSize;
     const center = this.logoOriginalCenter;
-    const isMobile = this.camera.aspect < 1; // Ekran dikey ise mobil kabul ediyoruz
+    const isMobile = this.camera.aspect < 1;
 
     let finalScaleX, finalScaleY;
 
     if (isMobile) {
       // --- MOBİL GÖRÜNÜM MANTIĞI ---
-      // Hem yüksekliğe hem genişliğe göre sığacak şekilde ölçekle
-      const scaleToFitHeight = (this.viewport.height * 0.45) / size.y;
-      const scaleToFitWidth = (this.viewport.width * 0.9) / size.x;
-      const mobileScale = Math.min(scaleToFitWidth, scaleToFitHeight);
+      // GÜNCELLEME: Logoyu daha büyük yapıp sayfaya oturtmak için sadece genişliğe göre ölçekliyoruz.
+      const mobileScale = (this.viewport.width * 0.9) / size.x;
 
       finalScaleX = mobileScale;
       finalScaleY = mobileScale;
 
-      // Dikey konumu ayarla
       this.logoMesh.position.y = (this.viewport.height / 2) * 0.75;
     } else {
-      // --- MASAÜSTÜ GÖRÜNÜM MANTIĞI (ÖNCEKİ GİBİ) ---
-      // Sadece yüksekliğe göre ölçeklendir
+      // --- MASAÜSTÜ GÖRÜNÜM MANTIĞI ---
       const desktopScale = (this.viewport.height * 0.45) / size.y;
       finalScaleY = desktopScale;
-      // Genişliği %90 oranında ayarla
       finalScaleX = desktopScale * 0.9;
 
-      // Dikey konumu ayarla
       this.logoMesh.position.y = (this.viewport.height / 2) * 0.85;
     }
 
-    // Hesaplanan son ölçekleri uygula
     this.logoMesh.scale.set(finalScaleX, finalScaleY, finalScaleY);
-
-    // Yeni genişliğe göre yatayda ortala
     this.logoMesh.position.x = -center.x * finalScaleX;
   }
 
