@@ -63,7 +63,7 @@ class BegeadsScene {
     this.container.appendChild(this.renderer.domElement);
     this.camera.aspect = rect.width / rect.height;
     this.camera.position.set(0, 0, 5);
-    this.camera.zoom = 0.8;
+    this.camera.zoom = 1;
     this.camera.updateProjectionMatrix();
     this.updateViewport();
     this.setupLighting();
@@ -184,19 +184,17 @@ class BegeadsScene {
     let finalScaleX, finalScaleY;
 
     if (isMobile) {
-      // --- MOBİL GÖRÜNÜM MANTIĞI ---
-      // GÜNCELLEME: Logonun ölçeği, sayfa genişliğinin %100'ünü kullanacak şekilde ayarlandı.
-      // Bu satır, logonun orijinal genişliğini (size.x) alıp,
-      // tam olarak viewport genişliğine (this.viewport.width) eşit olacak şekilde ölçekler.
+      // Genişliği %100 yapıyoruz (önceki gibi doğru).
       const mobileScale = this.viewport.width / size.x;
 
       finalScaleX = mobileScale;
       finalScaleY = mobileScale;
 
-      // Dikey pozisyonu dengelemek için güncellendi.
-      this.logoMesh.position.y = (this.viewport.height / 2) * 0.7;
+      // ***** LOGO ARTIK GERÇEKTEN BÜYÜK OLACAK *****
+      // Dikey olarak daha iyi ortalamak için pozisyonu güncelliyoruz.
+      this.logoMesh.position.y = (this.viewport.height / 2) * 0.55; // Değer 0.7'den 0.55'e düşürüldü.
     } else {
-      // --- MASAÜSTÜ GÖRÜNÜM MANTIĞI ---
+      // Masaüstü ayarları aynı kalabilir.
       const desktopScale = (this.viewport.height * 0.45) / size.y;
       finalScaleY = desktopScale;
       finalScaleX = desktopScale * 0.9;
