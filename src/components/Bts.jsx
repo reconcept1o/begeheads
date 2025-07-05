@@ -203,7 +203,7 @@ function Bts() {
   const animationFrameId = useRef(null);
   const trackWidth = useRef(0);
 
-  const BASE_SPEED = 0.5;
+  const BASE_SPEED = 0.1;
   const FRICTION = 0.95;
 
   const getClientX = (e) => (e.touches ? e.touches[0].clientX : e.clientX);
