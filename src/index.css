@@ -1,5 +1,5 @@
 /* ======================================== */
-/* YENİ EKLENEN ÖZEL İMLEÇ STİLLERİ (V4)      */
+/* YENİ EKLENEN ÖZEL İMLEÇ STİLLERİ (V5 - SON) */
 /* ======================================== */
 
 /* Turuncu büyük yuvarlak */
@@ -7,15 +7,13 @@
   position: fixed;
   top: 0;
   left: 0;
-  /* GÜNCELLEME: Boyut 35px olarak küçültüldü */
   width: 35px;
   height: 35px;
   background-color: orange;
   border-radius: 50%;
   z-index: 9998;
   pointer-events: none;
-  mix-blend-mode: difference;
-  /* GÜNCELLEME: Opacity geçişi eklendi */
+  /* GÜNCELLEME: mix-blend-mode kaldırıldı */
   transition: transform 0.2s ease-out, opacity 0.3s ease-out;
   opacity: 0; /* Başlangıçta gizli */
 }
@@ -25,18 +23,16 @@
   position: fixed;
   top: 0;
   left: 0;
-  /* GÜNCELLEME: Boyut 35px olarak küçültüldü */
   width: 35px;
   height: 35px;
-  background-color: rgba(0, 0, 0, 0.5);
+  /* GÜNCELLEME: Renk opak siyah olarak değiştirildi */
+  background-color: black;
   border-radius: 50%;
   z-index: 9997;
   pointer-events: none;
-  /* GÜNCELLEME: Opacity geçişi eklendi */
   transition: transform 0.3s ease-out, opacity 0.3s ease-out;
   opacity: 0; /* Başlangıçta gizli */
 }
-
 
 
 /* ======================================== */
