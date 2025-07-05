@@ -1,8 +1,6 @@
-/* ======================================== */
-/* YENİ EKLENEN ÖZEL İMLEÇ STİLLERİ (V5 - SON) */
-/* ======================================== */
-
-/* Turuncu büyük yuvarlak */
+/* ======================================== /
+/ YENİ EKLENEN ÖZEL İMLEÇ STİLLERİ (3 YUVARLAK) /
+/ ======================================== *//* Turuncu büyük yuvarlak */
 .cursor-circle-orange {
   position: fixed;
   top: 0;
@@ -13,40 +11,45 @@
   border-radius: 50%;
   z-index: 9998;
   pointer-events: none;
-  /* GÜNCELLEME: mix-blend-mode kaldırıldı */
   transition: transform 0.2s ease-out, opacity 0.3s ease-out;
-  opacity: 0; /* Başlangıçta gizli */
-}
-
-/* Siyah büyük yuvarlak */
-.cursor-circle-black {
+  opacity: 0;
+  }/* Pembe büyük yuvarlak */
+  .cursor-circle-pink {
   position: fixed;
   top: 0;
   left: 0;
   width: 35px;
   height: 35px;
-  /* GÜNCELLEME: Renk opak siyah olarak değiştirildi */
-  background-color: black;
+  background-color: pink;
   border-radius: 50%;
   z-index: 9997;
   pointer-events: none;
+  transition: transform 0.25s ease-out, opacity 0.3s ease-out;
+  opacity: 0;
+  }/* Siyah büyük yuvarlak */
+  .cursor-circle-black {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 35px;
+  height: 35px;
+  background-color: black;
+  border-radius: 50%;
+  z-index: 9996;
+  pointer-events: none;
   transition: transform 0.3s ease-out, opacity 0.3s ease-out;
-  opacity: 0; /* Başlangıçta gizli */
-}
-
-
-/* ======================================== */
-/* MEVCUT KODUNUZ BAŞLANGICI                */
-/* ======================================== */
-
-body {
+  opacity: 0;
+  }/* ======================================== /
+  / MEVCUT KODUNUZ BAŞLANGICI                /
+  / ======================================== */
+  body {
   margin: 0;
   font-family: "Outfit", -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
+  'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+  sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-}
+  }
 
 
 .wdxl-lubrifont-tc-regular {
