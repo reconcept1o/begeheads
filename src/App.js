@@ -1,14 +1,16 @@
 import React from "react";
 import { Routes, Route } from "react-router-dom";
 
-
 import Home from "./components/Home";
 import WhatWeMade from "./components/WhatWeMade";
 import Bts from "./components/Bts";
 import HowItsWorks from "./components/HowItsWorks";
 import Footer from "./components/Footer";
 import PrivacyPolicy from "./components/PrivacyPolicy";
-import Ready from "./components/Ready"
+import Ready from "./components/Ready";
+
+// 1. CustomCursor component'ini yeni yolundan import ediyoruz
+import CustomCursor from "./Animation/CustomCursor";
 
 function MainPage() {
   return (
@@ -17,7 +19,7 @@ function MainPage() {
       <WhatWeMade />
       <Bts />
       <HowItsWorks />
-<Ready />
+      <Ready />
       <Footer />
     </>
   );
@@ -37,9 +39,11 @@ function App() {
     <div
       style={{ minHeight: "100vh", display: "flex", flexDirection: "column" }}
     >
+      {/* 2. CustomCursor'ı Routes'un dışına, en üste yerleştiriyoruz */}
+      <CustomCursor />
+
       <Routes>
         <Route path="/" element={<MainPage />} />
-
         <Route path="/privacy-policy" element={<PrivacyPage />} />
       </Routes>
     </div>

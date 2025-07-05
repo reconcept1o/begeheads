@@ -1,6 +1,55 @@
+/* ======================================== */
+/* YENİ EKLENEN ÖZEL İMLEÇ STİLLERİ          */
+/* ======================================== */
+
+/* Varsayılan fare imlecini tamamen gizle */
+* {
+  cursor: none;
+}
+
+/* Anlık takip eden küçük turuncu nokta */
+.cursor-dot {
+  position: fixed;
+  top: -5px; /* Yarıçap kadar eksi değer */
+  left: -5px; /* Yarıçap kadar eksi değer */
+  width: 10px;
+  height: 10px;
+  background-color: orange;
+  border-radius: 50%;
+  z-index: 9999;
+  pointer-events: none; /* Tıklama olaylarını engellemez */
+  transition: transform 0.1s linear;
+}
+
+/* Gecikmeli gelen büyük çember */
+.cursor-circle {
+  position: fixed;
+  top: -20px; /* Yarıçap kadar eksi değer */
+  left: -20px; /* Yarıçap kadar eksi değer */
+  width: 40px;
+  height: 40px;
+  border: 1px solid orange;
+  border-radius: 50%;
+  z-index: 9999;
+  pointer-events: none;
+  transition: transform 0.2s linear, width 0.3s ease, height 0.3s ease, top 0.3s ease, left 0.3s ease;
+}
+
+/* Link veya buton üzerine gelindiğinde çemberin alacağı stil */
+.cursor-circle.hovered {
+  width: 60px;
+  height: 60px;
+  top: -30px;
+  left: -30px;
+}
+
+
+/* ======================================== */
+/* MEVCUT KODUNUZ BAŞLANGICI                */
+/* ======================================== */
+
 body {
   margin: 0;
-
   font-family: "Outfit", -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
     sans-serif;
