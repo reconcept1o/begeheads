@@ -162,12 +162,14 @@ class BegeadsScene {
       }
 
       const scale = (this.viewport.height * 0.45) / size.y;
-      group.scale.set(scale, scale, scale);
-      group.position.x = -center.x * scale;
 
-      // GÜNCELLEME: Logoyu "2 tık" daha yukarı çektik (0.6 -> 0.85)
+      // GÜNCELLEME: Genişliği biraz arttırıyoruz (0.8 -> 0.9).
+      group.scale.set(scale * 0.9, scale, scale);
+
+      // Ortalamayı yeni genişliğe göre güncelliyoruz.
+      group.position.x = -center.x * (scale * 0.9);
+
       group.position.y = (this.viewport.height / 2) * 0.85;
-
       group.position.z = -0.5;
       group.rotation.x = Math.PI;
 
@@ -182,7 +184,7 @@ class BegeadsScene {
       roughness: 0.2,
       transmission: 1.0,
       thickness: 2,
-      ior: 1.3,
+      ior: 1.1,
       envMap: this.scene.environment,
       envMapIntensity: 1.8,
     });
