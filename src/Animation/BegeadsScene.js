@@ -186,13 +186,14 @@ class BegeadsScene {
 
     if (isMobile) {
       // --- MOBİL GÖRÜNÜM MANTIĞI ---
-      // GÜNCELLEME: Mobil logonun genişlik oranını %95'ten %98'e çıkardık.
-      const mobileScale = (this.viewport.width * 0.98) / size.x;
+      // GÜNCELLEME: Mobil logonun genişlik oranını %100'e çıkardık.
+      const mobileScale = this.viewport.width / size.x; // Değer 1.0 (yani %100) olarak ayarlandı.
 
       finalScaleX = mobileScale;
       finalScaleY = mobileScale;
 
-      this.logoMesh.position.y = (this.viewport.height / 2) * 0.75;
+      // GÜNCELLEME: Logo büyüdüğü için dikey pozisyonunu hafifçe aşağı çektik.
+      this.logoMesh.position.y = (this.viewport.height / 2) * 0.7; // 0.75'ten 0.7'ye düşürüldü.
     } else {
       // --- MASAÜSTÜ GÖRÜNÜM MANTIĞI ---
       const desktopScale = (this.viewport.height * 0.45) / size.y;
