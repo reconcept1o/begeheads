@@ -63,7 +63,13 @@ class BegeadsScene {
     this.container.appendChild(this.renderer.domElement);
     this.camera.aspect = rect.width / rect.height;
     this.camera.position.set(0, 0, 5);
-    this.camera.zoom = 1;
+
+    // ***** YENİ AKILLI ZOOM AYARI *****
+    // Ekran en/boy oranına göre mobil mi masaüstü mü karar veriyoruz.
+    const isMobile = this.camera.aspect < 1;
+    // Mobil ise zoom 1, değilse (masaüstü ise) orijinal değeri olan 0.8'i kullanıyoruz.
+    this.camera.zoom = isMobile ? 1 : 0.8;
+
     this.camera.updateProjectionMatrix();
     this.updateViewport();
     this.setupLighting();
@@ -365,7 +371,15 @@ class BegeadsScene {
   handleResize() {
     if (!this.container) return;
     const rect = this.container.getBoundingClientRect();
+
+    // ***** BURAYA DA AKILLI ZOOM'U EKLİYORUZ *****
+    // Pencere yeniden boyutlandığında en/boy oranı değişir.
     this.camera.aspect = rect.width / rect.height;
+    // Yeni orana göre zoom'u tekrar ayarla.
+    const isMobile = this.camera.aspect < 1;
+    this.camera.zoom = isMobile ? 1 : 0.8;
+
+    // Kamera ayarları değiştiği için projeksiyon matrisini güncellemek ÇOK ÖNEMLİ.
     this.camera.updateProjectionMatrix();
     this.renderer.setSize(rect.width, rect.height);
     this.updateViewport();
