@@ -97,7 +97,8 @@ const newCarouselStyles = `
     color: #FFFFFF;
     text-decoration: none;
     transition: opacity 0.3s ease;
-    border: 3px solid #FFFFFF;
+    /* GÜNCELLEME: Mobildeki ikonların border değeri 1px olarak değiştirildi */
+    border: 1px solid #FFFFFF;
     border-radius: 50%;
     padding: 0.75rem;
     width: 50px;
@@ -126,6 +127,7 @@ const newCarouselStyles = `
 
 // --- KART KOMPONENTİ ---
 function CarouselCard({ item, flashKey }) {
+  // Bu komponentte değişiklik yok
   const [isButtonHovered, setIsButtonHovered] = useState(false);
   const cardStyles = {
     slideCard: {
@@ -160,7 +162,6 @@ function CarouselCard({ item, flashKey }) {
       cursor: "pointer",
     },
   };
-
   return (
     <div style={cardStyles.slideCard}>
       {flashKey > 0 && (
@@ -201,7 +202,6 @@ function Bts() {
   const dragStartX = useRef(0);
   const animationFrameId = useRef(null);
   const trackWidth = useRef(0);
-  const isTouchDevice = useRef(false);
 
   const BASE_SPEED = 0.5;
   const FRICTION = 0.95;
@@ -220,7 +220,6 @@ function Bts() {
       if (!isPressed) return;
       const clientX = getClientX(e);
       const deltaX = clientX - dragStartX.current;
-      velocity.current = deltaX * 2;
       positionX.current += deltaX;
       dragStartX.current = clientX;
     },
@@ -230,7 +229,7 @@ function Bts() {
   const animationLoop = useCallback(() => {
     if (!trackRef.current) return;
 
-    if (!isPressed && !isHovered && !isTouchDevice.current) {
+    if (!isPressed && !isHovered) {
       velocity.current *= FRICTION;
       velocity.current -= BASE_SPEED;
     } else {
@@ -264,9 +263,6 @@ function Bts() {
   }, [startAnimationLoop]);
 
   useEffect(() => {
-    isTouchDevice.current =
-      "ontouchstart" in window || navigator.maxTouchPoints > 0;
-
     const calculateWidth = () => {
       if (trackRef.current?.scrollWidth) {
         trackWidth.current = trackRef.current.scrollWidth;
@@ -274,9 +270,7 @@ function Bts() {
     };
     calculateWidth();
     window.addEventListener("resize", calculateWidth);
-
     startAnimationLoop();
-
     return () => {
       window.removeEventListener("resize", calculateWidth);
       cancelAnimationFrame(animationFrameId.current);
