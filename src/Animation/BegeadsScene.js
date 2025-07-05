@@ -174,7 +174,6 @@ class BegeadsScene {
       this.updateLogoLayout();
     });
   }
-
   updateLogoLayout() {
     if (!this.logoMesh || !this.logoOriginalSize) return;
 
@@ -186,14 +185,16 @@ class BegeadsScene {
 
     if (isMobile) {
       // --- MOBİL GÖRÜNÜM MANTIĞI ---
-      // GÜNCELLEME: Mobil logonun genişlik oranını %100'e çıkardık.
-      const mobileScale = this.viewport.width / size.x; // Değer 1.0 (yani %100) olarak ayarlandı.
+      // GÜNCELLEME: Logonun ölçeği, sayfa genişliğinin %100'ünü kullanacak şekilde ayarlandı.
+      // Bu satır, logonun orijinal genişliğini (size.x) alıp,
+      // tam olarak viewport genişliğine (this.viewport.width) eşit olacak şekilde ölçekler.
+      const mobileScale = this.viewport.width / size.x;
 
       finalScaleX = mobileScale;
       finalScaleY = mobileScale;
 
-      // GÜNCELLEME: Logo büyüdüğü için dikey pozisyonunu hafifçe aşağı çektik.
-      this.logoMesh.position.y = (this.viewport.height / 2) * 0.7; // 0.75'ten 0.7'ye düşürüldü.
+      // Dikey pozisyonu dengelemek için güncellendi.
+      this.logoMesh.position.y = (this.viewport.height / 2) * 0.7;
     } else {
       // --- MASAÜSTÜ GÖRÜNÜM MANTIĞI ---
       const desktopScale = (this.viewport.height * 0.45) / size.y;
@@ -206,15 +207,16 @@ class BegeadsScene {
     this.logoMesh.scale.set(finalScaleX, finalScaleY, finalScaleY);
     this.logoMesh.position.x = -center.x * finalScaleX;
   }
+
   createAnimatedLetters(geometry) {
     const material = new THREE.MeshPhysicalMaterial({
       metalness: 0,
-      roughness: 0.2,
+      roughness: 0.3,
       transmission: 1.0,
       thickness: 2,
       ior: 1.1,
       envMap: this.scene.environment,
-      envMapIntensity: 1.8,
+      envMapIntensity: 1,
     });
 
     const scaleFactor = Math.max(15, Math.min(25, 30 / this.viewport.width));
