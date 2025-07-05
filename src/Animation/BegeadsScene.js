@@ -32,6 +32,9 @@ class BegeadsScene {
     this.viewport = { width: 2, height: 2 };
 
     this.logoMesh = null;
+    this.logoOriginalSize = null;
+    this.logoOriginalCenter = null;
+
     this.shapesGroup = null;
     this.shapesGroup2 = null;
     this.lookAtTarget1 = new THREE.Vector3();
@@ -139,10 +142,11 @@ class BegeadsScene {
           )
         )
       );
-      const size = new THREE.Vector3();
-      box.getSize(size);
-      const center = new THREE.Vector3();
-      box.getCenter(center);
+
+      this.logoOriginalSize = new THREE.Vector3();
+      box.getSize(this.logoOriginalSize);
+      this.logoOriginalCenter = new THREE.Vector3();
+      box.getCenter(this.logoOriginalCenter);
 
       const material = new THREE.MeshBasicMaterial({
         color: 0xffffff,
@@ -161,21 +165,55 @@ class BegeadsScene {
         }
       }
 
-      const scale = (this.viewport.height * 0.45) / size.y;
-
-      // GÜNCELLEME: Genişliği biraz arttırıyoruz (0.8 -> 0.9).
-      group.scale.set(scale * 0.9, scale, scale);
-
-      // Ortalamayı yeni genişliğe göre güncelliyoruz.
-      group.position.x = -center.x * (scale * 0.9);
-
-      group.position.y = (this.viewport.height / 2) * 0.85;
       group.position.z = -0.5;
       group.rotation.x = Math.PI;
 
       this.logoMesh = group;
       this.scene.add(this.logoMesh);
+
+      this.updateLogoLayout();
     });
+  }
+
+  // GÜNCELLEME: Responsive logo yerleşimi için fonksiyon güncellendi
+  updateLogoLayout() {
+    if (!this.logoMesh || !this.logoOriginalSize) return;
+
+    const size = this.logoOriginalSize;
+    const center = this.logoOriginalCenter;
+    const isMobile = this.camera.aspect < 1; // Ekran dikey ise mobil kabul ediyoruz
+
+    let finalScaleX, finalScaleY;
+
+    if (isMobile) {
+      // --- MOBİL GÖRÜNÜM MANTIĞI ---
+      // Hem yüksekliğe hem genişliğe göre sığacak şekilde ölçekle
+      const scaleToFitHeight = (this.viewport.height * 0.45) / size.y;
+      const scaleToFitWidth = (this.viewport.width * 0.9) / size.x;
+      const mobileScale = Math.min(scaleToFitWidth, scaleToFitHeight);
+
+      finalScaleX = mobileScale;
+      finalScaleY = mobileScale;
+
+      // Dikey konumu ayarla
+      this.logoMesh.position.y = (this.viewport.height / 2) * 0.75;
+    } else {
+      // --- MASAÜSTÜ GÖRÜNÜM MANTIĞI (ÖNCEKİ GİBİ) ---
+      // Sadece yüksekliğe göre ölçeklendir
+      const desktopScale = (this.viewport.height * 0.45) / size.y;
+      finalScaleY = desktopScale;
+      // Genişliği %90 oranında ayarla
+      finalScaleX = desktopScale * 0.9;
+
+      // Dikey konumu ayarla
+      this.logoMesh.position.y = (this.viewport.height / 2) * 0.85;
+    }
+
+    // Hesaplanan son ölçekleri uygula
+    this.logoMesh.scale.set(finalScaleX, finalScaleY, finalScaleY);
+
+    // Yeni genişliğe göre yatayda ortala
+    this.logoMesh.position.x = -center.x * finalScaleX;
   }
 
   createAnimatedLetters(geometry) {
@@ -184,7 +222,7 @@ class BegeadsScene {
       roughness: 0.2,
       transmission: 1.0,
       thickness: 2,
-      ior: 1.05,
+      ior: 1.1,
       envMap: this.scene.environment,
       envMapIntensity: 1.8,
     });
@@ -341,6 +379,8 @@ class BegeadsScene {
     this.camera.updateProjectionMatrix();
     this.renderer.setSize(rect.width, rect.height);
     this.updateViewport();
+
+    this.updateLogoLayout();
 
     if (this.basePositions.group1 && this.basePositions.group2) {
       const scaleFactor = Math.max(15, Math.min(25, 30 / this.viewport.width));
