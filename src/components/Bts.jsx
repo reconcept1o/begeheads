@@ -1,20 +1,13 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { Container, Row, Col } from "react-bootstrap";
-import { Swiper, SwiperSlide } from "swiper/react";
-import { FreeMode, Scrollbar, Navigation, Autoplay } from "swiper/modules";
-
-// Diğer importlar, veri ve stil tanımlamaları...
 import { FaInstagram, FaYoutube, FaLinkedin } from "react-icons/fa";
-import "swiper/css";
-import "swiper/css/free-mode";
-import "swiper/css/scrollbar";
-import "swiper/css/navigation";
-import "swiper/css/autoplay";
 
+// Resimlerinizi import edin (yolların doğru olduğundan emin olun)
 import image1 from "../assets/bts/11.webp";
 import image2 from "../assets/bts/22.webp";
 import image3 from "../assets/bts/33.webp";
 
+// --- VERİLER ---
 const btsData = [
   {
     id: 1,
@@ -34,121 +27,160 @@ const btsData = [
     text: "Bringing a top USA influencer...",
     link: "https://example.com/influencer",
   },
+  {
+    id: 4,
+    image: image1,
+    text: "Another project in China...",
+    link: "https://example.com/china-2",
+  },
+  {
+    id: 5,
+    image: image2,
+    text: "On-water content sequel...",
+    link: "https://example.com/video-2",
+  },
+  {
+    id: 6,
+    image: image3,
+    text: "USA influencer collaboration...",
+    link: "https://example.com/influencer-2",
+  },
 ];
+
 const socialLinks = [
   { name: "Instagram", href: "https://instagram.com", icon: <FaInstagram /> },
   { name: "YouTube", href: "https://youtube.com", icon: <FaYoutube /> },
   { name: "LinkedIn", href: "https://linkedin.com", icon: <FaLinkedin /> },
 ];
-const styles = {
-  mainContainer: {
-    backgroundColor: "#000000",
-    color: "#FFFFFF",
-    minHeight: "100vh",
-    padding: "2rem 0 5rem 0",
-    fontFamily: "'Outfit', sans-serif",
-  },
-  headerRow: { alignItems: "center", marginBottom: "3rem" },
-  btsTitle: { fontSize: "2rem", fontWeight: "bold", textAlign: "left" },
-  slideCard: {
-    borderRadius: "16px",
-    overflow: "hidden",
-    boxShadow: "0 8px 20px rgba(0, 0, 0, 0.25)",
-    transition: "transform 0.3s ease",
-    cursor: "grab",
-  },
-  image: {
-    display: "block",
-    width: "100%",
-    aspectRatio: "4 / 5",
-    objectFit: "cover",
-  },
-  slideContent: {
-    backgroundColor: "#FFFFFF",
-    color: "#000000",
-    padding: "1.5rem",
-  },
-  slideText: {
-    fontSize: "1.1rem",
-    lineHeight: 1.6,
-    marginBottom: "1.5rem",
-    color: "#000000",
-  },
-  slideButton: {
-    display: "inline-block",
-    backgroundColor: "transparent",
-    color: "#000000",
-    padding: "0.5rem 0.25rem",
-    fontWeight: "bold",
-    transition: "color 0.3s ease",
-    textDecoration: "underline",
-    textUnderlineOffset: "6px",
-    border: "none",
-    cursor: "pointer",
-  },
-  mobileIconLink: {
-    color: "#FFFFFF",
-    fontSize: "1.8rem",
-    textDecoration: "none",
-    transition: "opacity 0.3s ease",
-  },
-};
-const animationStyles = `
-  @keyframes shine { from { background-position: -200% center; } to { background-position: 200% center; } }
-  .animated-shine-text { background: linear-gradient(90deg, #fff 40%, #555 50%, #fff 60%); background-size: 200% auto; color: #000; background-clip: text; -webkit-background-clip: text; -webkit-text-fill-color: transparent; animation: shine 4s linear infinite; }
-  .swiper-scrollbar { background: rgba(255, 255, 255, 0.2) !important; bottom: -10px !important; height: 4px !important; }
-  .swiper-scrollbar-drag { background: #FFFFFF !important; }
-  .swiper-button-next, .swiper-button-prev { color: #FFFFFF !important; }
-  @media (max-width: 768px) { .swiper-button-next, .swiper-button-prev { display: none; } }
-  .card-active { cursor: grabbing !important; }
-  .mobile-icon-link:hover { opacity: 0.7; }
-  .swiper-wrapper { transition-timing-function: linear !important; }
+
+// --- STİLLER ---
+const newCarouselStyles = `
+  .marquee-container {
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    padding: 1rem 0;
+    cursor: grab;
+  }
+  .marquee-container:active {
+    cursor: grabbing;
+  }
+  .marquee-track {
+    display: flex;
+    gap: 40px;
+    transition: gap 0.4s ease;
+    will-change: transform;
+  }
+  .carousel-card-wrapper {
+    flex-shrink: 0;
+    width: clamp(300px, 80%, 420px);
+    transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+    position: relative;
+  }
+  @keyframes border-flash { 
+    0% { border-color: orange; opacity: 1; } 
+    100% { border-color: transparent; opacity: 0; } 
+  }
+  .border-flash-effect { 
+    position: absolute; 
+    top: 0; 
+    left: 0; 
+    width: 100%; 
+    height: 100%; 
+    border-radius: 16px; 
+    border: 3px solid transparent; 
+    pointer-events: none; 
+    animation: border-flash 0.6s ease-out forwards; 
+  }
+  .social-icon {
+    font-size: 1.8rem;
+    color: #FFFFFF;
+    text-decoration: none;
+    transition: opacity 0.3s ease;
+    border: 3px solid #FFFFFF;
+    border-radius: 50%;
+    padding: 0.75rem;
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .social-button {
+    background-color: transparent;
+    color: #FFFFFF;
+    border: 3px solid #FFFFFF;
+    border-radius: 25px;
+    padding: 0.6rem 2rem;
+    font-size: 1.10rem;
+    cursor: pointer;
+    text-decoration: none;
+    margin-left: 1rem;
+    transition: all 0.3s ease;
+  }
+  .social-button:hover {
+    background-color: #FFFFFF;
+    color: #000000;
+  }
 `;
-function SocialButton({ text, href, style }) {
-  const [isHovered, setIsHovered] = useState(false);
-  const finalStyle = {
-    ...style,
-    backgroundColor: isHovered ? "#FFFFFF" : "#000000",
-    color: isHovered ? "#000000" : "#FFFFFF",
+
+// --- KART KOMPONENTİ ---
+function CarouselCard({ item, flashKey }) {
+  const [isButtonHovered, setIsButtonHovered] = useState(false);
+  const cardStyles = {
+    slideCard: {
+      borderRadius: "16px",
+      overflow: "hidden",
+      boxShadow: "0 8px 20px rgba(0, 0, 0, 0.25)",
+      backgroundColor: "#FFFFFF",
+    },
+    image: {
+      display: "block",
+      width: "100%",
+      aspectRatio: "4 / 5",
+      objectFit: "cover",
+    },
+    slideContent: { color: "#000000", padding: "1.5rem" },
+    slideText: {
+      fontSize: "1.1rem",
+      lineHeight: 1.6,
+      marginBottom: "1.5rem",
+      color: "#000000",
+    },
+    slideButton: {
+      display: "inline-block",
+      backgroundColor: "transparent",
+      color: isButtonHovered ? "#555555" : "#000000",
+      padding: "0.5rem 0.25rem",
+      fontWeight: "bold",
+      transition: "color 0.3s ease",
+      textDecoration: "underline",
+      textUnderlineOffset: "6px",
+      border: "none",
+      cursor: "pointer",
+    },
   };
+
   return (
-    <a
-      href={href}
-      target="_blank"
-      rel="noopener noreferrer"
-      style={finalStyle}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-    >
-      {text}
-    </a>
-  );
-}
-function BtsSlide({ item, onPress, isActive }) {
-  const [isHovered, setIsHovered] = useState(false);
-  const buttonStyle = {
-    ...styles.slideButton,
-    color: isHovered ? "#555555" : "#000000",
-  };
-  return (
-    <div
-      style={styles.slideCard}
-      className={isActive ? "card-active" : ""}
-      onMouseDown={onPress}
-      onTouchStart={onPress}
-    >
-      <img src={item.image} alt="Behind the scenes" style={styles.image} />
-      <div style={styles.slideContent}>
-        <p style={styles.slideText}>{item.text}</p>
+    <div style={cardStyles.slideCard}>
+      {flashKey > 0 && (
+        <div className="border-flash-effect" key={flashKey}></div>
+      )}
+      <img
+        src={item.image}
+        alt="Behind the scenes"
+        style={cardStyles.image}
+        draggable="false"
+      />
+      <div style={cardStyles.slideContent}>
+        <p style={cardStyles.slideText}>{item.text}</p>
         <a
           href={item.link}
           target="_blank"
           rel="noopener noreferrer"
-          style={buttonStyle}
-          onMouseEnter={() => setIsHovered(true)}
-          onMouseLeave={() => setIsHovered(false)}
-          onMouseDown={(e) => e.stopPropagation()}
-          onTouchStart={(e) => e.stopPropagation()}
+          style={cardStyles.slideButton}
+          onMouseEnter={() => setIsButtonHovered(true)}
+          onMouseLeave={() => setIsButtonHovered(false)}
         >
           SEE MORE
         </a>
@@ -157,144 +189,166 @@ function BtsSlide({ item, onPress, isActive }) {
   );
 }
 
+// --- ANA KOMPONENT ---
 function Bts() {
-  // YENİ: Swiper örneğini kontrol edebilmek için state
-  const [swiperInstance, setSwiperInstance] = useState(null);
-
   const [isPressed, setIsPressed] = useState(false);
-  const NORMAL_SPACING = 40;
-  const PRESSED_SPACING = 60;
-  const [currentSpaceBetween, setCurrentSpaceBetween] =
-    useState(NORMAL_SPACING);
+  const [isHovered, setIsHovered] = useState(false);
+  const [flashKey, setFlashKey] = useState(0);
 
-  // YENİ: Sadece bir slaytın üzerine gelindiğinde autoplay'i durduran fonksiyon
-  const handleMouseEnterSlide = () => {
-    if (swiperInstance && swiperInstance.autoplay.running) {
-      swiperInstance.autoplay.stop();
-    }
-  };
+  const trackRef = useRef(null);
+  const positionX = useRef(0);
+  const velocity = useRef(0);
+  const dragStartX = useRef(0);
+  const animationFrameId = useRef(null);
+  const trackWidth = useRef(0);
 
-  // YENİ: Slaytın üzerinden ayrılınca autoplay'i başlatan fonksiyon
-  const handleMouseLeaveSlide = () => {
-    if (swiperInstance && !swiperInstance.autoplay.running) {
-      swiperInstance.autoplay.start();
-    }
-  };
+  const BASE_SPEED = 0.5;
+  const FRICTION = 0.95;
 
-  // Tıklama animasyonunu yöneten fonksiyonlar (autoplay'e dokunmuyorlar)
-  const handlePressStart = (event) => {
-    if (event.type === "mousedown" && event.button !== 0) return;
+  const handleMouseDown = (e) => {
     setIsPressed(true);
-    setCurrentSpaceBetween(PRESSED_SPACING);
+    dragStartX.current = e.clientX;
+    velocity.current = 0;
+    cancelAnimationFrame(animationFrameId.current);
   };
 
-  const handlePressEnd = () => {
+  const handleMouseMove = useCallback(
+    (e) => {
+      if (!isPressed) return;
+      const deltaX = e.clientX - dragStartX.current;
+      positionX.current += deltaX;
+      dragStartX.current = e.clientX;
+    },
+    [isPressed]
+  );
+
+  const animationLoop = useCallback(() => {
+    if (!trackRef.current) return;
+
+    if (!isPressed && !isHovered) {
+      velocity.current *= FRICTION;
+      velocity.current -= BASE_SPEED;
+    } else {
+      velocity.current *= FRICTION;
+    }
+
+    positionX.current += velocity.current;
+
+    if (trackWidth.current > 0) {
+      if (positionX.current <= -trackWidth.current / 2) {
+        positionX.current += trackWidth.current / 2;
+      } else if (positionX.current >= 0) {
+        positionX.current -= trackWidth.current / 2;
+      }
+    }
+
+    trackRef.current.style.transform = `translateX(${positionX.current}px)`;
+    animationFrameId.current = requestAnimationFrame(animationLoop);
+  }, [isPressed, isHovered]);
+
+  const startAnimationLoop = useCallback(() => {
+    cancelAnimationFrame(animationFrameId.current);
+    animationFrameId.current = requestAnimationFrame(animationLoop);
+  }, [animationLoop]);
+
+  const handleMouseUp = useCallback(() => {
     setIsPressed(false);
-    setCurrentSpaceBetween(NORMAL_SPACING);
-  };
+    setFlashKey((prev) => prev + 1);
+    startAnimationLoop();
+  }, [startAnimationLoop]);
 
   useEffect(() => {
-    document.addEventListener("mouseup", handlePressEnd);
-    document.addEventListener("touchend", handlePressEnd);
-    return () => {
-      document.removeEventListener("mouseup", handlePressEnd);
-      document.removeEventListener("touchend", handlePressEnd);
+    const calculateWidth = () => {
+      if (trackRef.current?.scrollWidth) {
+        trackWidth.current = trackRef.current.scrollWidth;
+      }
     };
+    calculateWidth();
+    window.addEventListener("resize", calculateWidth);
+    return () => window.removeEventListener("resize", calculateWidth);
   }, []);
 
-  const socialButtonStyle = {
-    padding: "0.75rem 1.5rem",
-    fontSize: "1rem",
-    borderRadius: "20px",
-    border: "2px solid #FFFFFF",
-    backgroundColor: "#000000",
-    color: "#FFFFFF",
-    textDecoration: "none",
-    fontWeight: "bold",
-    transition: "all 0.3s ease",
+  useEffect(() => {
+    startAnimationLoop();
+    return () => cancelAnimationFrame(animationFrameId.current);
+  }, [startAnimationLoop]);
+
+  useEffect(() => {
+    if (isPressed) {
+      window.addEventListener("mousemove", handleMouseMove);
+      window.addEventListener("mouseup", handleMouseUp);
+    }
+    return () => {
+      window.removeEventListener("mousemove", handleMouseMove);
+      window.removeEventListener("mouseup", handleMouseUp);
+    };
+  }, [isPressed, handleMouseMove, handleMouseUp]);
+
+  const mainStyles = {
+    mainContainer: {
+      backgroundColor: "#000000",
+      color: "#FFFFFF",
+      minHeight: "100vh",
+      padding: "2rem 0 5rem 0",
+      fontFamily: "'Outfit', sans-serif",
+    },
+    headerRow: { alignItems: "center", marginBottom: "1rem" },
+    btsTitle: { fontSize: "2rem", fontWeight: "bold", textAlign: "left" },
   };
 
   return (
-    <div style={styles.mainContainer}>
-      <style>{animationStyles}</style>
+    <div style={mainStyles.mainContainer}>
+      <style>{newCarouselStyles}</style>
       <Container fluid="lg">
-        {/* Diğer JSX elementleri */}
-        <Row style={styles.headerRow}>
+        <Row style={mainStyles.headerRow}>
           <Col xs={6} md={6}>
-            <h2 style={styles.btsTitle} className="animated-shine-text">
-              BTS
-            </h2>
+            <h2 style={mainStyles.btsTitle}>BTS</h2>
           </Col>
-          <Col
-            xs={6}
-            md={6}
-            className="d-none d-md-flex align-items-center justify-content-end gap-3"
-          >
-            {socialLinks.map((link) => (
-              <SocialButton
-                key={link.name}
-                text={link.name}
-                href={link.href}
-                style={socialButtonStyle}
-              />
-            ))}
-          </Col>
-        </Row>
-        <Row>
-          <Col xs={12}>
-            <Swiper
-              // YENİ: Swiper örneğini state'e kaydediyoruz
-              onSwiper={setSwiperInstance}
-              modules={[FreeMode, Scrollbar, Navigation, Autoplay]}
-              loop={true}
-              freeMode={true}
-              slidesPerView={"auto"}
-              spaceBetween={currentSpaceBetween}
-              speed={8000}
-              autoplay={{
-                delay: 1,
-                disableOnInteraction: false,
-                // DİKKAT: pauseOnMouseEnter özelliğini kaldırıyoruz çünkü kontrolü biz alıyoruz.
-              }}
-              scrollbar={{ draggable: true, hide: false }}
-              navigation={true}
-            >
-              {btsData.map((item) => {
-                const slideStyle = {
-                  width: "80%",
-                  maxWidth: "420px",
-                  transition: "transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1)",
-                  transform: isPressed ? "scale(0.95)" : "scale(1)",
-                };
-                return (
-                  // YENİ: Her bir slayta mouse eventlerini ekliyoruz
-                  <SwiperSlide
-                    key={item.id}
-                    style={slideStyle}
-                    onMouseEnter={handleMouseEnterSlide}
-                    onMouseLeave={handleMouseLeaveSlide}
-                  >
-                    <BtsSlide
-                      item={item}
-                      onPress={handlePressStart}
-                      isActive={isPressed}
-                    />
-                  </SwiperSlide>
-                );
-              })}
-            </Swiper>
-          </Col>
-        </Row>
-        <Row className="d-block d-md-none mt-4">
-          <Col xs={12} className="d-flex justify-content-start gap-4">
+          <Col xs={6} md={6} className="d-none d-md-flex justify-content-end">
             {socialLinks.map((link) => (
               <a
                 key={link.name}
                 href={link.href}
                 target="_blank"
                 rel="noopener noreferrer"
-                style={styles.mobileIconLink}
-                className="mobile-icon-link"
+                className="social-button"
+              >
+                {link.name}
+              </a>
+            ))}
+          </Col>
+        </Row>
+        <div
+          className="marquee-container"
+          onMouseDown={handleMouseDown}
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={() => setIsHovered(false)}
+        >
+          <div
+            ref={trackRef}
+            className="marquee-track"
+            style={{ gap: isPressed ? "60px" : "40px" }}
+          >
+            {[...btsData, ...btsData].map((item, index) => (
+              <div
+                className="carousel-card-wrapper"
+                key={`${item.id}-${index}`}
+                style={{ transform: isPressed ? "scale(0.95)" : "scale(1)" }}
+              >
+                <CarouselCard item={item} flashKey={flashKey} />
+              </div>
+            ))}
+          </div>
+        </div>
+        <Row className="d-block d-md-none mt-4">
+          <Col xs={12} className="d-flex justify-content-end gap-3">
+            {socialLinks.map((link) => (
+              <a
+                key={link.name}
+                href={link.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="social-icon"
               >
                 {link.icon}
               </a>

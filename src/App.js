@@ -8,6 +8,7 @@ import Bts from "./components/Bts";
 import HowItsWorks from "./components/HowItsWorks";
 import Footer from "./components/Footer";
 import PrivacyPolicy from "./components/PrivacyPolicy";
+import Ready from "./components/Ready"
 
 function MainPage() {
   return (
@@ -16,6 +17,7 @@ function MainPage() {
       <WhatWeMade />
       <Bts />
       <HowItsWorks />
+<Ready />
       <Footer />
     </>
   );

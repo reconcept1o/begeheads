@@ -1,248 +1,213 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react"; // Added useEffect and useRef for mobile functionality
 import { Container, Row, Col } from "react-bootstrap";
 import { useInView } from "react-intersection-observer";
+import Ready from "./Ready";
 
-
-const IntuitiveIcon = () => (
-  <svg
-    width="50"
-    height="50"
-    viewBox="0 0 24 24"
-    fill="none"
-    xmlns="http://www.w3.org/2000/svg"
-  >
-    <path
-      d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z"
-      fill="#000000"
-      opacity="0.3"
-    />
-    <path
-      d="M12 4c-4.41 0-8 3.59-8 8s3.59 8 8 8 8-3.59 8-8-3.59-8-8-8zm0 16c-3.31 0-6-2.69-6-6s2.69-6 6-6 6 2.69 6 6-2.69 6-6 6zm-1-9h2v2h-2zm0 4h2v2h-2z"
-      fill="#000000"
-    />
+// Icons for navigation (using SVG or any icon library)
+const LeftArrow = () => (
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="white">
+    <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z" />
   </svg>
 );
-const VisionIcon = () => (
-  <svg
-    width="50"
-    height="50"
-    viewBox="0 0 24 24"
-    fill="none"
-    xmlns="http://www.w3.org/2000/svg"
-  >
-    <path
-      d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5C21.27 7.61 17 4.5 12 4.5zm0 13c-3.31 0-6-2.69-6-6s2.69-6 6-6 6 2.69 6 6-2.69 6-6 6zm0-10c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4z"
-      fill="#000000"
-    />
+const RightArrow = () => (
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="white">
+    <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z" />
   </svg>
 );
-const BuiltIcon = () => (
-  <svg
-    width="50"
-    height="50"
-    viewBox="0 0 24 24"
-    fill="none"
-    xmlns="http://www.w3.org/2000/svg"
-  >
-    <path
-      d="M22.7 19l-9.1-9.1c.9-2.3.4-5-1.5-6.9-2-2-5-2.4-7.4-1.3L9 6.1 6.1 9 1.6 4.5C.4 6.9 1 9.9 3.1 12c1.9 1.9 4.6 2.4 6.9 1.5l9.1 9.1c.4.4 1 .4 1.4 0l2.3-2.3c.4-.4.4-1 0-1.4z"
-      fill="#000000"
-    />
-  </svg>
-);
-
 
 const featuresData = [
   {
-    icon: <IntuitiveIcon />,
     title: "Intuitive Creators.",
     text: "We work with those who move intuitively — creators who sense what matters before it becomes obvious.",
   },
   {
-    icon: <VisionIcon />,
     title: "Vision-Led Brands.",
     text: "The ones who already know who they are — they just need someone who can shape it with clarity and care.",
   },
   {
-    icon: <BuiltIcon />,
     title: "Built Right.",
     text: "We build things that don’t just look good — they land with weight, speak for themselves, and outlive the scroll.",
   },
 ];
 
-const contactData = [
-  {
-    iconName: "WhatsApp",
-    title: "Quick call? Direct message?",
-    description: "You’ll get us instantly.",
-    buttonText: "Let’s Talk",
-    link: "https://wa.me/YOUR_PHONE_NUMBER",
-  },
-  {
-    iconName: "Email",
-    title: "Have something in mind?",
-    description: "Send it clean. We’ll hit back fast.",
-    buttonText: "Your Move",
-    link: "mailto:YOUR_EMAIL_ADDRESS",
-  },
-];
-
-// --- STİL NESNELERİ (İkonlar için güncellendi) ---
+// --- STİL NESNELERİ ---
 const styles = {
   mainContainer: {
     backgroundColor: "#F7F7F7",
     color: "#121212",
-    padding: "8rem 0",
+    padding: "4rem 0", // Reduced padding for mobile
     fontFamily: "'Outfit', sans-serif",
     overflowX: "hidden",
   },
   mainTitle: {
-    fontSize: "clamp(3rem, 10vw, 6rem)",
-    fontWeight: 700,
-    textAlign: "center",
-    marginBottom: "6rem",
-    color: "#000000",
+    fontSize: "clamp(2rem, 8vw, 3rem)", // Adjusted size for mobile
+    fontWeight: 400,
+    textAlign: "left",
+    marginBottom: "3rem", // Reduced margin for mobile
+    color: "black",
   },
-  featureCard: { height: "100%", display: "flex", flexDirection: "column" },
- 
-  featureIcon: {
-    marginBottom: "1.5rem",
+  carouselContainer: {
+    position: "relative",
+    width: "100%",
+    overflow: "hidden",
   },
-  featureTitle: {
-    fontSize: "2.5rem",
-    fontWeight: 700,
-    color: "#111111",
-    marginBottom: "1rem",
-    minHeight: "7rem",
-  },
-  featureText: {
-    fontSize: "1.2rem",
-    lineHeight: 1.7,
-    color: "#555555",
-    flexGrow: 1,
-  },
-  ctaTitle: {
-    fontSize: "clamp(2.5rem, 8vw, 4rem)",
-    fontWeight: 700,
-    textAlign: "center",
-    marginTop: "10rem",
-    marginBottom: "4rem",
-    color: "#000000",
-  },
-  contactCard: {
-    backgroundColor: "#FFFFFF",
-    padding: "2.5rem",
-    borderRadius: "24px",
-    border: "2px solid #000000",
-    boxShadow: "0 10px 30px rgba(0, 0, 0, 0.05)",
+  featureCard: {
     height: "100%",
     display: "flex",
     flexDirection: "column",
-  },
-  contactIcon: { marginBottom: "1.5rem" },
-  contactTitle: {
-    fontSize: "1.5rem",
-    fontWeight: 700,
-    color: "#000000",
-    marginBottom: "0.5rem",
-  },
-  contactDescription: { fontSize: "1.1rem", color: "#555555", flexGrow: 1 },
-  contactButton: {
-    backgroundColor: "#000000",
-    color: "#FFFFFF",
-    padding: "1rem 2rem",
+    padding: "1.5rem", // Reduced padding for mobile
     borderRadius: "16px",
-    textDecoration: "none",
-    fontWeight: "bold",
-    transition: "all 0.3s ease",
-    textAlign: "center",
-    marginTop: "2rem",
-    border: "2px solid #000000",
+    backgroundColor: "#000000", // Default black background for mobile
+    color: "#FFFFFF",
+    transition: "transform 0.3s ease",
+    position: "absolute",
+    top: "0",
+    left: "0",
+    width: "100%",
+  },
+  featureTitle: {
+    fontSize: "1.8rem", // Reduced size for mobile
+    fontWeight: 700,
+    color: "#FFFFFF", // White by default on mobile
+    marginBottom: "8rem", // Maintained large spacing
+    minHeight: "5rem", // Reduced minHeight for mobile
+  },
+  featureText: {
+    fontSize: "1rem", // Reduced size for mobile
+    lineHeight: 1.5,
+    color: "#CCCCCC", // Lighter gray for contrast on black
+    flexGrow: 1,
+  },
+  arrow: {
+    position: "absolute",
+    top: "50%",
+    transform: "translateY(-50%)",
+    cursor: "pointer",
+    zIndex: 10,
+  },
+  leftArrow: {
+    left: "10px",
+  },
+  rightArrow: {
+    right: "10px",
+  },
+  desktop: {
+    display: "block",
+  },
+  mobile: {
+    display: "none",
   },
 };
 
-// --- ANİMASYONLU BİLEŞENLER ---
-function FeatureCard({ icon, title, text, delay }) {
+// Media query for mobile
+const mobileStyles = `
+  @media (max-width: 768px) {
+    .desktop {
+      display: none;
+    }
+    .mobile {
+      display: block;
+    }
+    .featureCard {
+      padding: 1.5rem;
+      font-size: 1rem;
+    }
+    .featureTitle {
+      font-size: 1.8rem;
+      margin-bottom: 8rem;
+    }
+    .featureText {
+      font-size: 1rem;
+    }
+  }
+`;
+
+// --- ANİMASYONLU BİLEŞEN ---
+function FeatureCard({ title, text, delay, isActive }) {
   const { ref, inView } = useInView({ triggerOnce: true, threshold: 0.1 });
+
   const animationStyle = {
     opacity: inView ? 1 : 0,
     transform: inView ? "translateY(0)" : "translateY(50px)",
     transition: `all 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) ${delay}s`,
   };
-  return (
-    <div ref={ref} style={{ ...styles.featureCard, ...animationStyle }}>
-      <div style={styles.featureIcon}>{icon}</div>
-      <h4 style={styles.featureTitle}>{title}</h4>
-      <p style={styles.featureText}>{text}</p>
-    </div>
-  );
-}
 
-function ContactCard({
-  iconName,
-  title,
-  description,
-  buttonText,
-  link,
-  delay,
-}) {
-  const { ref, inView } = useInView({ triggerOnce: true, threshold: 0.3 });
-  const [isHovered, setIsHovered] = useState(false);
   const cardStyle = {
-    ...styles.contactCard,
-    opacity: inView ? 1 : 0,
-    transform: inView ? "translateY(0)" : "translateY(50px)",
-    transition: `all 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) ${delay}s`,
+    ...styles.featureCard,
+    ...animationStyle,
+    transform: isActive ? "translateX(0)" : "translateX(100%)", // Slide effect
   };
-  const buttonStyle = {
-    ...styles.contactButton,
-    backgroundColor: isHovered ? "#FFFFFF" : "#000000",
-    color: isHovered ? "#000000" : "#FFFFFF",
+
+  const titleStyle = {
+    ...styles.featureTitle,
+  };
+
+  const textStyle = {
+    ...styles.featureText,
   };
 
   return (
-    <div ref={ref} style={cardStyle}>
-      <div style={styles.contactIcon}>
-        {iconName === "WhatsApp" ? (
-          <svg width="40" height="40" viewBox="0 0 24 24">
-            <path
-              d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91C2.13 13.66 2.59 15.35 3.43 16.84L2.05 22L7.31 20.6C8.75 21.38 10.36 21.82 12.04 21.82C17.5 21.82 21.95 17.37 21.95 11.91C21.95 9.24 20.91 6.78 19.16 4.96C17.34 3.14 14.81 2 12.04 2ZM17.15 15.22C16.92 15.74 15.76 16.32 15.24 16.38C14.72 16.43 14.28 16.44 13.93 16.27C13.58 16.11 12.83 15.86 11.93 15.05C10.84 14.05 10.16 12.81 9.98 12.51C9.8 12.21 9.68 12.06 9.51 11.84C9.33 11.62 9.16 11.45 9 11.23C8.84 11.01 8.68 10.81 8.54 10.58C8.4 10.35 8.25 10.12 8.27 9.87C8.29 9.62 8.78 9.17 9.03 8.94C9.28 8.71 9.49 8.65 9.66 8.65C9.83 8.65 10 8.65 10.15 8.94C10.3 9.24 10.63 10.03 10.71 10.18C10.79 10.33 10.87 10.48 10.79 10.63C10.71 10.78 10.63 10.86 10.48 11C10.33 11.15 10.23 11.26 10.11 11.39C9.99 11.51 9.87 11.63 9.75 11.75C9.64 11.85 9.53 11.96 9.66 12.11C9.8 12.26 10.29 12.91 10.92 13.5C11.65 14.18 12.23 14.5 12.38 14.62C12.53 14.74 12.65 14.77 12.8 14.7C12.95 14.62 13.39 14.16 13.59 13.91C13.79 13.66 14.11 13.58 14.41 13.66C14.71 13.74 15.5 14.16 15.7 14.26C15.9 14.36 16.08 14.44 16.13 14.51C16.18 14.59 16.18 14.89 16.03 15.04L17.15 15.22Z"
-              fill="#000000"
-            />
-          </svg>
-        ) : (
-          <svg
-            width="40"
-            height="40"
-            viewBox="0 0 24 24"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              d="M22 6C22 4.9 21.1 4 20 4H4C2.9 4 2 4.9 2 6V18C2 19.1 2.9 20 4 20H20C21.1 20 22 19.1 22 18V6ZM20 6L12 11L4 6H20ZM20 18H4V8L12 13L20 8V18Z"
-              fill="#000000"
-            />
-          </svg>
-        )}
-      </div>
-      <h5 style={styles.contactTitle}>{title}</h5>
-      <p style={styles.contactDescription}>{description}</p>
-      <a
-        href={link}
-        target="_blank"
-        rel="noopener noreferrer"
-        style={buttonStyle}
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
-      >
-        {buttonText}
-      </a>
+    <div ref={ref} style={cardStyle} className="mobile">
+      <h4 style={titleStyle}>{title}</h4>
+      <p style={textStyle}>{text}</p>
     </div>
   );
 }
 
 // ANA BILEŞEN
 function HowItWorks() {
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const touchRef = useRef(null);
+
+  // Infinite loop logic
+  const nextSlide = () => {
+    setCurrentIndex((prev) => (prev + 1) % featuresData.length);
+  };
+
+  const prevSlide = () => {
+    setCurrentIndex(
+      (prev) => (prev - 1 + featuresData.length) % featuresData.length
+    );
+  };
+
+  // Handle touch events for swipe
+  useEffect(() => {
+    const touchArea = touchRef.current;
+    let touchStartX = 0;
+    let touchEndX = 0;
+
+    const handleTouchStart = (e) => {
+      touchStartX = e.touches[0].clientX;
+    };
+
+    const handleTouchMove = (e) => {
+      touchEndX = e.touches[0].clientX;
+    };
+
+    const handleTouchEnd = () => {
+      if (touchStartX - touchEndX > 50) {
+        nextSlide(); // Swipe left
+      }
+      if (touchStartX - touchEndX < -50) {
+        prevSlide(); // Swipe right
+      }
+    };
+
+    if (touchArea) {
+      touchArea.addEventListener("touchstart", handleTouchStart);
+      touchArea.addEventListener("touchmove", handleTouchMove);
+      touchArea.addEventListener("touchend", handleTouchEnd);
+    }
+
+    return () => {
+      if (touchArea) {
+        touchArea.removeEventListener("touchstart", handleTouchStart);
+        touchArea.removeEventListener("touchmove", handleTouchMove);
+        touchArea.removeEventListener("touchend", handleTouchEnd);
+      }
+    };
+  }, []);
+
   return (
     <div style={styles.mainContainer}>
       <Container>
@@ -251,26 +216,57 @@ function HowItWorks() {
             <h2 style={styles.mainTitle}>HOW IT WORKS?</h2>
           </Col>
         </Row>
-        <Row className="g-5 g-lg-4 justify-content-center">
+        {/* Desktop Version */}
+        <Row
+          className="g-0 desktop"
+          style={{
+            borderTop: "1px solid #000000",
+            borderLeft: "none",
+            borderRight: "none",
+            borderBottom: "none",
+          }}
+        >
           {featuresData.map((feature, index) => (
-            <Col key={index} md={6} lg={4}>
+            <Col
+              key={index}
+              md={6}
+              lg={4}
+              className={
+                index === 0
+                  ? "border-end"
+                  : index === featuresData.length - 1
+                  ? "border-start"
+                  : "border-start border-end"
+              }
+              style={{ borderColor: "#000000" }}
+            >
               <FeatureCard {...feature} delay={index * 0.15} />
             </Col>
           ))}
         </Row>
-        <Row className="justify-content-center">
-          <Col md={10}>
-            <h2 style={styles.ctaTitle}>Ready to build something with us?</h2>
-          </Col>
-        </Row>
-        <Row className="g-4 justify-content-center">
-          {contactData.map((contact, index) => (
-            <Col key={index} md={6} lg={5}>
-              <ContactCard {...contact} delay={index * 0.2} />
-            </Col>
-          ))}
-        </Row>
+        {/* Mobile Version */}
+        <div className="mobile" style={styles.carouselContainer} ref={touchRef}>
+          <FeatureCard
+            {...featuresData[currentIndex]}
+            delay={0}
+            isActive={true}
+          />
+          <div
+            style={{ ...styles.arrow, ...styles.leftArrow }}
+            onClick={prevSlide}
+          >
+            <LeftArrow />
+          </div>
+          <div
+            style={{ ...styles.arrow, ...styles.rightArrow }}
+            onClick={nextSlide}
+          >
+            <RightArrow />
+          </div>
+        </div>
+        <Ready />
       </Container>
+      <style>{mobileStyles}</style> {/* Inject media query styles */}
     </div>
   );
 }
