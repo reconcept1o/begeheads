@@ -190,17 +190,17 @@ class BegeadsScene {
     let finalScaleX, finalScaleY;
 
     if (isMobile) {
-      // Genişliği %100 yapıyoruz (önceki gibi doğru).
+      // Genişliği %100 
       const mobileScale = this.viewport.width / size.x;
 
       finalScaleX = mobileScale;
       finalScaleY = mobileScale;
 
-      // ***** LOGO ARTIK GERÇEKTEN BÜYÜK OLACAK *****
-      // Dikey olarak daha iyi ortalamak için pozisyonu güncelliyoruz.
-      this.logoMesh.position.y = (this.viewport.height / 2) * 0.55; // Değer 0.7'den 0.55'e düşürüldü.
+    
+     
+      this.logoMesh.position.y = (this.viewport.height / 2) * 0.55; // Değer 0.7'den 0.55'.
     } else {
-      // Masaüstü ayarları aynı kalabilir.
+   
       const desktopScale = (this.viewport.height * 0.45) / size.y;
       finalScaleY = desktopScale;
       finalScaleX = desktopScale * 0.9;
@@ -372,14 +372,14 @@ class BegeadsScene {
     if (!this.container) return;
     const rect = this.container.getBoundingClientRect();
 
-    // ***** BURAYA DA AKILLI ZOOM'U EKLİYORUZ *****
-    // Pencere yeniden boyutlandığında en/boy oranı değişir.
+    // ***** AKILLI ZOOM........ *****
+    // Pencere yeniden boyutlandığında en/boy oranı değişir....
     this.camera.aspect = rect.width / rect.height;
-    // Yeni orana göre zoom'u tekrar ayarla.
+  
     const isMobile = this.camera.aspect < 1;
     this.camera.zoom = isMobile ? 1 : 0.8;
 
-    // Kamera ayarları değiştiği için projeksiyon matrisini güncellemek ÇOK ÖNEMLİ.
+    // matrix ayarı
     this.camera.updateProjectionMatrix();
     this.renderer.setSize(rect.width, rect.height);
     this.updateViewport();

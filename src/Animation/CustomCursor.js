@@ -1,4 +1,4 @@
-// EKLENDİ: Gerekli React fonksiyonlarını import eden satır
+
 import React, { useState, useEffect, useRef } from "react";
 
 function CustomCursor() {
@@ -120,5 +120,5 @@ function CustomCursor() {
   );
 }
 
-// EKLENDİ: Component'i dışa aktaran satır
+
 export default CustomCursor;

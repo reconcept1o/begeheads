@@ -3,7 +3,7 @@
 import React, { useRef, useEffect, useState } from "react";
 import BegeadsScene from "../Animation/BegeadsScene";
 
-// Asset'leri import ediyoruz
+// asset'leri import ediyoruz....
 import backgroundUrl from "../assets/Background.png";
 import logoUrl from "../assets/logo.svg";
 import gltfUrl from "../assets/letter_b_03.glb";
@@ -83,7 +83,7 @@ function Home() {
     justifyContent: "flex-end",
     alignItems: "center",
     padding: "20px",
-    // GÜNCELLEME: İçerik grubunu aşağı çekmek için alttaki boşluk azaltıldı.
+    
     paddingBottom: isMobile ? "10vh" : "4vh",
     boxSizing: "border-box",
   };

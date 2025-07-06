@@ -335,8 +335,8 @@ function WhatWeMade() {
 
   const responsiveStyles = {
     title: {
-      fontWeight: 300,
-      fontSize: breakpoint === "mobile" ? "2.8rem" : "4.5rem",
+      fontWeight: 600,
+      fontSize: breakpoint === "mobile" ? "2.8rem" : "4rem",
       marginBottom: "4rem",
       textAlign: "left",
       paddingLeft: "15px",
