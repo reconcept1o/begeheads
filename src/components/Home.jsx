@@ -83,16 +83,15 @@ function Home() {
     justifyContent: "flex-end",
     alignItems: "center",
     padding: "20px",
-    // GÜNCELLEME: Mobil için alttaki boşluğu arttırarak içeriği yukarı taşıdık
-    paddingBottom: isMobile ? "10vh" : "12vh",
+    // GÜNCELLEME: İçerik grubunu aşağı çekmek için alttaki boşluk azaltıldı.
+    paddingBottom: isMobile ? "10vh" : "4vh",
     boxSizing: "border-box",
   };
-
   const subtitleStyle = {
     color: "white",
     textAlign: "center",
    
-    fontSize: isMobile ? "1.1rem" : "1.2rem",
+    fontSize: isMobile ? "1.1rem" : "1.5rem",
     fontWeight: 600,
     lineHeight: 1.6,
     marginTop: "0px",
