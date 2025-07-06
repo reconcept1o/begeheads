@@ -1,6 +1,6 @@
 // Home.js
 
-import React, { useRef, useEffect, useState, useCallback } from "react";
+import React, { useRef, useEffect, useState } from "react";
 import BegeadsScene from "../Animation/BegeadsScene";
 
 // Asset'leri import ediyoruz
@@ -68,7 +68,7 @@ function Home() {
     backgroundSize: "cover",
     backgroundPosition: "center",
     overflow: "hidden",
-    fontFamily: "'Outfit', sans-serif",
+   
   };
 
   const contentContainerStyle = {
@@ -91,11 +91,11 @@ function Home() {
   const subtitleStyle = {
     color: "white",
     textAlign: "center",
-    fontFamily: "'Outfit', sans-serif",
-    fontSize: isMobile ? "1rem" : "1.2rem",
-    fontWeight: 300,
+   
+    fontSize: isMobile ? "1.5rem" : "1.2rem",
+    fontWeight: 600,
     lineHeight: 1.6,
-    marginTop: 0,
+    marginTop: "0px",
     maxWidth: isMobile ? "90vw" : "600px",
     opacity: isSceneLoaded ? 1 : 0,
     transition: "opacity 1s ease-in 0.3s",
@@ -168,7 +168,7 @@ function Home() {
     justifyContent: "center",
     alignItems: "center",
     textAlign: "center",
-    fontFamily: "'Outfit', sans-serif",
+
   };
   const buttonDefaultStyle = {
     backgroundColor: "transparent",
@@ -209,7 +209,7 @@ function Home() {
             onMouseEnter={() => setIsMailHovered(true)}
             onMouseLeave={() => setIsMailHovered(false)}
           >
-            Mail
+            E-Mail
           </button>
         </nav>
       </div>

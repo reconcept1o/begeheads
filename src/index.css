@@ -1,6 +1,24 @@
-/* ======================================== /
-/ YENİ EKLENEN ÖZEL İMLEÇ STİLLERİ (3 YUVARLAK) /
-/ ======================================== *//* Turuncu büyük yuvarlak */
+
+
+/* ======================================== */
+/* GENEL GÖVDE (BODY) STİLİ                */
+/* ======================================== */
+
+body {
+  margin: 0;
+  /* VARSAYILAN FONT OLARAK 'PP Neue Montreal' AYARLANDI */
+  font-family: 'PP Neue Montreal', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+  'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+  sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ======================================== */
+/* ÖZEL İMLEÇ STİLLERİ                      */
+/* ======================================== */
+
+/* Turuncu büyük yuvarlak */
 .cursor-circle-orange {
   position: fixed;
   top: 0;
@@ -13,8 +31,9 @@
   pointer-events: none;
   transition: transform 0.2s ease-out, opacity 0.3s ease-out;
   opacity: 0;
-  }/* Pembe büyük yuvarlak */
-  .cursor-circle-pink {
+}
+/* Pembe büyük yuvarlak */
+.cursor-circle-pink {
   position: fixed;
   top: 0;
   left: 0;
@@ -26,8 +45,9 @@
   pointer-events: none;
   transition: transform 0.25s ease-out, opacity 0.3s ease-out;
   opacity: 0;
-  }/* Siyah büyük yuvarlak */
-  .cursor-circle-black {
+}
+/* Siyah büyük yuvarlak */
+.cursor-circle-black {
   position: fixed;
   top: 0;
   left: 0;
@@ -39,71 +59,5 @@
   pointer-events: none;
   transition: transform 0.3s ease-out, opacity 0.3s ease-out;
   opacity: 0;
-  }/* ======================================== /
-  / MEVCUT KODUNUZ BAŞLANGICI                /
-  / ======================================== */
-  body {
-  margin: 0;
-  font-family: "Outfit", -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-  'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-  sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  }
-
-
-.wdxl-lubrifont-tc-regular {
-  font-family: "WDXL Lubrifont TC", sans-serif;
-  font-weight: 400;
-  font-style: normal;
 }
 
-
-.noto-serif-dives-akuru-regular {
-  font-family: "Noto Serif Dives Akuru", serif;
-  font-weight: 400;
-  font-style: normal;
-}
-
-
-.comic-relief-regular {
-  font-family: "Comic Relief", system-ui;
-  font-weight: 400;
-  font-style: normal;
-}
-
-.comic-relief-bold {
-  font-family: "Comic Relief", system-ui;
-  font-weight: 700;
-  font-style: normal;
-}
-
-
-
-.outfit-light {
-  font-family: "Outfit", sans-serif;
-  font-optical-sizing: auto;
-  font-weight: 300;
-  font-style: normal;
-}
-
-.outfit-regular {
-  font-family: "Outfit", sans-serif;
-  font-optical-sizing: auto;
-  font-weight: 400;
-  font-style: normal;
-}
-
-.outfit-bold {
-  font-family: "Outfit", sans-serif;
-  font-optical-sizing: auto;
-  font-weight: 700;
-  font-style: normal;
-}
-
-.outfit-black {
-  font-family: "Outfit", sans-serif;
-  font-optical-sizing: auto;
-  font-weight: 900;
-  font-style: normal;
-}

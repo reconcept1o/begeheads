@@ -65,7 +65,7 @@ const styles = {
     backgroundColor: "#000000",
     color: "#FFFFFF",
     padding: "5rem 0 10rem 0",
-    fontFamily: "'Outfit', sans-serif",
+
   },
   ctaTitle: {
     fontSize: "clamp(2.5rem, 8vw, 4rem)",

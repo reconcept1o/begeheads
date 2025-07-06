@@ -59,7 +59,7 @@ const styles = {
     backgroundColor: "#FFFFFF",
     color: "#000000",
     padding: "6rem 2rem 4rem 2rem",
-    fontFamily: "'Outfit', sans-serif",
+
     position: "relative",
     borderTop: "1px solid #E0E0E0",
   },

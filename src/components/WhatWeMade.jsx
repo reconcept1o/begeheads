@@ -331,7 +331,7 @@ function WhatWeMade() {
   const handleMailClick = () =>
     (window.location.href = "mailto:YOUR_EMAIL_ADDRESS");
 
-  const baseFont = { fontFamily: "'Outfit', sans-serif" };
+  const baseFont = {}; 
 
   const responsiveStyles = {
     title: {

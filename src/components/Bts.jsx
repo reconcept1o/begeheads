@@ -302,7 +302,7 @@ function Bts() {
       color: "#FFFFFF",
       minHeight: "100vh",
       padding: "2rem 0 5rem 0",
-      fontFamily: "'Outfit', sans-serif",
+      
     },
     headerRow: { alignItems: "center", marginBottom: "1rem" },
     btsTitle: { fontSize: "2rem", fontWeight: "bold", textAlign: "left" },

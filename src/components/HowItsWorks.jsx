@@ -35,7 +35,7 @@ const styles = {
     backgroundColor: "#F7F7F7",
     color: "#121212",
     padding: "8rem 0",
-    fontFamily: "'Outfit', sans-serif",
+ 
     overflowX: "hidden",
   },
   mainTitle: {

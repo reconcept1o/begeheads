@@ -9,7 +9,7 @@ import Footer from "./components/Footer";
 import PrivacyPolicy from "./components/PrivacyPolicy";
 import Ready from "./components/Ready";
 
-// 1. CustomCursor component'ini yeni yolundan import ediyoruz
+
 import CustomCursor from "./Animation/CustomCursor";
 
 function MainPage() {
@@ -39,7 +39,7 @@ function App() {
     <div
       style={{ minHeight: "100vh", display: "flex", flexDirection: "column" }}
     >
-      {/* 2. CustomCursor'ı Routes'un dışına, en üste yerleştiriyoruz */}
+
       <CustomCursor />
 
       <Routes>
