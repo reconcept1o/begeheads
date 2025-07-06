@@ -35,12 +35,12 @@ const styles = {
     backgroundColor: "#F7F7F7",
     color: "#121212",
     padding: "8rem 0",
- 
+
     overflowX: "hidden",
   },
   mainTitle: {
-    fontSize: "clamp(1rem, 3vw, 3rem)",
-    fontWeight: 300,
+    fontSize: "clamp(3rem, 3vw, 3rem)",
+    fontWeight: 600,
     textAlign: "left",
     marginBottom: "6rem",
     color: "black",
@@ -63,15 +63,16 @@ const styles = {
     position: "relative",
   },
   featureTitle: {
-    fontSize: "2.5rem",
-    fontWeight: 700,
+    fontSize: "3.5rem",
+    fontWeight: 500,
     color: "black",
     marginBottom: "18rem",
     minHeight: "7rem",
   },
   featureText: {
-    fontSize: "1.2rem",
-    lineHeight: 1.7,
+    fontSize: "2rem",
+    fontWeight: 500,
+    lineHeight: 1.25,
     color: "#555555",
     flexGrow: 1,
   },
