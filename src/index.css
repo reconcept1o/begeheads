@@ -1,12 +1,12 @@
 
 
-/* ======================================== */
+
 /* GENEL GÖVDE (BODY) STİLİ                */
-/* ======================================== */
+
 
 body {
   margin: 0;
-  /* VARSAYILAN FONT OLARAK 'PP Neue Montreal' AYARLANDI */
+
   font-family: 'PP Neue Montreal', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
   'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
   sans-serif;
@@ -14,9 +14,7 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* ======================================== */
-/* ÖZEL İMLEÇ STİLLERİ                      */
-/* ======================================== */
+
 
 /* Turuncu büyük yuvarlak */
 .cursor-circle-orange {
