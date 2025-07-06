@@ -232,7 +232,7 @@ const highlightStyles = `
       border-bottom-color: transparent;
       padding: 0.5rem 1rem;
       border-radius: 6px;
-      transform: rotate(-2deg);
+    
       line-height: 1.2;
       cursor: default;
       transition: none;
