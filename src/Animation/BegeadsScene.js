@@ -196,9 +196,9 @@ class BegeadsScene {
       finalScaleX = mobileScale;
       finalScaleY = mobileScale;
 
-    
+    // mobil logo posizyonu
      
-      this.logoMesh.position.y = (this.viewport.height / 2) * 0.55; // Değer 0.7'den 0.55'.
+      this.logoMesh.position.y = (this.viewport.height / 2) * 0.4; // Değer 0.7'den 0.55'.
     } else {
    
       const desktopScale = (this.viewport.height * 0.45) / size.y;
