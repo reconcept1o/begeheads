@@ -92,7 +92,7 @@ function Home() {
     color: "white",
     textAlign: "center",
    
-    fontSize: isMobile ? "1.5rem" : "1.2rem",
+    fontSize: isMobile ? "1.1rem" : "1.2rem",
     fontWeight: 600,
     lineHeight: 1.6,
     marginTop: "0px",
