@@ -3,7 +3,6 @@
 import React, { useRef, useEffect, useState } from "react";
 import BegeadsScene from "../Animation/BegeadsScene";
 
-// asset'leri import ediyoruz....
 import backgroundUrl from "../assets/Background.png";
 import logoUrl from "../assets/logo.svg";
 import gltfUrl from "../assets/letter_b_03.glb";

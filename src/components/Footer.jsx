@@ -233,7 +233,7 @@ function Footer() {
           <Row style={styles.logoRow} className="footer-logo-row">
             <Col>
               <img src={logo} alt="BEGEADS Logo" style={styles.logo} />
-              {/* ® sembolünü ekleyen <sup> etiketi buradan kaldırıldı. */}
+             
             </Col>
           </Row>
 

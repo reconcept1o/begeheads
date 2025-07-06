@@ -3,12 +3,12 @@ import { Container, Row, Col } from "react-bootstrap";
 import { useInView } from "react-intersection-observer";
 import { useSpring, animated } from "react-spring";
 
-// Videolarınızı projenizdeki doğru yoldan import ettiğinizden emin olun
+
 import video1 from "../assets/video/1.mp4";
 import video2 from "../assets/video/2.mp4";
 import video3 from "../assets/video/3.mp4";
 
-// --- ErrorBoundary Bileşeni (Değişiklik Yok) ---
+// --- ErrorBoundary Bileşeni ---
 class ErrorBoundary extends React.Component {
   state = { hasError: false };
   static getDerivedStateFromError(error) {
@@ -25,7 +25,7 @@ class ErrorBoundary extends React.Component {
   }
 }
 
-// --- AnimatedStat Bileşeni (GÜNCELLEME BURADA) ---
+// --- AnimatedStat Bileşeni ---
 function AnimatedStat({ value, label, inView, breakpoint }) {
   const { number } = useSpring({
     from: { number: 0 },
@@ -219,7 +219,7 @@ function VideoCard({
   );
 }
 
-// --- Diğer stiller ve ana component (Değişiklik Yok) ---
+
 const highlightStyles = `
   .highlight-word { display: inline-block; position: relative; cursor: pointer; transition: all 0.2s ease-in-out; border-bottom: 7px solid #141414; padding-bottom: 0; line-height: 0.9; }
   .highlight-word:hover::before { content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background-image: linear-gradient(to right, #111111, #555555); border-radius: 6px; z-index: -1; transition: all 0.2s ease-in-out; }

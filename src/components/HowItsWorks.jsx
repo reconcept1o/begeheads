@@ -48,7 +48,7 @@ const styles = {
   // Mobile-specific title style to override margin
   mobileHeaderTitle: {
     fontSize: "clamp(1.5rem, 5vw, 2rem)",
-    fontWeight: 300,
+    fontWeight: 600,
     color: "black",
     margin: 0,
   },
@@ -139,7 +139,7 @@ const mobileStyles = `
   }
 `;
 
-// --- ANİMASYONLU BİLEŞEN (Desktop) ---
+// ---Desktop Animation ---
 function FeatureCard({ title, text, delay }) {
   const { ref, inView } = useInView({ triggerOnce: true, threshold: 0.1 });
   const [isHovered, setIsHovered] = useState(false);
@@ -180,7 +180,7 @@ function FeatureCard({ title, text, delay }) {
   );
 }
 
-// --- MOBILE CAROUSEL COMPONENT ---
+// --- mobile corousel---
 function MobileFeatureCard({ title, text, isActive }) {
   const { ref, inView } = useInView({ triggerOnce: true, threshold: 0.1 });
 
@@ -204,7 +204,7 @@ function MobileFeatureCard({ title, text, isActive }) {
   );
 }
 
-// ANA BILEŞEN
+// ana bileşenler
 function HowItWorks() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const touchRef = useRef(null);

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { Container, Row, Col } from "react-bootstrap";
 import { useInView } from "react-intersection-observer";
 
@@ -110,7 +110,7 @@ const styles = {
   },
 };
 
-// --- AKAN YAZI BİLEŞENİ ---
+// --swipper text bileşeni---
 function Marquee() {
   const text = "BUİLD TO BE REPLAYED - ";
   return (
@@ -126,13 +126,13 @@ function Marquee() {
   );
 }
 
-// --- İLETİŞİM KARTI BİLEŞENİ ---
+
 function ContactCard({ mainTitle, description, buttonText, link, delay }) {
   const { ref, inView } = useInView({ triggerOnce: true, threshold: 0.3 });
 
   const cardStyle = {
     ...styles.contactCard,
-    // Başlangıçta görünen ince çerçeveyi box-shadow ile taklit ediyoruz
+    
     boxShadow: `inset 0 0 0 1px #333`,
     opacity: inView ? 1 : 0,
     transform: inView ? "translateY(0)" : "translateY(50px)",
@@ -156,7 +156,7 @@ function ContactCard({ mainTitle, description, buttonText, link, delay }) {
   );
 }
 
-// --- ANA BILEŞEN ---
+
 function Ready() {
   return (
     <>

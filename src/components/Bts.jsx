@@ -53,7 +53,7 @@ const socialLinks = [
   { name: "LinkedIn", href: "https://linkedin.com", icon: <FaLinkedin /> },
 ];
 
-// --- STİLLER (SINIF İSİMLERİ GÜNCELLENDİ) ---
+
 const newCarouselStyles = `
   /* GÜNCELLEME: Sınıf adı çakışmayı önlemek için değiştirildi */
   .bts-carousel-container {
