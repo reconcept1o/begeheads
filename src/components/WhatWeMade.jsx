@@ -250,7 +250,7 @@ transform: rotate(-2deg);
       content: '';
       position: absolute;
       left: 1rem; right: 1rem; bottom: 0.5rem;
-      height: 7px;
+      height: 5px;
       background-color: #FFFFFF;
     }
   }
