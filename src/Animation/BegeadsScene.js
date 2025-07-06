@@ -215,12 +215,12 @@ class BegeadsScene {
   createAnimatedLetters(geometry) {
     const material = new THREE.MeshPhysicalMaterial({
       metalness: 0,
-      roughness: 0.3,
-      transmission: 1.0,
+      roughness: 0.1,
+      transmission: 1,
       thickness: 2,
-      ior: 1.1,
+      ior: 1.02,
       envMap: this.scene.environment,
-      envMapIntensity: 1,
+      envMapIntensity: 1.5,
     });
 
     const scaleFactor = Math.max(15, Math.min(25, 30 / this.viewport.width));
