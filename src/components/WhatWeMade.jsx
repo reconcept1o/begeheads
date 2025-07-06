@@ -25,11 +25,12 @@ class ErrorBoundary extends React.Component {
   }
 }
 
-// --- AnimatedStat Bileşeni (Değişiklik Yok) ---
+// --- AnimatedStat Bileşeni (GÜNCELLEME BURADA) ---
 function AnimatedStat({ value, label, inView, breakpoint }) {
   const { number } = useSpring({
     from: { number: 0 },
-    number: inView ? value : 0,
+    // GÜNCELLEME: Eğer value NaN ise, animasyon hedefini 0 yapıyoruz.
+    number: inView ? (isNaN(value) ? 0 : value) : 0,
     delay: 300,
     config: { mass: 1, tension: 20, friction: 10 },
   });
@@ -75,6 +76,7 @@ function AnimatedStat({ value, label, inView, breakpoint }) {
     },
   };
 
+  // Bu kontrol hala gerekli, çünkü sadece label'ı göstermek istiyoruz.
   if (isNaN(value)) {
     return <div style={statStyles.labelOnly}>{label}</div>;
   }
@@ -217,28 +219,24 @@ function VideoCard({
   );
 }
 
-// --- FİNAL STİLLER (İSTENEN GÜNCELLEME YAPILDI) ---
+// --- Diğer stiller ve ana component (Değişiklik Yok) ---
 const highlightStyles = `
   .highlight-word { display: inline-block; position: relative; cursor: pointer; transition: all 0.2s ease-in-out; border-bottom: 7px solid #141414; padding-bottom: 0; line-height: 0.9; }
   .highlight-word:hover::before { content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background-image: linear-gradient(to right, #111111, #555555); border-radius: 6px; z-index: -1; transition: all 0.2s ease-in-out; }
   .highlight-word:hover { color: #FFFFFF; border-bottom-color: transparent; padding: 0.5rem 1rem; border-radius: 6px; transform: rotate(-2deg); line-height: 1.2; }
   .highlight-word:hover::after { content: ''; position: absolute; left: 1rem; right: 1rem; bottom: 0.5rem; height: 7px; background-color: #FFFFFF; }
 
-  /* GÜNCELLEME: Mobil cihazlarda hover animasyonunu statik hale getirme */
   @media (max-width: 991px) {
     .highlight-word {
-      /* Masaüstü hover stillerini doğrudan mobil base stili yap */
       color: #FFFFFF;
       border-bottom-color: transparent;
       padding: 0.5rem 1rem;
       border-radius: 6px;
       transform: rotate(-2deg);
       line-height: 1.2;
-      cursor: default; /* Mobil'de imleç normal olsun */
-      transition: none; /* Mobil'de geçiş animasyonuna gerek yok */
+      cursor: default;
+      transition: none;
     }
-
-    /* Arka planı (::before) ve iç çizgiyi (::after) kalıcı olarak ekle */
     .highlight-word::before {
       content: '';
       position: absolute;
@@ -257,7 +255,6 @@ const highlightStyles = `
   }
 `;
 
-// --- Ana Sayfa Bileşeni (Değişiklik Yok) ---
 function WhatWeMade() {
   const videoData = [
     {
@@ -331,7 +328,7 @@ function WhatWeMade() {
   const handleMailClick = () =>
     (window.location.href = "mailto:YOUR_EMAIL_ADDRESS");
 
-  const baseFont = {}; 
+  const baseFont = {};
 
   const responsiveStyles = {
     title: {
